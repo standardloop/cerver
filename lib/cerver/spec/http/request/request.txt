@@ -1,0 +1,18 @@
+GET / HTTP/1.1
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: en
+Cache-Control: no-cache
+Connection: keep-alive
+Cookie: argocd.token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcmdvY2QiLCJzdWIiOiJhZG1pbjpsb2dpbiIsImV4cCI6MTcwNjgzNzM3OSwibmJmIjoxNzA2NzUwOTc5LCJpYXQiOjE3MDY3NTA5NzksImp0aSI6ImE2YTFmMWZhLTYzNTUtNDZmYi05MTZiLTE4YzI2MDRmZmJkZCJ9.a0iJ_XoNJKL9YK5zbAwDb9JQC0T2t-6tQMZyrXDQq28
+Host: localhost:8080
+Pragma: no-cache
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36
+sec-ch-ua: "Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "macOS"

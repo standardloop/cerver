@@ -8,7 +8,7 @@
 #include <unistd.h>     // write() close()
 
 // #include "../httpcodes/httpcodes.h"
-int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen);  // FIXME: where to put this declaration?
+int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen); // FIXME: where to put this declaration?
 
 int Cerver(int port)
 {
@@ -56,10 +56,15 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
             exit(EXIT_FAILURE);
         }
 
-        char buffer[30000] = {0}; // FIXME
+        char buffer[30000] = {0}; // FIXME: memory lel
         valread = read(new_socket, buffer, 30000);
         printf("[DEBUG]: valread: %ld\n", valread);
         printf("%s\n", buffer);
+        /*
+            request = ParseRequest(buffer, valread);
+            request->headers
+            request->body
+        */
         write(new_socket, hello, strlen(hello));
         close(new_socket);
     }

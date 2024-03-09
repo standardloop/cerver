@@ -1,7 +1,7 @@
 include Makefile.properties
 
 
-all: main
+all: main run
 
 clean:
 	rm main
@@ -11,4 +11,3 @@ main: main.c
 
 run:
 	./main
-
