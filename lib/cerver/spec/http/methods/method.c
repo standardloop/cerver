@@ -1,7 +1,7 @@
 #include "methods.h"
 #include <stdlib.h>
 
-char *HttpMethoEnumToString(int method)
+char *HttpMethodStr(int method)
 {
     switch (method)
     {

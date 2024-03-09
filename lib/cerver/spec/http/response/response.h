@@ -3,8 +3,7 @@
 
 #include "../codes/codes.h"
 
-
-typedef struct Response
+typedef struct HttpResponse
 {
     HttpCodes response_code;
     char **headers; // FIXM: headers package?

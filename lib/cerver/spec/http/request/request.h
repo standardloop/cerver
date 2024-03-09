@@ -3,9 +3,9 @@
 
 #include "../methods/methods.h"
 
-typedef struct Request
+typedef struct HttpRequest
 {
-    int http_method;
+    HttpMethods http_method;
     char *target;   //
     char **headers; // FIXM: headers package?
     char *body;     // FIXME: optional?

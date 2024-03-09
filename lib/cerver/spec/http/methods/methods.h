@@ -1,8 +1,6 @@
 #ifndef METHODS_H
 #define METHODS_H
-
-char *HttpMethoEnumToString(int method);
-
+char *HttpMethodStr(int method);
 enum HttpMethods
 {
     HttpGET = 0,

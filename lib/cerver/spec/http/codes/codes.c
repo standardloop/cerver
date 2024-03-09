@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "codes.h"
 
-char *HttpStatus_Class(int code)
+char *HttpStatusClass(int code)
 {
     if (code >= 100 && code < 200)
     {
@@ -26,11 +26,12 @@ char *HttpStatus_Class(int code)
     return NULL;
 }
 
-char *HttpStatus_Phrase(int code)
+char *HttpStatusPhrase(int code)
 {
     switch (code)
     {
 
+    // FIXME: enum here?
     // 1XX
     case 100:
         return "Continue";

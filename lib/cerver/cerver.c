@@ -8,6 +8,9 @@
 #include <unistd.h>     // write() close()
 
 // #include "../httpcodes/httpcodes.h"
+
+#include "spec/http/request/request.h"
+
 int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen); // FIXME: where to put this declaration?
 
 int Cerver(int port)
@@ -58,8 +61,11 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
 
         char buffer[30000] = {0}; // FIXME: memory lel
         valread = read(new_socket, buffer, 30000);
-        printf("[DEBUG]: valread: %ld\n", valread);
+        printf("[DEBUG]: valread: %ld\n", valread); // TODO: logging
         printf("%s\n", buffer);
+
+        // dnb
+        // HttpRequest request = parseRequest();
         /*
             request = ParseRequest(buffer, valread);
             request->headers
