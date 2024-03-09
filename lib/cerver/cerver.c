@@ -9,7 +9,7 @@
 
 // #include "../httpcodes/httpcodes.h"
 
-#include "spec/http/request/request.h"
+#include "./spec/http/request/request.h"
 
 int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen); // FIXME: where to put this declaration?
 
@@ -32,8 +32,10 @@ int Cerver(int port)
 
     memset(address.sin_zero, '\0', sizeof address.sin_zero);
 
+    // OS will handle cleaning up the port cleanaup
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
     {
+
         perror("In bind");
         exit(EXIT_FAILURE);
     }
@@ -50,22 +52,38 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
 {
     int new_socket;
     long valread;
+    // Make this dynamic :D
     char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
     while (1)
     {
         if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
         {
-            perror("[FATAL]: there have been ");
+            perror("[FATAL]: Couldn't accept connections on socket?");
             exit(EXIT_FAILURE);
         }
 
-        char buffer[30000] = {0}; // FIXME: memory lel
-        valread = read(new_socket, buffer, 30000);
-        printf("[DEBUG]: valread: %ld\n", valread); // TODO: logging
+        // buffer until we can see Content-Length?
+        char buffer[1024] = {0}; // FIXME: memory lel
+        // char *buffer_canary = malloc(sizeof(char *) * 30000);
+        // if (buffer_canary == NULL)
+        // {
+        //     // return 5XX error
+        // }
+        // free(buffer_canary);
+        valread = read(new_socket, buffer, 1024);
+
+        // printf("[DEBUG]: valread: %ld\n", valread); // TODO: logging
         printf("%s\n", buffer);
 
         // dnb
-        // HttpRequest request = parseRequest();
+        HttpRequest *request = CreateHttpRequest();
+        // HttpRequest *request = CreateHttpRequest(buffer, valread);
+        if (request == NULL)
+        {
+            // if you cannot parse the request, we need to return a 4XX?
+            // perror("[FATAL]: HttpRequest faile to parse ");
+            // exit(EXIT_FAILURE);
+        }
         /*
             request = ParseRequest(buffer, valread);
             request->headers

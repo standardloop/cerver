@@ -3,12 +3,13 @@
 
 #include "../methods/methods.h"
 
-typedef struct HttpRequest
+typedef struct
 {
-    HttpMethods http_method;
+    enum HttpMethods http_method;
     char *target;   //
     char **headers; // FIXM: headers package?
     char *body;     // FIXME: optional?
-};
+} HttpRequest;
 
+HttpRequest *CreateHttpRequest();
 #endif

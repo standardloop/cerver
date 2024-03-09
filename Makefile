@@ -1,13 +1,13 @@
 include Makefile.properties
 
 
-all: main run
+all: compile run
 
 clean:
 	rm main
 
-main: main.c
-	$(CC) $(CC_FLAGS) main.c lib/cerver/cerver.c -o main
+compile: main.c
+	$(CC) $(CC_FLAGS) main.c lib/cerver/cerver.c lib/cerver/spec/http/request/request.c -o main
 
 run:
 	./main

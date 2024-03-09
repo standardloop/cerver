@@ -3,11 +3,11 @@
 
 #include "../codes/codes.h"
 
-typedef struct HttpResponse
+typedef struct
 {
-    HttpCodes response_code;
+    enum HttpCodes response_code;
     char **headers; // FIXM: headers package?
     char *body;     // FIXME: optional?
-};
+} HttpResponse;
 
 #endif
