@@ -7,7 +7,7 @@ clean:
 	rm main
 
 compile: main.c
-	$(CC) $(CC_FLAGS) main.c lib/cerver/cerver.c lib/cerver/spec/http/request/request.c lib/cerver/spec/http/methods/methods.c -o main
+	$(CC) $(CC_FLAGS) main.c lib/cerver/cerver.c lib/cerver/http/request/request.c lib/cerver/http/methods/methods.c -o main
 
 run:
 	./main

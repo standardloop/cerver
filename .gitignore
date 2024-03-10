@@ -54,3 +54,4 @@ dkms.conf
 # Custom
 main
 .vscode
+.DS_Store

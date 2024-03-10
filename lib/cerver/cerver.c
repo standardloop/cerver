@@ -11,7 +11,7 @@
 
 // #include "../httpcodes/httpcodes.h"
 
-#include "./spec/http/request/request.h"
+#include "./http/request/request.h"
 
 int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen); // FIXME: where to put this declaration?
 
