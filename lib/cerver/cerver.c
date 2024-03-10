@@ -53,8 +53,8 @@ int Cerver(int port)
 int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
 {
     int new_socket;
-    long valread;
-    // Make this dynamic :D
+    // long valread;
+    //  Make this dynamic :D
     char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
     while (1)
     {
@@ -77,12 +77,15 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
 
         // valread = read(new_socket, buffer, sizeof(char *) * buffer_size);
         (void)read(new_socket, buffer, sizeof(char *) * buffer_size);
-        // HttpRequest *request;
+
         printf("%s\n", buffer);
-        int request_method = ParseRequestMethod(buffer, buffer_size);
-        if (request_method == 0)
+
+        enum HttpMethods request_method = ParseRequestMethod(buffer, buffer_size);
+        if (request_method == HttpFAKER)
         {
             free(buffer);
+            perror("[ERROR]: ");
+            exit(EXIT_FAILURE);
             // return 5XX
         }
         // printf("[DEBUG]: valread: %ld\n", valread); // TODO: logging

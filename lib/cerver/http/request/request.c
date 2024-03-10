@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "request.h"
-#include "../methods/methods.h"
 
 // HEAD / HTTP/1.1
 // Host: localhost:8080
@@ -11,21 +10,24 @@
 int getSize(char *buffer, size_t buffer_length)
 {
     // FIXME: ADD ERROR LOGIC
+    printf("[TRACE]: getSize Char: %c\n", *buffer);
     char *t;
     int size = 0;
 
-    for (t = buffer; (size < buffer_length) || *t != '\0' || *t != '/'; t++)
+    for (*t = buffer; size < MAX_METHOD_LENGTH && size < buffer_length && *t != '/' && *t != '\0'; t++)
     {
+        printf("[TRACE]: getSize Char: %c\n", *t);
         size++;
     }
     return size;
 }
 
-int ParseRequestMethod(char *buffer, size_t buffer_length)
+enum HttpMethods ParseRequestMethod(char *buffer, size_t buffer_length)
 {
+    printf("[TRACE]: entering a new function\n");
     int size = getSize(buffer, buffer_length);
     printf("[DEBUG]: size till:  %d\n", size);
-    if (size == 0 || size > MAX_METHOD_LENGTH)
+    if (size == 0)
     {
         return HttpFAKER;
     }
