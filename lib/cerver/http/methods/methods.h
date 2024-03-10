@@ -15,6 +15,6 @@ enum HttpMethods
     HttpPATCH,
     HttpFAKER,
 };
-char *HttpMethodStr(enum HttpMethods);
-
+char *HttpMethodToStr(enum HttpMethods);
+enum HttpMethods HttpStrToMethod(char *method);
 #endif

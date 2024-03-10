@@ -17,6 +17,7 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen); // FIXME
 
 int Cerver(int port)
 {
+
     int server_fd;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
@@ -56,6 +57,7 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
     // long valread;
     //  Make this dynamic :D
     char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+    // long served_count = 0;
     while (1)
     {
         if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
@@ -68,7 +70,7 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
         // char buffer[1024] = {0};
         int buffer_size = 1024 + 1;
 
-        char *buffer = malloc(sizeof(char *) * buffer_size);
+        char *buffer = malloc(sizeof(char) * buffer_size);
         if (buffer == NULL)
         {
             perror("[FATAL]: Couldn't allocate memory to to find ContentLength");
@@ -100,6 +102,7 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
         //     // exit(EXIT_FAILURE);
         // }
         write(new_socket, hello, strlen(hello));
+        // served_count++;
         close(new_socket);
     }
     // FIXME

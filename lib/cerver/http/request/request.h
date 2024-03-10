@@ -13,4 +13,5 @@ typedef struct
 
 HttpRequest *CreateHttpRequest();
 enum HttpMethods ParseRequestMethod(char *, size_t);
+
 #endif
