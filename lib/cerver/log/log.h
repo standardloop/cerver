@@ -10,4 +10,5 @@ enum LogLevels
     ERROR,
     FATAL,
 };
+void Log(int level);
 #endif

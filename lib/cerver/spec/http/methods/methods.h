@@ -1,6 +1,7 @@
 #ifndef METHODS_H
 #define METHODS_H
-char *HttpMethodStr(int method);
+
+#define MAX_METHOD_LENGTH 10
 enum HttpMethods
 {
     HttpGET,
@@ -12,5 +13,8 @@ enum HttpMethods
     HttpOPTIONS,
     HttpTRACE,
     HttpPATCH,
+    HttpFAKER,
 };
+char *HttpMethodStr(enum HttpMethods);
+
 #endif

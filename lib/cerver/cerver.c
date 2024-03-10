@@ -7,6 +7,8 @@
 #include <netinet/in.h> // sockaddr_in
 #include <unistd.h>     // write() close()
 
+#include <string.h> // fixme
+
 // #include "../httpcodes/httpcodes.h"
 
 #include "./spec/http/request/request.h"
@@ -63,32 +65,37 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
         }
 
         // buffer until we can see Content-Length?
-        char buffer[1024] = {0}; // FIXME: memory lel
-        // char *buffer_canary = malloc(sizeof(char *) * 30000);
-        // if (buffer_canary == NULL)
-        // {
-        //     // return 5XX error
-        // }
-        // free(buffer_canary);
-        valread = read(new_socket, buffer, 1024);
+        // char buffer[1024] = {0};
+        int buffer_size = 1024 + 1;
 
-        // printf("[DEBUG]: valread: %ld\n", valread); // TODO: logging
-        printf("%s\n", buffer);
-
-        // dnb
-        HttpRequest *request = CreateHttpRequest();
-        // HttpRequest *request = CreateHttpRequest(buffer, valread);
-        if (request == NULL)
+        char *buffer = malloc(sizeof(char *) * buffer_size);
+        if (buffer == NULL)
         {
-            // if you cannot parse the request, we need to return a 4XX?
-            // perror("[FATAL]: HttpRequest faile to parse ");
-            // exit(EXIT_FAILURE);
+            perror("[FATAL]: Couldn't allocate memory to to find ContentLength");
+            exit(EXIT_FAILURE);
         }
-        /*
-            request = ParseRequest(buffer, valread);
-            request->headers
-            request->body
-        */
+
+        // valread = read(new_socket, buffer, sizeof(char *) * buffer_size);
+        (void)read(new_socket, buffer, sizeof(char *) * buffer_size);
+        // HttpRequest *request;
+        printf("%s\n", buffer);
+        int request_method = ParseRequestMethod(buffer, buffer_size);
+        if (request_method == 0)
+        {
+            free(buffer);
+            // return 5XX
+        }
+        // printf("[DEBUG]: valread: %ld\n", valread); // TODO: logging
+        // printf("%s\n", buffer);
+        free(buffer);
+        //
+        // HttpRequest *request = CreateHttpRequest();
+        // if (request == NULL)
+        // {
+        //     // if you cannot parse the request, we need to return a 4XX?
+        //     // perror("[FATAL]: HttpRequest faile to parse ");
+        //     // exit(EXIT_FAILURE);
+        // }
         write(new_socket, hello, strlen(hello));
         close(new_socket);
     }

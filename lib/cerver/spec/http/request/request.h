@@ -12,4 +12,5 @@ typedef struct
 } HttpRequest;
 
 HttpRequest *CreateHttpRequest();
+long ParseRequestMethod(char *, size_t);
 #endif

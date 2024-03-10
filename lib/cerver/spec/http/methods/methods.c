@@ -1,7 +1,8 @@
 #include "methods.h"
 #include <stdlib.h>
 
-char *HttpMethodStr(int method)
+
+char *HttpMethodStr(enum HttpMethods method)
 {
     switch (method)
     {
@@ -23,6 +24,7 @@ char *HttpMethodStr(int method)
         return "TRACE";
     case HttpPATCH:
         return "PATCH";
+    case HttpFAKER:
     default:
         return NULL;
     }
