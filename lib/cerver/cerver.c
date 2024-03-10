@@ -7,15 +7,19 @@
 #include <netinet/in.h> // sockaddr_in
 #include <unistd.h>     // write() close()
 
+#include <string.h> // fixme
+
+// #include "../httpcodes/httpcodes.h"
+
+#include "./spec/http/request/request.h"
+
+int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen); // FIXME: where to put this declaration?
+
 int Cerver(int port)
 {
     int server_fd;
-    int new_socket;
-    long valread;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
-
-    char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
 
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
@@ -30,8 +34,10 @@ int Cerver(int port)
 
     memset(address.sin_zero, '\0', sizeof address.sin_zero);
 
+    // OS will handle cleaning up the port cleanaup
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
     {
+
         perror("In bind");
         exit(EXIT_FAILURE);
     }
@@ -40,23 +46,59 @@ int Cerver(int port)
         perror("In listen");
         exit(EXIT_FAILURE);
     }
+
+    return cerverLoop(server_fd, address, addrlen);
+}
+
+int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
+{
+    int new_socket;
+    long valread;
+    // Make this dynamic :D
+    char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
     while (1)
     {
         if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
         {
-            perror("In accept");
+            perror("[FATAL]: Couldn't accept connections on socket?");
             exit(EXIT_FAILURE);
         }
 
-        char buffer[30000] = {0};
-        valread = read(new_socket, buffer, 30000);
+        // buffer until we can see Content-Length?
+        // char buffer[1024] = {0};
+        int buffer_size = 1024 + 1;
+
+        char *buffer = malloc(sizeof(char *) * buffer_size);
+        if (buffer == NULL)
+        {
+            perror("[FATAL]: Couldn't allocate memory to to find ContentLength");
+            exit(EXIT_FAILURE);
+        }
+
+        // valread = read(new_socket, buffer, sizeof(char *) * buffer_size);
+        (void)read(new_socket, buffer, sizeof(char *) * buffer_size);
+        // HttpRequest *request;
         printf("%s\n", buffer);
+        int request_method = ParseRequestMethod(buffer, buffer_size);
+        if (request_method == 0)
+        {
+            free(buffer);
+            // return 5XX
+        }
+        // printf("[DEBUG]: valread: %ld\n", valread); // TODO: logging
+        // printf("%s\n", buffer);
+        free(buffer);
+        //
+        // HttpRequest *request = CreateHttpRequest();
+        // if (request == NULL)
+        // {
+        //     // if you cannot parse the request, we need to return a 4XX?
+        //     // perror("[FATAL]: HttpRequest faile to parse ");
+        //     // exit(EXIT_FAILURE);
+        // }
         write(new_socket, hello, strlen(hello));
         close(new_socket);
     }
+    // FIXME
     return EXIT_SUCCESS;
 }
-
-// void Use(char* path, void*() promise) {
-
-// }
