@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <strings.h>
 #include "request.h"
+#include <stdbool.h>
 #include "../methods/methods.h"
+#include "../version/version.h"
 
 // HEAD / HTTP/1.1
 // Host: localhost:8080
@@ -11,61 +13,41 @@
 
 // size_t getMethodStrSize(char *, size_t);
 
-size_t getMethodStrSize(char *buffer, size_t buffer_length)
+// Long Term FIXME but get working server first
+// Free Memory of parts of buffer
+// Paralleize this code
+HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
 {
-    // FIXME: ADD ERROR LOGIC
-    char *temp_ptr;
-    size_t size = 0;
-
-    for (temp_ptr = buffer; size < MAX_METHOD_LENGTH && ((sizeof(char)) * size) < buffer_length && *temp_ptr != '/' && *temp_ptr != '\0'; temp_ptr++)
+    if (buffer == NULL)
     {
-        // printf("[TRACE]: getSize Char: %c\n", *temp_ptr);
-        //  printf("\n[TRACE]: getSize size: %d\n", size);
-        size++;
+        return NULL;
     }
-    return size;
-}
-
-// FIXME: util or built in function for this?
-
-void substringUntil(char *original, char *substr, int index)
-{
-    for (int i = 0; i <= index; i++)
+    HttpRequest *request = malloc(sizeof(CreateHttpRequest));
+    if (request == NULL)
     {
+        return NULL;
     }
-}
-
-enum HttpMethods
-extractHttpMethod(char *buffer, size_t size)
-{
-    char *buffer_substr;
-    buffer_substr = malloc(sizeof(char) * size);
-    if (buffer_substr != NULL)
+    request->method = ParseRequestMethod(buffer, buffer_size);
+    if (request->method == HttpFAKER)
     {
-        (void)substringUntil(buffer, buffer_substr, size / sizeof(char));
-        enum HttpMethods method = HttpStrToMethod(buffer_substr);
-        free(buffer_substr);
-        return method;
+        free(request);
+        return NULL;
     }
-    return HttpFAKER;
-}
-
-enum HttpMethods
-ParseRequestMethod(char *buffer, size_t buffer_length)
-{
-    printf("[TRACE]: entering ParseRequestMethod\n");
-    size_t size = getMethodStrSize(buffer, buffer_length);
-    // TODO TODO TODO
-
-    // printf("[TRACE]: size is:  %d\n", size);
-    if (size == 0)
+    // FIXME Free memory from the this since we already got what we want
+    request->httpVerion = ParseHttpVersion(buffer, buffer_size);
+    if (request->httpVerion == 0.0)
     {
-        return HttpFAKER;
+        free(request);
+        return NULL;
     }
-    return extractHttpMethod(buffer, size);
+    request->host = NULL;
+    request->port = 8080; // FIXME
+    request->headers = NULL;
+    request->body = NULL;
+    return request;
 }
 
-HttpRequest *CreateHttpRequest()
-{
-    return NULL;
-}
+// bool FreeHttpRequest()
+// {
+//     return false;
+// }

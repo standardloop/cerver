@@ -17,7 +17,6 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen); // FIXME
 
 int Cerver(int port)
 {
-
     int server_fd;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
@@ -66,11 +65,9 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
             exit(EXIT_FAILURE);
         }
 
-        // buffer until we can see Content-Length?
-        // char buffer[1024] = {0};
-        int buffer_size = 1024 + 1;
+        size_t buffer_size = BUFFER_SIZE;
 
-        char *buffer = malloc(sizeof(char) * buffer_size);
+        char *buffer = malloc(sizeof(char) * buffer_size); // no malloc here?
         if (buffer == NULL)
         {
             perror("[FATAL]: Couldn't allocate memory to to find ContentLength");
@@ -80,27 +77,18 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
         // valread = read(new_socket, buffer, sizeof(char *) * buffer_size);
         (void)read(new_socket, buffer, sizeof(char *) * buffer_size);
 
-        printf("%s\n", buffer);
+        printf("\n%s\n", buffer);
 
-        enum HttpMethods request_method = ParseRequestMethod(buffer, buffer_size);
-        if (request_method == HttpFAKER)
+        HttpRequest *request = CreateHttpRequest(buffer, buffer_size);
+        if (request == NULL)
         {
-            free(buffer);
-            perror("[ERROR]: ");
-            exit(EXIT_FAILURE);
-            // return 5XX
+            // if you cannot parse the request, we need to return a 4XX?
+            perror("[ERROR]: HttpRequest faile to parse ");
+            // exit(EXIT_FAILURE);
         }
         // printf("[DEBUG]: valread: %ld\n", valread); // TODO: logging
         // printf("%s\n", buffer);
         free(buffer);
-        //
-        // HttpRequest *request = CreateHttpRequest();
-        // if (request == NULL)
-        // {
-        //     // if you cannot parse the request, we need to return a 4XX?
-        //     // perror("[FATAL]: HttpRequest faile to parse ");
-        //     // exit(EXIT_FAILURE);
-        // }
         write(new_socket, hello, strlen(hello));
         // served_count++;
         close(new_socket);
