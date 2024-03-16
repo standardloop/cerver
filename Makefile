@@ -7,7 +7,13 @@ clean:
 	rm main
 
 build: main.c
-	$(CC) $(CC_FLAGS) main.c lib/cerver/cerver.c lib/cerver/http/methods/methods.c lib/cerver/http/request/request.c lib/cerver/http/version/version.c -o main
+	$(CC) $(CC_FLAGS) main.c \
+	lib/cerver/cerver.c \
+	lib/cerver/util/util.c \
+	lib/cerver/http/methods/methods.c \
+	lib/cerver/http/request/request.c \
+	lib/cerver/http/version/version.c \
+	-o main
 
 run:
 	./main

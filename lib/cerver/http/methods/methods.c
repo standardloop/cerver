@@ -79,13 +79,14 @@ enum HttpMethods HttpStrToMethod(char *method)
 size_t getMethodStrSize(char *buffer, size_t buffer_length)
 {
     // FIXME: ADD ERROR LOGIC
-    char *temp_ptr;
+    char *temp_ptr = buffer;
     size_t size = 0;
 
-    for (temp_ptr = buffer; size < MAX_METHOD_LENGTH && ((sizeof(char)) * size) < buffer_length && *temp_ptr != '/' && *temp_ptr != '\0'; temp_ptr++)
+    while (size < MAX_METHOD_LENGTH && ((sizeof(char)) * size) < buffer_length && *temp_ptr != '/' && *temp_ptr != '\0')
     {
         // printf("[TRACE]: getSize Char: %c\n", *temp_ptr);
         //  printf("\n[TRACE]: getSize size: %d\n", size);
+        temp_ptr++;
         size++;
     }
     return size;
@@ -100,7 +101,7 @@ void substringUntil(char *original, char *substr, int index)
     {
         substr[i] = original[i];
     }
-    //printf("\n[TRACE]: substringUntil: %s\n", substr);
+    // printf("\n[TRACE]: substringUntil: %s\n", substr);
 }
 
 enum HttpMethods

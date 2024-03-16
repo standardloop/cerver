@@ -1,6 +1,7 @@
 #ifndef REQUEST_H
 #define REQUEST_H
 
+#define MAX_LINE_LENGTH 50
 #include "../methods/methods.h"
 
 /*

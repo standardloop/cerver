@@ -11,6 +11,6 @@ int main()
     // char *my_env_var = getenv("PORT");
     int port = 8080;
     // Cerver(port, max_request_count);
-    printf("\nStarting Cerver on Port %d\n\n\n", port);
+    // printf("\nStarting Cerver on Port %d\n\n\n", port);
     return Cerver(port);
 }

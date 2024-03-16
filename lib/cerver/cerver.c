@@ -12,8 +12,9 @@
 // #include "../httpcodes/httpcodes.h"
 
 #include "./http/request/request.h"
+#include "./util/util.h"
 
-int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen); // FIXME: where to put this declaration?
+int cerverLoop(int, struct sockaddr_in, int); // FIXME: where to put this declaration?
 
 int Cerver(int port)
 {
@@ -77,7 +78,7 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
         // valread = read(new_socket, buffer, sizeof(char *) * buffer_size);
         (void)read(new_socket, buffer, sizeof(char *) * buffer_size);
 
-        printf("\n%s\n", buffer);
+        // PrintBuffer(buffer);
 
         HttpRequest *request = CreateHttpRequest(buffer, buffer_size);
         if (request == NULL)
@@ -85,6 +86,10 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
             // if you cannot parse the request, we need to return a 4XX?
             perror("[ERROR]: HttpRequest faile to parse ");
             // exit(EXIT_FAILURE);
+        }
+        if (request->method != HttpFAKER)
+        {
+            printf("\n[DEBUG]: method: is %s\n", HttpMethodToStr(request->method));
         }
         // printf("[DEBUG]: valread: %ld\n", valread); // TODO: logging
         // printf("%s\n", buffer);

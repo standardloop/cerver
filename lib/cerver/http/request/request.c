@@ -22,24 +22,54 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     {
         return NULL;
     }
+    // WIP
     HttpRequest *request = malloc(sizeof(CreateHttpRequest));
     if (request == NULL)
     {
         return NULL;
     }
-    request->method = ParseRequestMethod(buffer, buffer_size);
-    if (request->method == HttpFAKER)
+    /*
+    GET/HTTP/1.1
+    Host: localhost:8080
+    User-Agent: curl/7.79.1
+    Accept: wildcard
+    Connection: Upgrade, HTTP2-Settings
+    Upgrade: h2c
+    HTTP2-Settings: AAMAAABkAAQCAAAAAAIAAAAA
+    */
+
+    // Run through buffer line by line
+    char *buffer_ptr = buffer;
+    size_t char_count = 0;
+    int line_num = 0;
+    while (buffer_ptr != NULL && *buffer_ptr != '\0' && char_count < buffer_size && line_num < MAX_LINE_LENGTH)
     {
-        free(request);
-        return NULL;
+        if (line_num == 1)
+        {
+            // pass char count to only allow the function to access part of the string
+            request->method = ParseRequestMethod(buffer, char_count);
+            if (request->method == HttpFAKER)
+            {
+                free(request);
+                return NULL;
+            }
+            request->httpVerion = ParseHttpVersion(buffer, buffer_size);
+            if (request->httpVerion == 0.0)
+            {
+                free(request);
+                return NULL;
+            }
+        }
+        // printf("%c", *buffer_ptr);
+        if (*buffer_ptr == '\n')
+        {
+            line_num++;
+        }
+
+        buffer_ptr++;
+        char_count++;
     }
-    // FIXME Free memory from the this since we already got what we want
-    request->httpVerion = ParseHttpVersion(buffer, buffer_size);
-    if (request->httpVerion == 0.0)
-    {
-        free(request);
-        return NULL;
-    }
+
     request->host = NULL;
     request->port = 8080; // FIXME
     request->headers = NULL;
