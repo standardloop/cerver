@@ -76,19 +76,20 @@ enum HttpMethods HttpStrToMethod(char *method)
     return HttpFAKER;
 }
 
-size_t getMethodStrSize(char *buffer, size_t buffer_length)
+size_t getMethodStrSize(char *buffer, size_t buffer_size)
 {
     // FIXME: ADD ERROR LOGIC
     char *temp_ptr = buffer;
     size_t size = 0;
 
-    while (size < MAX_METHOD_LENGTH && ((sizeof(char)) * size) < buffer_length && *temp_ptr != '/' && *temp_ptr != '\0')
+    while (size < MAX_METHOD_LENGTH && ((sizeof(char)) * size) < buffer_size && *temp_ptr != '/' && *temp_ptr != '\0')
     {
         // printf("[TRACE]: getSize Char: %c\n", *temp_ptr);
         //  printf("\n[TRACE]: getSize size: %d\n", size);
         temp_ptr++;
         size++;
     }
+    temp_ptr = NULL;
     return size;
 }
 
@@ -120,10 +121,10 @@ extractHttpMethod(char *buffer, size_t size)
 }
 
 enum HttpMethods
-ParseRequestMethod(char *buffer, size_t buffer_length)
+ParseRequestMethod(char *buffer, size_t buffer_size)
 {
     // printf("[TRACE]: entering ParseRequestMethod\n");
-    size_t size = getMethodStrSize(buffer, buffer_length);
+    size_t size = getMethodStrSize(buffer, buffer_size);
     // TODO TODO TODO
 
     // printf("[TRACE]: size is:  %d\n", size);

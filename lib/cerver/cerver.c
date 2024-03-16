@@ -87,10 +87,10 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
             perror("[ERROR]: HttpRequest faile to parse ");
             // exit(EXIT_FAILURE);
         }
-        if (request->method != HttpFAKER)
-        {
-            printf("\n[DEBUG]: method: is %s\n", HttpMethodToStr(request->method));
-        }
+        // if (request->method != HttpFAKER)
+        // {
+        //     // printf("\n[DEBUG]: method: is %s\n", HttpMethodToStr(request->method));
+        // }
         // printf("[DEBUG]: valread: %ld\n", valread); // TODO: logging
         // printf("%s\n", buffer);
         free(buffer);

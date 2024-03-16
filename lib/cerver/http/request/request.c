@@ -29,7 +29,7 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
         return NULL;
     }
     /*
-    GET/HTTP/1.1
+    GET / HTTP/1.1
     Host: localhost:8080
     User-Agent: curl/7.79.1
     Accept: wildcard
@@ -47,13 +47,15 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
         if (line_num == 1)
         {
             // pass char count to only allow the function to access part of the string
-            request->method = ParseRequestMethod(buffer, char_count);
+            request->method = ParseRequestMethod(buffer, buffer_size);
             if (request->method == HttpFAKER)
             {
                 free(request);
                 return NULL;
             }
+            printf("\nMethod: %d", request->method);
             request->httpVerion = ParseHttpVersion(buffer, buffer_size);
+            printf("\nVersion: %f", request->httpVerion);
             if (request->httpVerion == 0.0)
             {
                 free(request);
