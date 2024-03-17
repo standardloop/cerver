@@ -10,9 +10,11 @@ build: main.c
 	$(CC) $(CC_FLAGS) main.c \
 	lib/cerver/cerver.c \
 	lib/cerver/util/util.c \
-	lib/cerver/http/methods/methods.c \
+	lib/cerver/http/request/methods/methods.c \
+	lib/cerver/http/request/version/version.c \
+	lib/cerver/http/request/host/host.c \
+	lib/cerver/http/request/port/port.c \
 	lib/cerver/http/request/request.c \
-	lib/cerver/http/version/version.c \
 	-o main
 
 run:

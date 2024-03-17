@@ -3,8 +3,10 @@
 #include <strings.h>
 #include "request.h"
 #include <stdbool.h>
-#include "../methods/methods.h"
-#include "../version/version.h"
+#include "./methods/methods.h"
+#include "./version/version.h"
+#include "./host/host.h"
+#include "./port/port.h"
 #include "../../util/util.h"
 
 // HEAD / HTTP/1.1
@@ -17,13 +19,17 @@
 // Long Term FIXME but get working server first
 // Free Memory of parts of buffer
 // Paralleize this code
+
 size_t howMuchToMoveToNewLine(char *buffer, size_t buffer_size)
 {
     size_t char_count = 0;
     char *temp_ptr = buffer;
-    while (temp_ptr != NULL && *temp_ptr != '\0' && *temp_ptr != '\n' && char_count < buffer_size)
+    while (*temp_ptr != '\n')
     {
-
+        if (temp_ptr == NULL || *temp_ptr == '\0' || char_count < buffer_size)
+        {
+            return ERROR_SIZE_T;
+        }
         temp_ptr++;
         char_count++;
     }
@@ -35,6 +41,8 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
 {
 
     //(void)PrintBuffer(buffer);
+    char *buffer_start = buffer;
+    size_t moved;
 
     if (buffer == NULL)
     {
@@ -59,7 +67,7 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     */
 
     // Run through buffer line by line
-    size_t moved = howMuchToMoveToNewLine(buffer, buffer_size);
+    moved = howMuchToMoveToNewLine(buffer, buffer_size);
     //(void)PrintBuffer(buffer);
 
     request->method = ParseRequestMethod(buffer, moved);
@@ -78,13 +86,39 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     }
     // printf("\nVersion: %.1f", request->http_verion);
     // FIXME: dead memory
+    buffer++; // '\n'
     buffer += moved;
     moved = howMuchToMoveToNewLine(buffer, buffer_size);
+
+    if (buffer == NULL || moved == 0)
+    {
+        printf("\n[FATAL]: how is this is happening");
+    }
     // PrintBuffer(buffer);
-    request->host = NULL;
-    request->port = 8080; // FIXME
+    request->host = ParseHost(buffer, moved);
+    if (request->host == NULL)
+    {
+        buffer = buffer_start;
+        free(request);
+        return NULL;
+    }
+    request->port = 8080;
+    // request->port = ParsePort(buffer, moved);
+    // if (request->port == ERROR_PORT)
+    // {
+    //     buffer = buffer_start;
+    //     free(request);
+    //     return NULL;
+    // }
+
+    buffer += moved;
+    moved = howMuchToMoveToNewLine(buffer, buffer_size);
+
     request->headers = NULL;
     request->body = NULL;
+
+    // FIXME free line by line but for now just reset it
+    buffer = buffer_start;
     return request;
 }
 

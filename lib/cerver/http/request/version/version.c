@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "./version.h"
-#include "../../util/util.h"
+#include "../../../util/util.h"
 
 float substrToFloat(char *);
 
@@ -13,7 +13,9 @@ float substrToFloat(char *version_string)
     {
         return ERROR_FLOAT;
     }
-    return roundf(atof(version_string) * 1000) / 1000;
+    float final_answer = roundf(atof(version_string) * 1000) / 1000;
+    free(version_string);  // :O
+    return final_answer;
 }
 float ParseHttpVersion(char *buffer, size_t buffer_size)
 {

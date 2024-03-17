@@ -2,7 +2,8 @@
 #define REQUEST_H
 
 #define MAX_LINE_LENGTH 50
-#include "../methods/methods.h"
+#define ERROR_SIZE_T 0
+#include "./methods/methods.h"
 
 /*
 HEAD / HTTP/1.1

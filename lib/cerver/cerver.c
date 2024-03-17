@@ -89,8 +89,8 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
         {
             // if you cannot parse the request, we need to return a 4XX?
             free(buffer);
-            printf("\n[ERROR]: HttpRequest fail to parse\n");
-            // exit(EXIT_FAILURE);
+            printf("\n[FATAL]: HttpRequest fail to parse\n");
+            exit(EXIT_FAILURE);
         }
         free(buffer);
 
