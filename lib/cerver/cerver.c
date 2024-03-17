@@ -35,7 +35,7 @@ int Cerver(int port)
 
     memset(address.sin_zero, '\0', sizeof address.sin_zero);
 
-    // OS will handle cleaning up the port cleanaup
+    // TODO: re-use options for this
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
     {
 
@@ -54,10 +54,11 @@ int Cerver(int port)
 int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
 {
     int new_socket;
-    // long valread;
+    ssize_t valread;
     //  Make this dynamic :D
     char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
     // long served_count = 0;
+    size_t buffer_size = BUFFER_SIZE;
     while (1)
     {
         if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
@@ -66,8 +67,6 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
             exit(EXIT_FAILURE);
         }
 
-        size_t buffer_size = BUFFER_SIZE;
-
         char *buffer = malloc(sizeof(char) * buffer_size); // no malloc here?
         if (buffer == NULL)
         {
@@ -75,25 +74,29 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
             exit(EXIT_FAILURE);
         }
 
-        // valread = read(new_socket, buffer, sizeof(char *) * buffer_size);
-        (void)read(new_socket, buffer, sizeof(char *) * buffer_size);
-
+        valread = read(new_socket, buffer, sizeof(char) * buffer_size);
+        if (valread == 0)
+        {
+            printf("\n[FATAL]: Didn't read more than 0\n");
+            free(buffer);
+            exit(EXIT_FAILURE);
+        }
         // PrintBuffer(buffer);
 
-        HttpRequest *request = CreateHttpRequest(buffer, buffer_size);
+        HttpRequest *request = CreateHttpRequest(buffer, buffer_size); // pass valread here?
+
         if (request == NULL)
         {
             // if you cannot parse the request, we need to return a 4XX?
-            perror("[ERROR]: HttpRequest faile to parse ");
+            free(buffer);
+            printf("\n[ERROR]: HttpRequest faile to parse\n");
             // exit(EXIT_FAILURE);
         }
-        // if (request->method != HttpFAKER)
-        // {
-        //     // printf("\n[DEBUG]: method: is %s\n", HttpMethodToStr(request->method));
-        // }
-        // printf("[DEBUG]: valread: %ld\n", valread); // TODO: logging
-        // printf("%s\n", buffer);
         free(buffer);
+
+        // DO SOMETHING WITH THE REQUEST STRUCT
+
+        FreeHttpRequest(request);
         write(new_socket, hello, strlen(hello));
         // served_count++;
         close(new_socket);

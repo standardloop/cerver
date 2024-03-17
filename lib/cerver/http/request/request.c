@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "../methods/methods.h"
 #include "../version/version.h"
+#include "../../util/util.h"
 
 // HEAD / HTTP/1.1
 // Host: localhost:8080
@@ -16,16 +17,35 @@
 // Long Term FIXME but get working server first
 // Free Memory of parts of buffer
 // Paralleize this code
+size_t howMuchToMoveToNewLine(char *buffer, size_t buffer_size)
+{
+    size_t char_count = 0;
+    char *temp_ptr = buffer;
+    while (temp_ptr != NULL && *temp_ptr != '\0' && *temp_ptr != '\n' && char_count < buffer_size)
+    {
+
+        temp_ptr++;
+        char_count++;
+    }
+    temp_ptr = NULL;
+    return char_count;
+}
+
 HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
 {
+
+    //(void)PrintBuffer(buffer);
+
     if (buffer == NULL)
     {
+        printf("\n[ERROR]: buffer is NULL for CreateHttpRequest\n");
         return NULL;
     }
     // WIP
     HttpRequest *request = malloc(sizeof(CreateHttpRequest));
     if (request == NULL)
     {
+        printf("\n[ERROR]: buffer is NULL for malloc in CreateHttpRequest\n");
         return NULL;
     }
     /*
@@ -39,39 +59,26 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     */
 
     // Run through buffer line by line
-    char *buffer_ptr = buffer;
-    size_t char_count = 0;
-    int line_num = 0;
-    while (buffer_ptr != NULL && *buffer_ptr != '\0' && char_count < buffer_size && line_num < MAX_LINE_LENGTH)
-    {
-        if (line_num == 1)
-        {
-            // pass char count to only allow the function to access part of the string
-            request->method = ParseRequestMethod(buffer, buffer_size);
-            if (request->method == HttpFAKER)
-            {
-                free(request);
-                return NULL;
-            }
-            printf("\nMethod: %d", request->method);
-            request->httpVerion = ParseHttpVersion(buffer, buffer_size);
-            printf("\nVersion: %f", request->httpVerion);
-            if (request->httpVerion == 0.0)
-            {
-                free(request);
-                return NULL;
-            }
-        }
-        // printf("%c", *buffer_ptr);
-        if (*buffer_ptr == '\n')
-        {
-            line_num++;
-        }
+    size_t moved = howMuchToMoveToNewLine(buffer, buffer_size);
+    //(void)PrintBuffer(buffer);
 
-        buffer_ptr++;
-        char_count++;
+    request->method = ParseRequestMethod(buffer, moved);
+    if (request->method == HttpFAKER)
+    {
+        free(request);
+        return NULL;
     }
 
+    request->http_verion = ParseHttpVersion(buffer, moved);
+    // printf("\nVersion: %.1f", request->http_verion);
+    if (request->http_verion == 0.0)
+    {
+        free(request);
+        return NULL;
+    }
+    // FIXME: dead memory
+    buffer += moved;
+    moved = howMuchToMoveToNewLine(buffer, buffer_size);
     request->host = NULL;
     request->port = 8080; // FIXME
     request->headers = NULL;
@@ -79,7 +86,9 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     return request;
 }
 
-// bool FreeHttpRequest()
-// {
-//     return false;
-// }
+void FreeHttpRequest(HttpRequest *request)
+{
+    // free other sections first
+    free(request);
+    return;
+}

@@ -81,11 +81,9 @@ size_t getMethodStrSize(char *buffer, size_t buffer_size)
     // FIXME: ADD ERROR LOGIC
     char *temp_ptr = buffer;
     size_t size = 0;
-
-    while (size < MAX_METHOD_LENGTH && ((sizeof(char)) * size) < buffer_size && *temp_ptr != '/' && *temp_ptr != '\0')
+    // ((sizeof(char)) * size)
+    while (size < MAX_METHOD_LENGTH && size < buffer_size && *temp_ptr != '/' && *temp_ptr != '\0')
     {
-        // printf("[TRACE]: getSize Char: %c\n", *temp_ptr);
-        //  printf("\n[TRACE]: getSize size: %d\n", size);
         temp_ptr++;
         size++;
     }
@@ -108,8 +106,8 @@ void substringUntil(char *original, char *substr, int index)
 enum HttpMethods
 extractHttpMethod(char *buffer, size_t size)
 {
-    char *buffer_substr;
-    buffer_substr = malloc(sizeof(char) * size);
+    // FIXME: do I need null terminate
+    char *buffer_substr = malloc(sizeof(char) * size);
     if (buffer_substr != NULL)
     {
         (void)substringUntil(buffer, buffer_substr, size / sizeof(char)); // modifies buffer_substr
@@ -125,9 +123,6 @@ ParseRequestMethod(char *buffer, size_t buffer_size)
 {
     // printf("[TRACE]: entering ParseRequestMethod\n");
     size_t size = getMethodStrSize(buffer, buffer_size);
-    // TODO TODO TODO
-
-    // printf("[TRACE]: size is:  %d\n", size);
     if (size == 0)
     {
         return HttpFAKER;

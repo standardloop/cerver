@@ -24,14 +24,15 @@ HTTP2-Settings: AAMAAABkAAQCAAAAAAIAAAAA
 typedef struct
 {
     enum HttpMethods method;
-    float httpVerion; // example: 1.1
-    char *host;       // localhost
-    int port;         // 8080
-    char **headers;   // FIXM: headers package?
-    char *body;       // FIXME: optional?
+    float http_verion; // example: 1.1
+    char *host;        // localhost
+    int port;          // 8080
+    char **headers;    // FIXM: headers package?
+    char *body;        // FIXME: optional?
 } HttpRequest;
 
 HttpRequest *
 CreateHttpRequest(char *, size_t);
 
+void FreeHttpRequest(HttpRequest *);
 #endif
