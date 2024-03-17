@@ -4,19 +4,30 @@
 char *substrBetweenColons(char *start, char *end, size_t buffer_size)
 {
 
+    if (*(start + 1) == ' ')
+    {
+        printf("\n[INFO]: found a space so moving start up\n");
+        start++;
+    }
     char *host = malloc(sizeof(char) * buffer_size);
     if (host == NULL)
     {
+        printf("\n[ERROR]: host is NULL substrBetweenColons\n");
         return NULL;
     }
     size_t iteration_count = 0;
     while (start != end && iteration_count < buffer_size)
     {
+        // start++;
+        printf("\n[INFO]: *start is : %c\n", *start);
         host[iteration_count] = *start;
         iteration_count++;
         start++;
     }
+    host[buffer_size - 1] = '\0';
     printf("\nHOST ATTEMPT: %s\n", host);
+
+    free(host);
 
     // return host;
     return NULL;
@@ -65,15 +76,11 @@ char *ParseHost(char *buffer, size_t buffer_size)
         printf("\n[FATAL]: cannot find colons\n");
         return NULL;
     }
-    if (*(start + 1) == ' ')
-    {
-        start++;
-    }
-
     char *host = substrBetweenColons(start, end, distance);
 
     if (host == NULL)
     {
+        printf("\n[ERROR]: host is NULL after calling substrBetweenColons\n");
         return NULL;
     }
     // printf("\nDISTANCE IS: %zd\n", distance);

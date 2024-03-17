@@ -24,9 +24,14 @@ size_t howMuchToMoveToNewLine(char *buffer, size_t buffer_size)
 {
     size_t char_count = 0;
     char *temp_ptr = buffer;
+    if (*temp_ptr == '\n')
+    {
+        printf("\n[ERROR]: received a newline at start in howMuchToMoveToNewLine\n");
+    }
     while (*temp_ptr != '\n')
     {
-        if (temp_ptr == NULL || *temp_ptr == '\0' || char_count < buffer_size)
+        // printf("\n[JOSH]: temp_ptr in howMuchToMoveToNewLine is: %c\n", *temp_ptr);
+        if (temp_ptr == NULL || *temp_ptr == '\0' || char_count >= buffer_size)
         {
             return ERROR_SIZE_T;
         }
@@ -39,10 +44,11 @@ size_t howMuchToMoveToNewLine(char *buffer, size_t buffer_size)
 
 HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
 {
-
+    printf("\n[INFO]: entering CreateHttpRequest");
     //(void)PrintBuffer(buffer);
     char *buffer_start = buffer;
-    size_t moved;
+    size_t moved = 0;
+    int line_num = 0;
 
     if (buffer == NULL)
     {
@@ -70,10 +76,18 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     moved = howMuchToMoveToNewLine(buffer, buffer_size);
     //(void)PrintBuffer(buffer);
 
+    if (buffer == NULL || moved == 0)
+    {
+        free(request);
+        printf("\n[ERROR]: couldn't move to the next line in the request: line_num: %d\n", line_num);
+        return NULL;
+    }
+    line_num++;
     request->method = ParseRequestMethod(buffer, moved);
     if (request->method == HttpFAKER)
     {
         free(request);
+        printf("\n[ERROR]: couldn't get a valid http reques method");
         return NULL;
     }
 
@@ -82,6 +96,7 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     if (request->http_verion == ERROR_FLOAT)
     {
         free(request);
+        printf("\n[ERROR]: couldn't get a valid http version\n");
         return NULL;
     }
     // printf("\nVersion: %.1f", request->http_verion);
@@ -92,13 +107,16 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
 
     if (buffer == NULL || moved == 0)
     {
-        printf("\n[FATAL]: how is this is happening");
+        free(request);
+        printf("\n[ERROR]: couldn't move to the next line in the request: line_num: %d\n", line_num);
+        return NULL;
     }
     // PrintBuffer(buffer);
     request->host = ParseHost(buffer, moved);
     if (request->host == NULL)
     {
         buffer = buffer_start;
+        printf("\n[ERROR]: couldn't get a valid host\n");
         free(request);
         return NULL;
     }
@@ -111,8 +129,8 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     //     return NULL;
     // }
 
-    buffer += moved;
-    moved = howMuchToMoveToNewLine(buffer, buffer_size);
+    // buffer += moved;
+    // moved = howMuchToMoveToNewLine(buffer, buffer_size);
 
     request->headers = NULL;
     request->body = NULL;
