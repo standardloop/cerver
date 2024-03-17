@@ -63,21 +63,21 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
     {
         if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
         {
-            printf("[FATAL]: Couldn't accept connections on socket?");
+            // printf("[FATAL]: Couldn't accept connections on socket?");
             exit(EXIT_FAILURE);
         }
 
         char *buffer = malloc(sizeof(char) * buffer_size); // no malloc here?
         if (buffer == NULL)
         {
-            printf("[FATAL]: Couldn't allocate memory to to find ContentLength");
+            // printf("[FATAL]: Couldn't allocate memory to to find ContentLength");
             exit(EXIT_FAILURE);
         }
 
         valread = read(new_socket, buffer, sizeof(char) * buffer_size);
         if (valread == 0)
         {
-            printf("\n[FATAL]: Didn't read more than 0\n");
+            // printf("\n[FATAL]: Didn't read more than 0\n");
             free(buffer);
             exit(EXIT_FAILURE);
         }
@@ -89,7 +89,7 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
         {
             // if you cannot parse the request, we need to return a 4XX?
             free(buffer);
-            printf("\n[FATAL]: HttpRequest fail to parse\n");
+            // printf("\n[FATAL]: HttpRequest fail to parse\n");
             exit(EXIT_FAILURE);
         }
         free(buffer);

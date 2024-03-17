@@ -8,13 +8,13 @@ float substrToFloat(char *);
 
 float substrToFloat(char *version_string)
 {
-    // printf("\n%s\n", version_string);
+    // //printf("\n%s\n", version_string);
     if (version_string == NULL)
     {
         return ERROR_FLOAT;
     }
     float final_answer = roundf(atof(version_string) * 1000) / 1000;
-    free(version_string);  // :O
+    free(version_string); // :O
     return final_answer;
 }
 float ParseHttpVersion(char *buffer, size_t buffer_size)
@@ -33,7 +33,7 @@ float ParseHttpVersion(char *buffer, size_t buffer_size)
     char *version_string = NULL;
     while (char_count < buffer_size && *temp_ptr != '\0' && *temp_ptr != '\n')
     {
-        // printf("%c", *temp_ptr);
+        // //printf("%c", *temp_ptr);
         if (*temp_ptr == '/')
         {
             slash_count++;
@@ -49,11 +49,11 @@ float ParseHttpVersion(char *buffer, size_t buffer_size)
 
     if (slash_count == 2)
     {
-        // printf("\nSlash Count is 2 and *temp_ptr is: %c\n", *temp_ptr);
+        // //printf("\nSlash Count is 2 and *temp_ptr is: %c\n", *temp_ptr);
         // temp_ptr++;
-        // printf("\nSlash Count is 2 and *temp_ptr+1 is: %c\n", *temp_ptr);
+        // //printf("\nSlash Count is 2 and *temp_ptr+1 is: %c\n", *temp_ptr);
         // temp_ptr++;
-        // printf("\nSlash Count is 2 and *temp_ptr+2 is: %c\n", *temp_ptr);
+        // //printf("\nSlash Count is 2 and *temp_ptr+2 is: %c\n", *temp_ptr);
         // 1.1
         size_t substr_count = 4 * sizeof(char);
         version_string = malloc(sizeof(char) * substr_count);
@@ -80,7 +80,7 @@ float ParseHttpVersion(char *buffer, size_t buffer_size)
         //     temp_ptr++;
         //     char_count++;
         // }
-        // // printf("\nversion_string: %s\n", version_string);
+        // // //printf("\nversion_string: %s\n", version_string);
     }
     else
     {

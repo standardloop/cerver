@@ -1,31 +1,33 @@
 #include "./host.h"
+#include "../../../util/util.h"
 
 // Host: localhost:8080
 char *substrBetweenColons(char *start, char *end, size_t buffer_size)
 {
-
+    //(void)PrintBuffer(start, buffer_size);
     if (*(start + 1) == ' ')
     {
-        printf("\n[INFO]: found a space so moving start up\n");
+        // printf("\n[INFO]: found a space so moving start up\n");
         start++;
     }
     char *host = malloc(sizeof(char) * buffer_size);
     if (host == NULL)
     {
-        printf("\n[ERROR]: host is NULL substrBetweenColons\n");
+        // printf("\n[ERROR]: host is NULL substrBetweenColons\n");
         return NULL;
     }
     size_t iteration_count = 0;
     while (start != end && iteration_count < buffer_size)
     {
         // start++;
-        printf("\n[INFO]: *start is : %c\n", *start);
+        // printf("\n[INFO]: *start is : %c\n", *start);
         host[iteration_count] = *start;
         iteration_count++;
         start++;
     }
-    host[buffer_size - 1] = '\0';
-    printf("\nHOST ATTEMPT: %s\n", host);
+    host[buffer_size] = '\0';
+    (void)PrintBuffer(start, buffer_size);
+    // printf("\nHOST ATTEMPT: %s\n", host);
 
     free(host);
 
@@ -35,11 +37,11 @@ char *substrBetweenColons(char *start, char *end, size_t buffer_size)
 
 char *ParseHost(char *buffer, size_t buffer_size)
 {
-
-    printf("\n[INFO]: entering ParseHost\n");
+    //(void)PrintBuffer(buffer);
+    // printf("\n[INFO]: entering ParseHost\n");
     if (buffer == NULL || buffer_size == 0)
     {
-        printf("\n[ERROR]: buffer input for ParseHost is NULL :O\n");
+        // printf("\n[ERROR]: buffer input for ParseHost is NULL :O\n");
         return NULL;
     }
 
@@ -54,16 +56,16 @@ char *ParseHost(char *buffer, size_t buffer_size)
         if (*temp_ptr == ':')
         {
             colon_count++;
-        }
-        if (colon_count == 1)
-        {
-            start = temp_ptr;
-        }
-        if (colon_count == 2)
-        {
-            end = temp_ptr;
-            printf("\n[INFO]: found 2 colons!\n");
-            break;
+            if (colon_count == 1)
+            {
+                start = temp_ptr;
+            }
+            if (colon_count == 2)
+            {
+                end = temp_ptr;
+                // printf("\n[INFO]: found 2 colons!\n");
+                break;
+            }
         }
         temp_ptr++;
         size++;
@@ -78,11 +80,12 @@ char *ParseHost(char *buffer, size_t buffer_size)
     }
     char *host = substrBetweenColons(start, end, distance);
 
+    //(void)PrintBuffer(host);
     if (host == NULL)
     {
-        printf("\n[ERROR]: host is NULL after calling substrBetweenColons\n");
+        // printf("\n[ERROR]: host is NULL after calling substrBetweenColons\n");
         return NULL;
     }
-    // printf("\nDISTANCE IS: %zd\n", distance);
+    // //printf("\nDISTANCE IS: %zd\n", distance);
     return NULL;
 }

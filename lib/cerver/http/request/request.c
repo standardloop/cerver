@@ -26,11 +26,11 @@ size_t howMuchToMoveToNewLine(char *buffer, size_t buffer_size)
     char *temp_ptr = buffer;
     if (*temp_ptr == '\n')
     {
-        printf("\n[ERROR]: received a newline at start in howMuchToMoveToNewLine\n");
+        // printf("\n[ERROR]: received a newline at start in howMuchToMoveToNewLine\n");
     }
     while (*temp_ptr != '\n')
     {
-        // printf("\n[JOSH]: temp_ptr in howMuchToMoveToNewLine is: %c\n", *temp_ptr);
+        // //printf("\n[JOSH]: temp_ptr in howMuchToMoveToNewLine is: %c\n", *temp_ptr);
         if (temp_ptr == NULL || *temp_ptr == '\0' || char_count >= buffer_size)
         {
             return ERROR_SIZE_T;
@@ -44,7 +44,7 @@ size_t howMuchToMoveToNewLine(char *buffer, size_t buffer_size)
 
 HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
 {
-    printf("\n[INFO]: entering CreateHttpRequest");
+    // printf("\n[INFO]: entering CreateHttpRequest");
     //(void)PrintBuffer(buffer);
     char *buffer_start = buffer;
     size_t moved = 0;
@@ -52,14 +52,16 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
 
     if (buffer == NULL)
     {
-        printf("\n[ERROR]: buffer is NULL for CreateHttpRequest\n");
+        // printf("\n[ERROR]: buffer is NULL for CreateHttpRequest\n");
+        buffer = buffer_start;
         return NULL;
     }
     // WIP
     HttpRequest *request = malloc(sizeof(CreateHttpRequest));
     if (request == NULL)
     {
-        printf("\n[ERROR]: buffer is NULL for malloc in CreateHttpRequest\n");
+        // printf("\n[ERROR]: buffer is NULL for malloc in CreateHttpRequest\n");
+        buffer = buffer_start;
         return NULL;
     }
     /*
@@ -79,7 +81,8 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     if (buffer == NULL || moved == 0)
     {
         free(request);
-        printf("\n[ERROR]: couldn't move to the next line in the request: line_num: %d\n", line_num);
+        buffer = buffer_start;
+        // printf("\n[ERROR]: couldn't move to the next line in the request: line_num: %d\n", line_num);
         return NULL;
     }
     line_num++;
@@ -87,7 +90,8 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     if (request->method == HttpFAKER)
     {
         free(request);
-        printf("\n[ERROR]: couldn't get a valid http reques method");
+        buffer = buffer_start;
+        // printf("\n[ERROR]: couldn't get a valid http reques method");
         return NULL;
     }
 
@@ -96,10 +100,11 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     if (request->http_verion == ERROR_FLOAT)
     {
         free(request);
-        printf("\n[ERROR]: couldn't get a valid http version\n");
+        buffer = buffer_start;
+        // printf("\n[ERROR]: couldn't get a valid http version\n");
         return NULL;
     }
-    // printf("\nVersion: %.1f", request->http_verion);
+    // //printf("\nVersion: %.1f", request->http_verion);
     // FIXME: dead memory
     buffer++; // '\n'
     buffer += moved;
@@ -108,7 +113,8 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     if (buffer == NULL || moved == 0)
     {
         free(request);
-        printf("\n[ERROR]: couldn't move to the next line in the request: line_num: %d\n", line_num);
+        buffer = buffer_start;
+        // printf("\n[ERROR]: couldn't move to the next line in the request: line_num: %d\n", line_num);
         return NULL;
     }
     // PrintBuffer(buffer);
@@ -116,7 +122,7 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     if (request->host == NULL)
     {
         buffer = buffer_start;
-        printf("\n[ERROR]: couldn't get a valid host\n");
+        // printf("\n[ERROR]: couldn't get a valid host\n");
         free(request);
         return NULL;
     }

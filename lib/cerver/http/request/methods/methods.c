@@ -100,7 +100,7 @@ void substringUntil(char *original, char *substr, int index)
     {
         substr[i] = original[i];
     }
-    // printf("\n[TRACE]: substringUntil: %s\n", substr);
+    // //printf("\n[TRACE]: substringUntil: %s\n", substr);
 }
 
 enum HttpMethods
@@ -121,7 +121,7 @@ extractHttpMethod(char *buffer, size_t size)
 enum HttpMethods
 ParseRequestMethod(char *buffer, size_t buffer_size)
 {
-    // printf("[TRACE]: entering ParseRequestMethod\n");
+    // //printf("[TRACE]: entering ParseRequestMethod\n");
     size_t size = getMethodStrSize(buffer, buffer_size);
     if (size == 0)
     {
