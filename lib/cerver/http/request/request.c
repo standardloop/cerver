@@ -70,15 +70,17 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     }
 
     request->http_verion = ParseHttpVersion(buffer, moved);
-    // printf("\nVersion: %.1f", request->http_verion);
-    if (request->http_verion == 0.0)
+
+    if (request->http_verion == ERROR_FLOAT)
     {
         free(request);
         return NULL;
     }
+    // printf("\nVersion: %.1f", request->http_verion);
     // FIXME: dead memory
     buffer += moved;
     moved = howMuchToMoveToNewLine(buffer, buffer_size);
+    // PrintBuffer(buffer);
     request->host = NULL;
     request->port = 8080; // FIXME
     request->headers = NULL;
