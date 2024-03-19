@@ -9,31 +9,117 @@ enum HttpMethods extractHttpMethod(char *, size_t);
 
 char *HttpMethodToStr(enum HttpMethods method)
 {
+    char *method_str = NULL;
+    size_t length = 0;
     switch (method)
     {
     case HttpGET:
-        return "GET";
+        length = 3 + 1;
+        method_str = malloc(sizeof(char) * length);
+        if (method_str != NULL)
+        {
+            memcpy(method_str, "GET", length);
+        }
+        break;
     case HttpHEAD:
-        return "HEAD";
+        length = 4 + 1;
+        method_str = malloc(sizeof(char) * length);
+        if (method_str != NULL)
+        {
+            memcpy(method_str, "HEAD", length);
+        }
+        break;
     case HttpPOST:
-        return "POST";
+        length = 4 + 1;
+        method_str = malloc(sizeof(char) * length);
+        if (method_str != NULL)
+        {
+            memcpy(method_str, "POST", length);
+        }
+        break;
     case HttpPUT:
-        return "PUT";
+        length = 3 + 1;
+        method_str = malloc(sizeof(char) * length);
+        if (method_str != NULL)
+        {
+            memcpy(method_str, "PUT", length);
+        }
+        break;
     case HttpDELETE:
-        return "DELETE";
+        length = 6 + 1;
+        method_str = malloc(sizeof(char) * length);
+        if (method_str != NULL)
+        {
+            memcpy(method_str, "DELETE", length);
+        }
+        break;
     case HttpCONNECT:
-        return "CONNECT";
+        length = 7 + 1;
+        method_str = malloc(sizeof(char) * length);
+        if (method_str != NULL)
+        {
+            memcpy(method_str, "CONNECT", length);
+        }
+        break;
     case HttpOPTIONS:
-        return "OPTIONS";
+        length = 7 + 1;
+        method_str = malloc(sizeof(char) * length);
+        if (method_str != NULL)
+        {
+            memcpy(method_str, "OPTIONS", length);
+        }
+        break;
     case HttpTRACE:
-        return "TRACE";
+        length = 5 + 1;
+        method_str = malloc(sizeof(char) * length);
+        if (method_str != NULL)
+        {
+            memcpy(method_str, "TRACE", length);
+        }
+        break;
     case HttpPATCH:
-        return "PATCH";
+        length = 5 + 1;
+        method_str = malloc(sizeof(char) * length);
+        if (method_str != NULL)
+        {
+            memcpy(method_str, "PATCH", length);
+        }
+        break;
     case HttpFAKER:
     default:
-        return NULL;
+        method_str = NULL;
     }
+    return method_str;
 }
+
+// TODO: do I need to allocate memory for this?
+// char *HttpMethodToStr(enum HttpMethods method)
+// {
+//     switch (method)
+//     {
+//     case HttpGET:
+//         return "GET";
+//     case HttpHEAD:
+//         return "HEAD";
+//     case HttpPOST:
+//         return "POST";
+//     case HttpPUT:
+//         return "PUT";
+//     case HttpDELETE:
+//         return "DELETE";
+//     case HttpCONNECT:
+//         return "CONNECT";
+//     case HttpOPTIONS:
+//         return "OPTIONS";
+//     case HttpTRACE:
+//         return "TRACE";
+//     case HttpPATCH:
+//         return "PATCH";
+//     case HttpFAKER:
+//     default:
+//         return NULL;
+//     }
+// }
 
 enum HttpMethods HttpStrToMethod(char *method)
 {

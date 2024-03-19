@@ -1,23 +1,18 @@
-#include "cerver.h"
-
 #include <stdio.h>      // perror
 #include <sys/socket.h> // socket() bind() listen() accept() sockaddr
 #include <stdlib.h>     // EXIT_FAILURE
 #include <string.h>     // strlen()
 #include <netinet/in.h> // sockaddr_in
 #include <unistd.h>     // write() close()
+#include <string.h>
 
-#include <string.h> // fixme
-
-// #include "../httpcodes/httpcodes.h"
-
+#include "cerver.h"
 #include "./http/request/request.h"
 #include "./util/util.h"
 
 void handleRequest(int);
-int cerverLoop(int, struct sockaddr_in, int); // FIXME: where to put this declaration?
 
-int Cerver(int port)
+HTTPCerver *Cerver(int port)
 {
     int server_fd;
     struct sockaddr_in address;
@@ -53,15 +48,24 @@ int Cerver(int port)
         exit(EXIT_FAILURE);
     }
 
-    return cerverLoop(server_fd, address, addrlen);
+    HTTPCerver *cerver = malloc(sizeof(HTTPCerver *));
+    if (cerver == NULL)
+    {
+        perror("cannot allocate memory for cerver");
+        exit(EXIT_FAILURE);
+    }
+    cerver->server_fd = server_fd;
+    cerver->address = address;
+    cerver->addrlen = addrlen;
+    return cerver;
 }
 
-int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
+void CerverStart(HTTPCerver *cerver)
 {
     int new_socket;
     while (1)
     {
-        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
+        if ((new_socket = accept(cerver->server_fd, (struct sockaddr *)&cerver->address, (socklen_t *)&cerver->addrlen)) < 0)
         {
             printf("[FATAL]: Couldn't accept connections on socket?");
             exit(EXIT_FAILURE);
@@ -69,7 +73,6 @@ int cerverLoop(int server_fd, struct sockaddr_in address, int addrlen)
         handleRequest(new_socket);
         close(new_socket);
     }
-    return EXIT_SUCCESS;
 }
 
 void handleRequest(int new_socket)
@@ -81,14 +84,13 @@ void handleRequest(int new_socket)
     valread = read(new_socket, buffer, sizeof(char) * buffer_size);
     if (valread == 0)
     {
-        // printf("\n[FATAL]: Didn't read more than 0\n");
+        printf("\n[FATAL]: Didn't read more than 0\n");
         free(buffer);
         exit(EXIT_FAILURE);
     }
-    // PrintBuffer(buffer);
 
     HttpRequest *request = CreateHttpRequest(buffer, buffer_size); // pass valread here?
-
+    PrintHttpRequest(request);
     if (request == NULL)
     {
         // if you cannot parse the request, we need to return a 4XX?

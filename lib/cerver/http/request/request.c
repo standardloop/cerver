@@ -51,15 +51,14 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     size_t moved = 0;
     if (buffer == NULL)
     {
-        // printf("\n[ERROR]: buffer is NULL for CreateHttpRequest\n");
+        printf("\n[ERROR][4XX]: buffer is NULL for CreateHttpRequest\n");
         buffer = buffer_start;
         return NULL;
     }
-    // WIP
     HttpRequest *request = malloc(sizeof(CreateHttpRequest));
     if (request == NULL)
     {
-        // printf("\n[ERROR]: buffer is NULL for malloc in CreateHttpRequest\n");
+        printf("\n[ERROR][5XX]: buffer is NULL for malloc in CreateHttpRequest\n");
         buffer = buffer_start;
         return NULL;
     }
@@ -94,16 +93,16 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
         return NULL;
     }
 
-    request->http_verion = ParseHttpVersion(buffer, moved);
+    request->version = ParseHttpVersion(buffer, moved);
 
-    if (request->http_verion == ERROR_FLOAT)
+    if (request->version == ERROR_FLOAT)
     {
         FreeHttpRequest(request);
         buffer = buffer_start;
         // printf("\n[ERROR]: couldn't get a valid http version\n");
         return NULL;
     }
-    // //printf("\nVersion: %.1f", request->http_verion);
+    // //printf("\nVersion: %.1f", request->version);
     // FIXME: dead memory
     buffer++; // '\n'
     buffer += moved;
@@ -133,13 +132,20 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
         printf("\n[ERROR][4XX]: couldn't get a valid port\n");
         return NULL;
     }
-    printf("\n[INFO][2XX]: port: %d\n", request->port);
-
     buffer += moved;
     moved = howMuchToMoveToNewLine(buffer, buffer_size);
     request->headers = NULL;
-    request->body = NULL;
 
+    // FIXME what other request don't have a body
+    if (request->method == HttpGET || request->method == HttpHEAD)
+    {
+        // actually look for body
+        request->body = NULL;
+    }
+    else
+    {
+        request->body = NULL;
+    }
     // FIXME free line by line but for now just reset it
     buffer = buffer_start;
     return request;
@@ -154,4 +160,26 @@ void FreeHttpRequest(HttpRequest *request)
     }
     free(request);
     return;
+}
+
+void PrintHttpRequest(HttpRequest *request)
+{
+    if (request->method != HttpFAKER)
+    {
+        char *method_strinig = HttpMethodToStr(request->method);
+        printf("[DEBUG][HTTPMETHOD]: %s\n", method_strinig);
+        free(method_strinig);
+    }
+    if (request->version != ERROR_FLOAT)
+    {
+        printf("[DEBUG][HTTPVERSION]: %.1f\n", request->version);
+    }
+    if (request->host != NULL)
+    {
+        printf("[DEBUG][HTTPHOST]: %s\n", request->host);
+    }
+    if (request->port != 0)
+    {
+        printf("[DEBUG][HTTPPORT]: %d\n", request->port);
+    }
 }
