@@ -47,9 +47,8 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     // printf("\n[INFO]: entering CreateHttpRequest");
     //(void)PrintBuffer(buffer);
     char *buffer_start = buffer;
-    size_t moved = 0;
     int line_num = 0;
-
+    size_t moved = 0;
     if (buffer == NULL)
     {
         // printf("\n[ERROR]: buffer is NULL for CreateHttpRequest\n");
@@ -114,7 +113,7 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     {
         free(request);
         buffer = buffer_start;
-        // printf("\n[ERROR]: couldn't move to the next line in the request: line_num: %d\n", line_num);
+        printf("\n[ERROR]: couldn't move to the next line in the request: line_num: %d\n", line_num);
         return NULL;
     }
     // PrintBuffer(buffer);
