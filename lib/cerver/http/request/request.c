@@ -79,7 +79,7 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
 
     if (buffer == NULL || moved == 0)
     {
-        free(request);
+        FreeHttpRequest(request);
         buffer = buffer_start;
         // printf("\n[ERROR]: couldn't move to the next line in the request: line_num: %d\n", line_num);
         return NULL;
@@ -88,7 +88,7 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     request->method = ParseRequestMethod(buffer, moved);
     if (request->method == HttpFAKER)
     {
-        free(request);
+        FreeHttpRequest(request);
         buffer = buffer_start;
         // printf("\n[ERROR]: couldn't get a valid http reques method");
         return NULL;
@@ -98,7 +98,7 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
 
     if (request->http_verion == ERROR_FLOAT)
     {
-        free(request);
+        FreeHttpRequest(request);
         buffer = buffer_start;
         // printf("\n[ERROR]: couldn't get a valid http version\n");
         return NULL;
@@ -111,7 +111,7 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
 
     if (buffer == NULL || moved == 0)
     {
-        free(request);
+        FreeHttpRequest(request);
         buffer = buffer_start;
         printf("\n[ERROR]: couldn't move to the next line in the request: line_num: %d\n", line_num);
         return NULL;
@@ -122,21 +122,21 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     {
         buffer = buffer_start;
         printf("\n[ERROR][4XX]: couldn't get a valid host\n");
-        free(request);
+        FreeHttpRequest(request);
         return NULL;
     }
-    request->port = 8080;
-    // request->port = ParsePort(buffer, moved);
-    // if (request->port == ERROR_PORT)
-    // {
-    //     buffer = buffer_start;
-    //     free(request);
-    //     return NULL;
-    // }
+    request->port = ParsePort(buffer, moved);
+    if (request->port == ERROR_PORT)
+    {
+        buffer = buffer_start;
+        FreeHttpRequest(request);
+        printf("\n[ERROR][4XX]: couldn't get a valid port\n");
+        return NULL;
+    }
+    printf("\n[INFO][2XX]: port: %d\n", request->port);
 
-    // buffer += moved;
-    // moved = howMuchToMoveToNewLine(buffer, buffer_size);
-
+    buffer += moved;
+    moved = howMuchToMoveToNewLine(buffer, buffer_size);
     request->headers = NULL;
     request->body = NULL;
 
