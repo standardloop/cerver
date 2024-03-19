@@ -29,6 +29,11 @@ int Cerver(int port)
         perror("In socket");
         exit(EXIT_FAILURE);
     }
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0)
+    {
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
+    }
 
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
@@ -87,13 +92,18 @@ void handleRequest(int new_socket)
     if (request == NULL)
     {
         // if you cannot parse the request, we need to return a 4XX?
-        free(buffer);
+        // free(buffer);
         printf("\n[FATAL]: HttpRequest fail to parse\n");
-        exit(EXIT_FAILURE);
+        // exit(EXIT_FAILURE);
+    }
+    else
+    {
+        // create response
+        //
+        write(new_socket, hello, strlen(hello));
     }
     free(buffer);
     FreeHttpRequest(request);
-    write(new_socket, hello, strlen(hello));
 }
 
 // // FIXME cheater

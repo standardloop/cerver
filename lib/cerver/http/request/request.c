@@ -121,7 +121,7 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     if (request->host == NULL)
     {
         buffer = buffer_start;
-        // printf("\n[ERROR]: couldn't get a valid host\n");
+        printf("\n[ERROR][4XX]: couldn't get a valid host\n");
         free(request);
         return NULL;
     }
@@ -148,6 +148,10 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
 void FreeHttpRequest(HttpRequest *request)
 {
     // free other sections first
+    if (request->host != NULL)
+    {
+        free(request->host);
+    }
     free(request);
     return;
 }
