@@ -1,11 +1,11 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
 
 #include "./queue.h"
-#include "./pool.h"
 
 typedef struct
 {
@@ -16,7 +16,21 @@ typedef struct
 
 } Scheduler;
 
+typedef struct
+{
+    int num_threads;
+    int working_threads;
+    pthread_t *pool;
+    pthread_mutex_t LOCK;
+    pthread_cond_t FILL;
+    pthread_cond_t EMPTY;
+
+} ThreadPool;
+
+ThreadPool *InitThreadPool(int);
+void StartThreads(Scheduler *, ThreadPool *);
+
 Scheduler *InitScheduler(enum ThreadPolicy, int);
-void AddToScheduler(ThreadPool *, Scheduler *, int *);
-int *GetFromScheduler(ThreadPool *, Scheduler *);
+void AddToScheduler(Scheduler *, ThreadPool *, int *);
+int *GetFromScheduler(Scheduler *, ThreadPool *);
 #endif

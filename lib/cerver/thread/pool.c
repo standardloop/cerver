@@ -4,7 +4,6 @@
 
 #include "./scheduler.h"
 #include "./queue.h"
-#include "./pool.h"
 #include "./worker.h"
 
 ThreadPool *InitThreadPool(int num_threads)
@@ -37,6 +36,7 @@ ThreadPool *InitThreadPool(int num_threads)
 
     return workers;
 }
+
 void StartThreads(Scheduler *scheduler, ThreadPool *workers)
 {
     for (int i = 0; i < workers->num_threads; i++)

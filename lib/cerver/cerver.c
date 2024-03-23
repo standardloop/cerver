@@ -10,9 +10,8 @@
 #include "cerver.h"
 #include "./util/util.h"
 #include "./thread/scheduler.h"
-#include "./thread/pool.h"
 
-HTTPCerver *Cerver(int port)
+HTTPCerver *CerverInit(int port, int num_threads, int queue_buffer_size)
 {
     int server_fd;
     struct sockaddr_in address;
@@ -48,7 +47,7 @@ HTTPCerver *Cerver(int port)
         exit(EXIT_FAILURE);
     }
 
-    HTTPCerver *cerver = malloc(sizeof(HTTPCerver *));
+    HTTPCerver *cerver = (HTTPCerver *)malloc(sizeof(HTTPCerver));
     if (cerver == NULL)
     {
         perror("cannot allocate memory for cerver");
@@ -57,6 +56,8 @@ HTTPCerver *Cerver(int port)
     cerver->server_fd = server_fd;
     cerver->address = address;
     cerver->addrlen = addrlen;
+    cerver->num_threads = num_threads;
+    cerver->queue_buffer_size = queue_buffer_size;
     return cerver;
 }
 
@@ -64,8 +65,8 @@ void CerverStart(HTTPCerver *cerver)
 {
     int new_socket;
 
-    Scheduler *scheduler = InitScheduler(FIFO, 10);
-    ThreadPool *pool = InitThreadPool(5);
+    Scheduler *scheduler = InitScheduler(FIFO, cerver->queue_buffer_size);
+    ThreadPool *pool = InitThreadPool(cerver->num_threads);
     StartThreads(scheduler, pool);
     // if (scheduler == NULL)
     // {
@@ -87,7 +88,7 @@ void CerverStart(HTTPCerver *cerver)
             fflush(stdout);
         }
         *pClient = new_socket;
-        AddToScheduler(pool, scheduler, pClient);
+        AddToScheduler(scheduler, pool, pClient);
 
         // close(new_socket);
     }

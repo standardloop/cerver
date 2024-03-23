@@ -5,7 +5,6 @@
 
 #include "./scheduler.h"
 #include "./queue.h"
-#include "./pool.h"
 #include "./worker.h"
 
 Scheduler *InitScheduler(enum ThreadPolicy policy, int buffer_size)
@@ -64,7 +63,7 @@ bool IsSchedulerEmpty(Scheduler *scheduler)
     return scheduler->curr_size == 0;
 }
 
-void AddToScheduler(ThreadPool *workers, Scheduler *scheduler, int *client_socket)
+void AddToScheduler(Scheduler *scheduler, ThreadPool *workers, int *client_socket)
 {
 
     int mutex_lock = pthread_mutex_lock(&workers->LOCK);
@@ -93,7 +92,7 @@ void AddToScheduler(ThreadPool *workers, Scheduler *scheduler, int *client_socke
     }
 }
 
-int *GetFromScheduler(ThreadPool *workers, Scheduler *scheduler)
+int *GetFromScheduler(Scheduler *scheduler, ThreadPool *workers)
 {
 
     int mutex_lock = pthread_mutex_lock(&workers->LOCK);

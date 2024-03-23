@@ -2,7 +2,6 @@
 #define WORKER_H
 
 #include "./queue.h"
-#include "./pool.h"
 #include "./scheduler.h"
 
 typedef struct

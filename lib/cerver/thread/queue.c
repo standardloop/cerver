@@ -3,7 +3,6 @@
 
 #include "./scheduler.h"
 #include "./queue.h"
-#include "./pool.h"
 #include "./worker.h"
 
 Queue *InitQueue(int capacity)

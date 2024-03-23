@@ -21,12 +21,6 @@
 // User-Agent: curl/7.79.1
 // Accept: */*
 
-// size_t getMethodStrSize(char *, size_t);
-
-// Long Term FIXME but get working server first
-// Free Memory of parts of buffer
-// Paralleize this code
-
 void HandleRequest(void *p_new_socket)
 {
     if (p_new_socket == NULL)

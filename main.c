@@ -17,11 +17,11 @@ int main()
     /*
         Setup Threads
     */
-    HTTPCerver *server = Cerver(port);
+    HTTPCerver *server = CerverInit(port, 10, 10);
     CerverStart(server);
 
     /*
-        
+
         Setup Paths here
     */
     // char *path = "/hello";
