@@ -9,7 +9,11 @@ typedef struct
     int server_fd;
     struct sockaddr_in address;
     int addrlen;
-
+    /*
+    char * host;
+    int port;
+    // other settings
+    */
 } HTTPCerver;
 
 HTTPCerver *Cerver(int);

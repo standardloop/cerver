@@ -44,7 +44,8 @@ size_t howMuchToMoveToNewLine(char *buffer, size_t buffer_size)
 
 HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
 {
-    // printf("\n[INFO]: entering CreateHttpRequest");
+    printf("\n[INFO]: entering CreateHttpRequest");
+    fflush(stdout);
     //(void)PrintBuffer(buffer);
     char *buffer_start = buffer;
     int line_num = 0;
@@ -166,9 +167,9 @@ void PrintHttpRequest(HttpRequest *request)
 {
     if (request->method != HttpFAKER)
     {
-        char *method_strinig = HttpMethodToStr(request->method);
-        printf("[DEBUG][HTTPMETHOD]: %s\n", method_strinig);
-        free(method_strinig);
+        char *method_string = HttpMethodToStr(request->method);
+        printf("[DEBUG][HTTPMETHOD]: %s\n", method_string);
+        free(method_string);
     }
     if (request->version != ERROR_FLOAT)
     {

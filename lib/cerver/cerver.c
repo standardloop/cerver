@@ -5,12 +5,13 @@
 #include <netinet/in.h> // sockaddr_in
 #include <unistd.h>     // write() close()
 #include <string.h>
+#include <pthread.h>
 
 #include "cerver.h"
 #include "./http/request/request.h"
 #include "./util/util.h"
 
-void handleRequest(int);
+void *handleRequest(void *);
 
 HTTPCerver *Cerver(int port)
 {
@@ -62,6 +63,8 @@ HTTPCerver *Cerver(int port)
 
 void CerverStart(HTTPCerver *cerver)
 {
+    // int num_threads = 10;
+
     int new_socket;
     while (1)
     {
@@ -70,42 +73,69 @@ void CerverStart(HTTPCerver *cerver)
             printf("[FATAL]: Couldn't accept connections on socket?");
             exit(EXIT_FAILURE);
         }
-        handleRequest(new_socket);
-        close(new_socket);
+        // pthread_t *t = malloc(sizeof(pthread_t));
+        // if (t == NULL)
+        // {
+        //     printf();
+        // }
+        pthread_t t;
+        int *pClient = malloc(sizeof(int));
+        if (pClient == NULL)
+        {
+            printf("\n[ERROR][5XX]: couldn't secure memory for socker a connection");
+            fflush(stdout);
+        }
+        *pClient = new_socket;
+        printf("\naboout to call pthread create\n");
+        fflush(stdout);
+        pthread_create(&t, NULL, handleRequest, pClient);
+        //  handleRequest(new_socket);
+        // handleRequest(pClient);
+
+        // close(new_socket);
     }
 }
 
-void handleRequest(int new_socket)
+void *handleRequest(void *p_new_socket)
 {
+    printf("\ninside handleRequest\n");
+    fflush(stdout);
+    int client_socket = *(int *)p_new_socket;
+    free(p_new_socket); // dont need anymore
     char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
     ssize_t valread;
-    size_t buffer_size = BUFFER_SIZE;
-    char *buffer = malloc(sizeof(char) * buffer_size); // no malloc here?
-    valread = read(new_socket, buffer, sizeof(char) * buffer_size);
+    char buffer[BUFFER_SIZE];
+    // char *buffer = malloc(sizeof(char) * buffer_size); // no malloc here?
+    valread = read(client_socket, buffer, sizeof(char) * BUFFER_SIZE);
     if (valread == 0)
     {
         printf("\n[FATAL]: Didn't read more than 0\n");
-        free(buffer);
-        exit(EXIT_FAILURE);
+        // free(buffer);
+        close(client_socket);
+        return NULL;
+        // exit(EXIT_FAILURE);
     }
 
-    HttpRequest *request = CreateHttpRequest(buffer, buffer_size); // pass valread here?
+    HttpRequest *request = CreateHttpRequest(buffer, BUFFER_SIZE); // pass valread here?
     PrintHttpRequest(request);
     if (request == NULL)
     {
         // if you cannot parse the request, we need to return a 4XX?
         // free(buffer);
-        printf("\n[FATAL]: HttpRequest fail to parse\n");
+        printf("\n[ERROR][4|5XX]: HttpRequest fail to parse\n");
+
         // exit(EXIT_FAILURE);
     }
     else
     {
         // create response
         //
-        write(new_socket, hello, strlen(hello));
+        write(client_socket, hello, strlen(hello));
     }
-    free(buffer);
+    // free(buffer);
     FreeHttpRequest(request);
+    close(client_socket);
+    return NULL;
 }
 
 // // FIXME cheater
