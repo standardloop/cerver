@@ -7,7 +7,6 @@
 
 Queue *InitQueue(int capacity)
 {
-
     Queue *queue = (Queue *)malloc(sizeof(Queue));
 
     if (queue == NULL)
@@ -27,6 +26,7 @@ int EnQueue(Queue *queue, int *client_socket)
 {
     if ((queue->size + 1) > queue->max_size)
     {
+        printf("\n[WARN][5XX]: queue is full\n");
         return queue->size;
     }
 
@@ -34,6 +34,7 @@ int EnQueue(Queue *queue, int *client_socket)
 
     if (node == NULL)
     {
+        printf("\n[WARN][5XX]: could not allocate space for a new node\n");
         return queue->size;
     }
 

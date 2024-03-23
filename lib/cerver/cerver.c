@@ -66,13 +66,19 @@ void CerverStart(HTTPCerver *cerver)
     int new_socket;
 
     Scheduler *scheduler = InitScheduler(FIFO, cerver->queue_buffer_size);
-    ThreadPool *pool = InitThreadPool(cerver->num_threads);
-    StartThreads(scheduler, pool);
-    // if (scheduler == NULL)
-    // {
-    //     printf("[FATAL]: Couldn't allocate memory to scheduler");
-    //     exit(EXIT_FAILURE);
-    // }
+    if (scheduler == NULL)
+    {
+        printf("[FATAL][5XX]: Couldn't allocate memory to scheduler");
+        exit(EXIT_FAILURE);
+    }
+
+    ThreadPool *thread_pool = InitThreadPool(cerver->num_threads);
+    if (thread_pool == NULL)
+    {
+        printf("[FATAL][5XX]: Couldn't allocate memory to thread_pool");
+        exit(EXIT_FAILURE);
+    }
+    StartThreads(scheduler, thread_pool);
 
     while (1)
     {
@@ -88,8 +94,7 @@ void CerverStart(HTTPCerver *cerver)
             fflush(stdout);
         }
         *pClient = new_socket;
-        AddToScheduler(scheduler, pool, pClient);
-
+        AddToScheduler(scheduler, thread_pool, pClient);
         // close(new_socket);
     }
 }

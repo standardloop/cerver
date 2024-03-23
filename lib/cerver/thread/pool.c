@@ -44,16 +44,29 @@ void StartThreads(Scheduler *scheduler, ThreadPool *workers)
         ThreadArg *arg = (ThreadArg *)malloc(sizeof(ThreadArg));
         if (arg == NULL)
         {
-            printf("Thread number %d: Creation failed", i);
+            printf("\n[ERROR][5XX]: Thread number %d: Creation failed", i);
             continue;
         }
-        arg->workers = workers;
-        arg->scheduler = scheduler;
-        arg->num_request = i;
-        int check_thread = pthread_create(&workers->pool[i], ((void *)0), ThreadWorker, arg);
-        if (check_thread != 0)
+        else
         {
-            printf("Thread number %d: Creation failed", i);
+            arg->workers = workers;
+            arg->scheduler = scheduler;
+            arg->num_request = i;
+            int check_thread = pthread_create(&workers->pool[i], NULL, ThreadWorker, arg);
+            if (check_thread != 0)
+            {
+                printf("\n[ERROR][5XX]: Thread number %d: Creation failed", i);
+            }
         }
     }
+}
+
+// FIXME mutex?
+void FreeThreadPool(ThreadPool *thread_pool)
+{
+    if (thread_pool->pool != NULL)
+    {
+        free(thread_pool->pool);
+    }
+    free(thread_pool);
 }

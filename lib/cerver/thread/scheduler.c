@@ -9,9 +9,11 @@
 
 Scheduler *InitScheduler(enum ThreadPolicy policy, int buffer_size)
 {
+    printf("\n[INFO]: starting InitScheduler!\n");
     Scheduler *scheduler = (Scheduler *)malloc(sizeof(Scheduler));
     if (scheduler == NULL)
     {
+        printf("\n[FATAL]: cannot InitScheduler\n");
         return NULL;
     }
     scheduler->policy = policy;
@@ -23,23 +25,21 @@ Scheduler *InitScheduler(enum ThreadPolicy policy, int buffer_size)
         scheduler->queue = InitQueue(buffer_size);
         if (scheduler->queue == NULL)
         {
+            printf("\n[FATAL]: cannot InitQueue\n");
             return NULL;
         }
     }
-
     return scheduler;
 }
 
 void ScheduleNewRequest(Scheduler *scheduler, int *client_socket)
 {
-
     if (scheduler->policy == FIFO)
     {
-
         int queue_size = EnQueue(scheduler->queue, client_socket);
-        printf("\nQueueSize: %d\n", queue_size);
+        scheduler->curr_size++;
+        printf("\n[INFO]:ScheduleNewRequest QueueSize: %d\n", queue_size);
     }
-    scheduler->curr_size++;
 }
 
 int *PickRequest(Scheduler *scheduler)
@@ -50,6 +50,7 @@ int *PickRequest(Scheduler *scheduler)
         client_socket = DeQueue(scheduler->queue);
     }
     scheduler->curr_size--;
+    printf("\n[INFO]:ScheduleNewRequest QueueSize: %d\n", scheduler->curr_size);
     return client_socket;
 }
 
@@ -69,26 +70,26 @@ void AddToScheduler(Scheduler *scheduler, ThreadPool *workers, int *client_socke
     int mutex_lock = pthread_mutex_lock(&workers->LOCK);
     if (mutex_lock != 0)
     {
-        printf("\n AddToScheduler mutex_lock \n");
+        printf("\n[WARN][5XX]: AddToScheduler mutex_lock \n");
     }
     while (IsSchedulerFull(scheduler))
     {
         int cond_wait = pthread_cond_wait(&workers->FILL, &workers->LOCK);
         if (cond_wait != 0)
         {
-            printf("\n AddToScheduler cond_wait \n");
+            printf("\n[WARN][5XX]: AddToScheduler cond_wait \n");
         }
     }
     ScheduleNewRequest(scheduler, client_socket);
     int empty_signal = pthread_cond_signal(&workers->EMPTY);
     if (empty_signal != 0)
     {
-        printf("\n AddToScheduler empty_signal \n");
+        printf("\n[WARN][5XX]: AddToScheduler empty_signal \n");
     }
     int lock_signal = pthread_mutex_unlock(&workers->LOCK);
     if (lock_signal != 0)
     {
-        printf("\n AddToScheduler lock_signal \n");
+        printf("\n[WARN][5XX]: AddToScheduler lock_signal \n");
     }
 }
 
@@ -123,4 +124,13 @@ int *GetFromScheduler(Scheduler *scheduler, ThreadPool *workers)
         printf("\n GetFromScheduler signal_lock \n");
     }
     return client_socket;
+}
+
+void FreeScheduler(Scheduler *scheduler)
+{
+    if (scheduler->queue != NULL)
+    {
+        FreeQueue(scheduler->queue);
+    }
+    free(scheduler);
 }
