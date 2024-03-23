@@ -9,7 +9,7 @@
 #include <pthread.h>
 #include <stdbool.h>
 
-#include "request.h"
+#include "./request.h"
 #include "./methods/methods.h"
 #include "./version/version.h"
 #include "./host/host.h"

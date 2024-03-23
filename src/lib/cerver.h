@@ -9,6 +9,7 @@ typedef struct
     int addrlen;
     int num_threads;
     int queue_buffer_size;
+    // route table
     /*
     char * host;
     int port;
@@ -16,8 +17,8 @@ typedef struct
     */
 } HTTPCerver;
 
-HTTPCerver *CerverInit(int, int, int);
+HTTPCerver *InitCerver(int, int, int);
 void FreeCerver(HTTPCerver *);
-void CerverStart(HTTPCerver *);
+void StartCerver(HTTPCerver *);
 
 #endif

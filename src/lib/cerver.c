@@ -11,7 +11,7 @@
 #include "./util/util.h"
 #include "./thread/scheduler.h"
 
-HTTPCerver *CerverInit(int port, int num_threads, int queue_buffer_size)
+HTTPCerver *InitCerver(int port, int num_threads, int queue_buffer_size)
 {
     int server_fd;
     struct sockaddr_in address;
@@ -58,13 +58,16 @@ HTTPCerver *CerverInit(int port, int num_threads, int queue_buffer_size)
     cerver->addrlen = addrlen;
     cerver->num_threads = num_threads;
     cerver->queue_buffer_size = queue_buffer_size;
+
+    // if (router != NULL)
+    // {
+    // }
     return cerver;
 }
 
-void CerverStart(HTTPCerver *cerver)
+void StartCerver(HTTPCerver *cerver)
 {
     int new_socket;
-
     Scheduler *scheduler = InitScheduler(FIFO, cerver->queue_buffer_size);
     if (scheduler == NULL)
     {
@@ -80,18 +83,20 @@ void CerverStart(HTTPCerver *cerver)
     }
     StartThreads(scheduler, thread_pool);
 
-    while (1)
+    while (FOREVER)
     {
         if ((new_socket = accept(cerver->server_fd, (struct sockaddr *)&cerver->address, (socklen_t *)&cerver->addrlen)) < 0)
         {
             printf("[FATAL]: Couldn't accept connections on socket?");
             exit(EXIT_FAILURE);
         }
-        ScheduleNewRequest(scheduler, thread_pool, new_socket);
+        ScheduleRequestToBeHandled(scheduler, thread_pool, new_socket);
     }
+    FreeThreadPool(thread_pool);
+    FreeScheduler(scheduler);
 }
 
-// // FIXME cheater
+// // FIXME
 // void handle_request(int client_socket)
 // {
 //     char buffer[BUFFER_SIZE];

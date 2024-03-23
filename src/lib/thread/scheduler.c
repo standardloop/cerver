@@ -32,7 +32,7 @@ Scheduler *InitScheduler(enum ThreadPolicy policy, int buffer_size)
     return scheduler;
 }
 
-void scheduleNewRequest(Scheduler *scheduler, int client_socket)
+void scheduleRequestInQueue(Scheduler *scheduler, int client_socket)
 {
     if (scheduler->policy == FIFO)
     {
@@ -42,7 +42,7 @@ void scheduleNewRequest(Scheduler *scheduler, int client_socket)
             printf("\n[WARN][5XX]: queue size error\n");
         }
         scheduler->curr_size++;
-        printf("\n[INFO]:ScheduleNewRequest QueueSize: %d\n", queue_size);
+        printf("\n[INFO]: scheduleRequestInQueue QueueSize: %d\n", queue_size);
     }
 }
 
@@ -54,12 +54,13 @@ int deQueueRequest(Scheduler *scheduler)
         client_socket = DeQueue(scheduler->buffer);
     }
     scheduler->curr_size--;
-    printf("\n[INFO]: ScheduleNewRequest QueueSize: %d\n", scheduler->curr_size);
+    printf("\n[INFO]: deQueueRequest QueueSize: %d\n", scheduler->curr_size);
     return client_socket;
 }
 
 bool isSchedulerFull(Scheduler *scheduler)
 {
+    // Maybe get if larger for some reason?
     return scheduler->curr_size == scheduler->buffer_size;
 }
 
@@ -68,38 +69,36 @@ bool isSchedulerEmpty(Scheduler *scheduler)
     return scheduler->curr_size == 0;
 }
 
-void ScheduleNewRequest(Scheduler *scheduler, ThreadPool *workers, int client_socket)
+void ScheduleRequestToBeHandled(Scheduler *scheduler, ThreadPool *workers, int client_socket)
 {
-
     int mutex_lock = pthread_mutex_lock(&workers->LOCK);
     if (mutex_lock != 0)
     {
-        printf("\n[WARN][5XX]: ScheduleNewRequest mutex_lock \n");
+        printf("\n[WARN][5XX]: ScheduleRequestToBeHandled mutex_lock \n");
     }
     while (isSchedulerFull(scheduler))
     {
         int cond_wait = pthread_cond_wait(&workers->FILL, &workers->LOCK);
         if (cond_wait != 0)
         {
-            printf("\n[WARN][5XX]: ScheduleNewRequest cond_wait \n");
+            printf("\n[WARN][5XX]: ScheduleRequestToBeHandled cond_wait \n");
         }
     }
-    scheduleNewRequest(scheduler, client_socket);
+    scheduleRequestInQueue(scheduler, client_socket);
     int empty_signal = pthread_cond_signal(&workers->EMPTY);
     if (empty_signal != 0)
     {
-        printf("\n[WARN][5XX]: ScheduleNewRequest empty_signal \n");
+        printf("\n[WARN][5XX]: ScheduleRequestToBeHandled empty_signal \n");
     }
     int lock_signal = pthread_mutex_unlock(&workers->LOCK);
     if (lock_signal != 0)
     {
-        printf("\n[WARN][5XX]: ScheduleNewRequest lock_signal \n");
+        printf("\n[WARN][5XX]: ScheduleRequestToBeHandled lock_signal \n");
     }
 }
 
 int AcceptRequest(Scheduler *scheduler, ThreadPool *workers)
 {
-
     int mutex_lock = pthread_mutex_lock(&workers->LOCK);
     if (mutex_lock != 0)
     {

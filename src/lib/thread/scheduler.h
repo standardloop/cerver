@@ -31,7 +31,7 @@ ThreadPool *InitThreadPool(int);
 void FreeThreadPool(ThreadPool *thread_pool);
 void StartThreads(Scheduler *, ThreadPool *);
 Scheduler *InitScheduler(enum ThreadPolicy, int);
-void ScheduleNewRequest(Scheduler *, ThreadPool *, int);
+void ScheduleRequestToBeHandled(Scheduler *, ThreadPool *, int);
 int AcceptRequest(Scheduler *, ThreadPool *);
 void FreeScheduler(Scheduler *);
 

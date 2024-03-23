@@ -5,11 +5,12 @@
 #include "./worker.h"
 
 #include "./../http/request/request.h"
+#include "./../util/util.h"
 
 void *ThreadWorker(void *arg)
 {
     ThreadArg *args = (ThreadArg *)arg;
-    while (1)
+    while (FOREVER)
     {
         int client_socket = AcceptRequest(args->scheduler, args->workers);
         HandleRequest(client_socket);
