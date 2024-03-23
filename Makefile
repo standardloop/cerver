@@ -15,6 +15,10 @@ build: main.c
 	lib/cerver/http/request/host/host.c \
 	lib/cerver/http/request/port/port.c \
 	lib/cerver/http/request/request.c \
+	lib/cerver/thread/scheduler.c \
+	lib/cerver/thread/pool.c \
+	lib/cerver/thread/queue.c \
+	lib/cerver/thread/worker.c \
 	-o main
 
 run:

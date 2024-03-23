@@ -1,8 +1,15 @@
 #include <stdlib.h>
-#include <stdio.h>
 #include <strings.h>
-#include "request.h"
+#include <stdio.h>      // perror
+#include <sys/socket.h> // socket() bind() listen() accept() sockaddr
+#include <stdlib.h>     // EXIT_FAILURE
+#include <string.h>     // strlen()
+#include <netinet/in.h> // sockaddr_in
+#include <unistd.h>     // write() close()
+#include <pthread.h>
 #include <stdbool.h>
+
+#include "request.h"
 #include "./methods/methods.h"
 #include "./version/version.h"
 #include "./host/host.h"
@@ -19,6 +26,43 @@
 // Long Term FIXME but get working server first
 // Free Memory of parts of buffer
 // Paralleize this code
+
+void HandleRequest(void *p_new_socket)
+{
+    if (p_new_socket == NULL)
+    {
+        printf("\n[FATAL][5XX]: p_new_socket is NULL :(\n");
+    }
+    int client_socket = *(int *)p_new_socket;
+    free(p_new_socket); // dont need anymore
+
+    char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+
+    ssize_t valread;
+    char buffer[BUFFER_SIZE];
+    // char *buffer = malloc(sizeof(char) * buffer_size); // no malloc here?
+    valread = read(client_socket, buffer, sizeof(char) * BUFFER_SIZE);
+    if (valread == 0)
+    {
+        printf("\n[FATAL]: Didn't read more than 0\n");
+        close(client_socket);
+    }
+
+    HttpRequest *request = CreateHttpRequest(buffer, BUFFER_SIZE); // pass valread here?
+    PrintHttpRequest(request);
+    if (request == NULL)
+    {
+        printf("\n[ERROR][4|5XX]: HttpRequest fail to parse\n");
+    }
+    else
+    {
+        // create response
+        write(client_socket, hello, strlen(hello));
+    }
+    // free(buffer);
+    FreeHttpRequest(request);
+    close(client_socket);
+}
 
 size_t howMuchToMoveToNewLine(char *buffer, size_t buffer_size)
 {

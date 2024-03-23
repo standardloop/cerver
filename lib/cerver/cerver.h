@@ -2,7 +2,7 @@
 #define CERVER_H
 #include <netinet/in.h> // sockaddr_in
 
-#define BUFFER_SIZE 1024
+
 
 typedef struct
 {

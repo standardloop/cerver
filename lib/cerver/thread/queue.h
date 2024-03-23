@@ -4,14 +4,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct
+typedef struct node
 {
-    int val;
+    int *client_socket;
+    struct node *next;
 } Node;
 
-typedef struct
+typedef struct queue
 {
-    Node *array;
+    int size;
+    int max_size;
+    Node *head;
+    Node *tail;
 } Queue;
 
 enum ThreadPolicy
@@ -19,6 +23,9 @@ enum ThreadPolicy
     FIFO = 0
 };
 
-
+Queue *InitQueue(int);
+int EnQueue(Queue *, int *);
+int *DeQueue(Queue *);
+void FreeQueue(Queue *queue);
 
 #endif

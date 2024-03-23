@@ -6,6 +6,9 @@
 #include <unistd.h>
 #include <pthread.h>
 
+#include "./scheduler.h"
+#include "./queue.h"
+
 typedef struct
 {
     int num_threads;
@@ -18,4 +21,6 @@ typedef struct
 } ThreadPool;
 
 ThreadPool *InitThreadPool(int);
+void StartThreads(Scheduler *, ThreadPool *);
+
 #endif

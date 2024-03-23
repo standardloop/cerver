@@ -1,6 +1,7 @@
 #ifndef REQUEST_H
 #define REQUEST_H
 
+#define BUFFER_SIZE 1024
 #define MAX_LINE_LENGTH 50
 #define ERROR_SIZE_T 0
 #include "./methods/methods.h"
@@ -37,4 +38,5 @@ CreateHttpRequest(char *, size_t);
 
 void FreeHttpRequest(HttpRequest *);
 void PrintHttpRequest(HttpRequest *);
+void HandleRequest(void *);
 #endif
