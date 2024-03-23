@@ -5,14 +5,14 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-#include "./queue.h"
+#include "./queue/queue.h"
 
 typedef struct
 {
     enum ThreadPolicy policy;
     int buffer_size;
     int curr_size;
-    Queue *queue;
+    Queue *buffer;
 
 } Scheduler;
 
@@ -31,8 +31,8 @@ ThreadPool *InitThreadPool(int);
 void FreeThreadPool(ThreadPool *thread_pool);
 void StartThreads(Scheduler *, ThreadPool *);
 Scheduler *InitScheduler(enum ThreadPolicy, int);
-void AddToScheduler(Scheduler *, ThreadPool *, int *);
-int *GetFromScheduler(Scheduler *, ThreadPool *);
+void ScheduleNewRequest(Scheduler *, ThreadPool *, int);
+int AcceptRequest(Scheduler *, ThreadPool *);
 void FreeScheduler(Scheduler *);
 
 #endif

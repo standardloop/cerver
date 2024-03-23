@@ -4,9 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define QUEUE_ERROR -1
+
 typedef struct node
 {
-    int *client_socket;
+    int client_socket;
     struct node *next;
 } Node;
 
@@ -24,8 +26,8 @@ enum ThreadPolicy
 };
 
 Queue *InitQueue(int);
-int EnQueue(Queue *, int *);
-int *DeQueue(Queue *);
+int EnQueue(Queue *, int);
+int DeQueue(Queue *);
 void FreeQueue(Queue *queue);
 
 #endif

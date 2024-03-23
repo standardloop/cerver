@@ -8,17 +8,17 @@ clean:
 
 build: main.c
 	$(CC) $(CC_FLAGS) main.c \
-	lib/cerver/cerver.c \
-	lib/cerver/util/util.c \
-	lib/cerver/http/request/methods/methods.c \
-	lib/cerver/http/request/version/version.c \
-	lib/cerver/http/request/host/host.c \
-	lib/cerver/http/request/port/port.c \
-	lib/cerver/http/request/request.c \
-	lib/cerver/thread/scheduler.c \
-	lib/cerver/thread/pool.c \
-	lib/cerver/thread/queue.c \
-	lib/cerver/thread/worker.c \
+	src/lib/cerver.c \
+	src/lib/util/util.c \
+	src/lib/http/request/methods/methods.c \
+	src/lib/http/request/version/version.c \
+	src/lib/http/request/host/host.c \
+	src/lib/http/request/port/port.c \
+	src/lib/http/request/request.c \
+	src/lib/thread/scheduler.c \
+	src/lib/thread/pool.c \
+	src/lib/thread/queue/queue.c \
+	src/lib/thread/worker.c \
 	-o main
 
 run:

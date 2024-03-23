@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "./scheduler.h"
 #include "./queue.h"
-#include "./worker.h"
 
 Queue *InitQueue(int capacity)
 {
@@ -22,7 +20,7 @@ Queue *InitQueue(int capacity)
 
     return queue;
 }
-int EnQueue(Queue *queue, int *client_socket)
+int EnQueue(Queue *queue, int client_socket)
 {
     if ((queue->size + 1) > queue->max_size)
     {
@@ -57,17 +55,16 @@ int EnQueue(Queue *queue, int *client_socket)
     return queue->size;
 }
 
-int *DeQueue(Queue *queue)
+int DeQueue(Queue *queue)
 {
     if (queue->size == 0)
     {
-        return NULL;
+        return QUEUE_ERROR;
     }
 
-    int *client_socket = NULL;
     Node *tmp = NULL;
 
-    client_socket = queue->head->client_socket;
+    int client_socket = queue->head->client_socket;
     tmp = queue->head;
     queue->head = queue->head->next;
     queue->size -= 1;
@@ -88,11 +85,6 @@ void FreeQueue(Queue *queue)
     {
         Node *tmp = queue->head;
         queue->head = queue->head->next;
-        if (tmp->client_socket != NULL)
-        {
-            free(tmp->client_socket);
-        }
-
         free(tmp);
     }
 
@@ -100,6 +92,5 @@ void FreeQueue(Queue *queue)
     {
         free(queue->tail);
     }
-
     free(queue);
 }

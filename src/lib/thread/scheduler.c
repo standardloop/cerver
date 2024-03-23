@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 #include "./scheduler.h"
-#include "./queue.h"
+#include "./queue/queue.h"
 #include "./worker.h"
 
 Scheduler *InitScheduler(enum ThreadPolicy policy, int buffer_size)
@@ -22,8 +22,8 @@ Scheduler *InitScheduler(enum ThreadPolicy policy, int buffer_size)
 
     if (policy == FIFO)
     {
-        scheduler->queue = InitQueue(buffer_size);
-        if (scheduler->queue == NULL)
+        scheduler->buffer = InitQueue(buffer_size);
+        if (scheduler->buffer == NULL)
         {
             printf("\n[FATAL]: cannot InitQueue\n");
             return NULL;
@@ -32,105 +32,109 @@ Scheduler *InitScheduler(enum ThreadPolicy policy, int buffer_size)
     return scheduler;
 }
 
-void ScheduleNewRequest(Scheduler *scheduler, int *client_socket)
+void scheduleNewRequest(Scheduler *scheduler, int client_socket)
 {
     if (scheduler->policy == FIFO)
     {
-        int queue_size = EnQueue(scheduler->queue, client_socket);
+        int queue_size = EnQueue(scheduler->buffer, client_socket);
+        if (queue_size == QUEUE_ERROR)
+        {
+            printf("\n[WARN][5XX]: queue size error\n");
+        }
         scheduler->curr_size++;
         printf("\n[INFO]:ScheduleNewRequest QueueSize: %d\n", queue_size);
     }
 }
 
-int *PickRequest(Scheduler *scheduler)
+int deQueueRequest(Scheduler *scheduler)
 {
-    int *client_socket = NULL;
+    int client_socket = -1;
     if (scheduler->policy == FIFO)
     {
-        client_socket = DeQueue(scheduler->queue);
+        client_socket = DeQueue(scheduler->buffer);
     }
     scheduler->curr_size--;
-    printf("\n[INFO]:ScheduleNewRequest QueueSize: %d\n", scheduler->curr_size);
+    printf("\n[INFO]: ScheduleNewRequest QueueSize: %d\n", scheduler->curr_size);
     return client_socket;
 }
 
-bool IsSchedulerFull(Scheduler *scheduler)
+bool isSchedulerFull(Scheduler *scheduler)
 {
     return scheduler->curr_size == scheduler->buffer_size;
 }
 
-bool IsSchedulerEmpty(Scheduler *scheduler)
+bool isSchedulerEmpty(Scheduler *scheduler)
 {
     return scheduler->curr_size == 0;
 }
 
-void AddToScheduler(Scheduler *scheduler, ThreadPool *workers, int *client_socket)
+void ScheduleNewRequest(Scheduler *scheduler, ThreadPool *workers, int client_socket)
 {
 
     int mutex_lock = pthread_mutex_lock(&workers->LOCK);
     if (mutex_lock != 0)
     {
-        printf("\n[WARN][5XX]: AddToScheduler mutex_lock \n");
+        printf("\n[WARN][5XX]: ScheduleNewRequest mutex_lock \n");
     }
-    while (IsSchedulerFull(scheduler))
+    while (isSchedulerFull(scheduler))
     {
         int cond_wait = pthread_cond_wait(&workers->FILL, &workers->LOCK);
         if (cond_wait != 0)
         {
-            printf("\n[WARN][5XX]: AddToScheduler cond_wait \n");
+            printf("\n[WARN][5XX]: ScheduleNewRequest cond_wait \n");
         }
     }
-    ScheduleNewRequest(scheduler, client_socket);
+    scheduleNewRequest(scheduler, client_socket);
     int empty_signal = pthread_cond_signal(&workers->EMPTY);
     if (empty_signal != 0)
     {
-        printf("\n[WARN][5XX]: AddToScheduler empty_signal \n");
+        printf("\n[WARN][5XX]: ScheduleNewRequest empty_signal \n");
     }
     int lock_signal = pthread_mutex_unlock(&workers->LOCK);
     if (lock_signal != 0)
     {
-        printf("\n[WARN][5XX]: AddToScheduler lock_signal \n");
+        printf("\n[WARN][5XX]: ScheduleNewRequest lock_signal \n");
     }
 }
 
-int *GetFromScheduler(Scheduler *scheduler, ThreadPool *workers)
+int AcceptRequest(Scheduler *scheduler, ThreadPool *workers)
 {
 
     int mutex_lock = pthread_mutex_lock(&workers->LOCK);
     if (mutex_lock != 0)
     {
-        printf("\n GetFromScheduler mutex_lock \n");
+        printf("\n AcceptRequest mutex_lock \n");
     }
-    while (IsSchedulerEmpty(scheduler))
+    while (isSchedulerEmpty(scheduler))
     {
         int thread_wait = pthread_cond_wait(&workers->EMPTY, &workers->LOCK);
         if (thread_wait != 0)
         {
-            printf("\n GetFromScheduler thread_wait \n");
+            printf("\n AcceptRequest thread_wait \n");
         }
     }
-    int *client_socket = PickRequest(scheduler);
+    int client_socket = deQueueRequest(scheduler);
 
-    printf("Request Scheduled for FD: %d\n", *client_socket);
+    printf("Request Scheduled for FD: %d\n", client_socket);
 
     int signal_fill = pthread_cond_signal(&workers->FILL);
     if (signal_fill != 0)
     {
-        printf("\n GetFromScheduler signal_fill \n");
+        printf("\n AcceptRequest signal_fill \n");
     }
     int signal_lock = pthread_mutex_unlock(&workers->LOCK);
     if (signal_lock != 0)
     {
-        printf("\n GetFromScheduler signal_lock \n");
+        printf("\n AcceptRequest signal_lock \n");
     }
     return client_socket;
 }
 
 void FreeScheduler(Scheduler *scheduler)
 {
-    if (scheduler->queue != NULL)
+    if (scheduler->buffer != NULL)
     {
-        FreeQueue(scheduler->queue);
+        FreeQueue(scheduler->buffer);
     }
     free(scheduler);
 }

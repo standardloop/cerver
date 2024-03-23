@@ -87,15 +87,7 @@ void CerverStart(HTTPCerver *cerver)
             printf("[FATAL]: Couldn't accept connections on socket?");
             exit(EXIT_FAILURE);
         }
-        int *pClient = malloc(sizeof(int));
-        if (pClient == NULL)
-        {
-            printf("\n[ERROR][5XX]: couldn't secure memory for socker a connection");
-            fflush(stdout);
-        }
-        *pClient = new_socket;
-        AddToScheduler(scheduler, thread_pool, pClient);
-        // close(new_socket);
+        ScheduleNewRequest(scheduler, thread_pool, new_socket);
     }
 }
 

@@ -1,16 +1,14 @@
 #ifndef WORKER_H
 #define WORKER_H
 
-#include "./queue.h"
+#include "./queue/queue.h"
 #include "./scheduler.h"
 
 typedef struct
 {
-
     Scheduler *scheduler;
     ThreadPool *workers;
-    int num_request;
-
+    int worker_number;
 } ThreadArg;
 
 void *ThreadWorker(void *arg);

@@ -3,15 +3,15 @@
 #include <pthread.h>
 
 #include "./scheduler.h"
-#include "./queue.h"
+#include "./queue/queue.h"
 #include "./worker.h"
 
 ThreadPool *InitThreadPool(int num_threads)
 {
-
     ThreadPool *workers = (ThreadPool *)malloc(sizeof(ThreadPool));
     if (workers == NULL)
     {
+        printf("\n");
         return NULL;
     }
     workers->num_threads = num_threads;
@@ -51,7 +51,7 @@ void StartThreads(Scheduler *scheduler, ThreadPool *workers)
         {
             arg->workers = workers;
             arg->scheduler = scheduler;
-            arg->num_request = i;
+            arg->worker_number = i;
             int check_thread = pthread_create(&workers->pool[i], NULL, ThreadWorker, arg);
             if (check_thread != 0)
             {

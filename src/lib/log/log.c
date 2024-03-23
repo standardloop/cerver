@@ -1,11 +1,12 @@
 #include "log.h"
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdio.h>
 
-void Log(enum LogLevels level)
+void Log(enum LogLevels level, bool flush)
 {
     bool print = true;
-    char *code = NULL;
+    // char *code = NULL;
     switch (level)
     {
     case FATAL:

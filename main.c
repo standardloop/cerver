@@ -1,25 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "./lib/cerver/cerver.h"
+#include "./src/lib/cerver.h"
 
 // int main(int argc, char const *argv[])
 int main()
 {
-
     /*
         parse argc/argv and environment
         char *my_env_var = getenv("PORT");
     */
-
     int port = 8080;
+    int num_threads = 10;
+    int buffer_size = 100;
 
-    /*
-        Setup Threads
-    */
-    HTTPCerver *server = CerverInit(port, 10, 10);
+    HTTPCerver *server = CerverInit(port, num_threads, buffer_size);
     CerverStart(server);
-
     /*
 
         Setup Paths here

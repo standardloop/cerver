@@ -21,29 +21,20 @@
 // User-Agent: curl/7.79.1
 // Accept: */*
 
-void HandleRequest(void *p_new_socket)
+void HandleRequest(int client_socket)
 {
-    if (p_new_socket == NULL)
-    {
-        printf("\n[FATAL][5XX]: p_new_socket is NULL :(\n");
-    }
-    int client_socket = *(int *)p_new_socket;
-    free(p_new_socket); // dont need anymore
-
     char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
-
     ssize_t valread;
     char buffer[BUFFER_SIZE];
-    // char *buffer = malloc(sizeof(char) * buffer_size); // no malloc here?
     valread = read(client_socket, buffer, sizeof(char) * BUFFER_SIZE);
     if (valread == 0)
     {
         printf("\n[FATAL]: Didn't read more than 0\n");
         close(client_socket);
     }
-
-    HttpRequest *request = CreateHttpRequest(buffer, BUFFER_SIZE); // pass valread here?
-    PrintHttpRequest(request);
+    HttpRequest *request = NULL;
+    // HttpRequest *request = CreateHttpRequest(buffer, BUFFER_SIZE); // pass valread here?
+    // PrintHttpRequest(request);
     if (request == NULL)
     {
         printf("\n[ERROR][4|5XX]: HttpRequest fail to parse\n");
@@ -53,7 +44,7 @@ void HandleRequest(void *p_new_socket)
         // create response
         write(client_socket, hello, strlen(hello));
     }
-    // free(buffer);
+    write(client_socket, hello, strlen(hello)); // FIXME TEMP
     FreeHttpRequest(request);
     close(client_socket);
 }
@@ -192,13 +183,15 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
 
 void FreeHttpRequest(HttpRequest *request)
 {
-    // free other sections first
+    if (request == NULL)
+    {
+        return;
+    }
     if (request->host != NULL)
     {
         free(request->host);
     }
     free(request);
-    return;
 }
 
 void PrintHttpRequest(HttpRequest *request)

@@ -38,5 +38,5 @@ CreateHttpRequest(char *, size_t);
 
 void FreeHttpRequest(HttpRequest *);
 void PrintHttpRequest(HttpRequest *);
-void HandleRequest(void *);
+void HandleRequest(int);
 #endif
