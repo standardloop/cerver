@@ -9,6 +9,7 @@ clean:
 build: main.c
 	$(CC) $(CC_FLAGS) main.c \
 	src/lib/cerver.c \
+	src/lib/logger.c \
 	src/lib/util/util.c \
 	src/lib/http/request/methods/methods.c \
 	src/lib/http/request/version/version.c \

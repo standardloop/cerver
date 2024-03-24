@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <strings.h>
-#include <stdio.h>      // perror
+#include <stdio.h>
 #include <sys/socket.h> // socket() bind() listen() accept() sockaddr
 #include <stdlib.h>     // EXIT_FAILURE
 #include <string.h>     // strlen()
@@ -10,11 +10,13 @@
 #include <stdbool.h>
 
 #include "./request.h"
-#include "./methods/methods.h"
+#include "./method/method.h"
 #include "./version/version.h"
 #include "./host/host.h"
 #include "./port/port.h"
 #include "../../util/util.h"
+
+#include "../../logger.h"
 
 // HEAD / HTTP/1.1
 // Host: localhost:8080
@@ -23,73 +25,40 @@
 
 void HandleRequest(int client_socket)
 {
-    char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+
     ssize_t valread;
     char buffer[BUFFER_SIZE];
     valread = read(client_socket, buffer, sizeof(char) * BUFFER_SIZE);
     if (valread == 0)
     {
-        printf("\n[FATAL]: Didn't read more than 0\n");
-        close(client_socket);
-    }
-    HttpRequest *request = NULL;
-    // HttpRequest *request = CreateHttpRequest(buffer, BUFFER_SIZE); // pass valread here?
-    // PrintHttpRequest(request);
-    if (request == NULL)
-    {
-        printf("\n[ERROR][4|5XX]: HttpRequest fail to parse\n");
+        (void)Log(ERROR, "[4XX]: Didn't read more than 0\n");
     }
     else
     {
-        // create response
-        write(client_socket, hello, strlen(hello));
-    }
-    write(client_socket, hello, strlen(hello)); // FIXME TEMP
-    FreeHttpRequest(request);
-    close(client_socket);
-}
-
-size_t howMuchToMoveToNewLine(char *buffer, size_t buffer_size)
-{
-    size_t char_count = 0;
-    char *temp_ptr = buffer;
-    if (*temp_ptr == '\n')
-    {
-        // printf("\n[ERROR]: received a newline at start in howMuchToMoveToNewLine\n");
-    }
-    while (*temp_ptr != '\n')
-    {
-        // //printf("\n[JOSH]: temp_ptr in howMuchToMoveToNewLine is: %c\n", *temp_ptr);
-        if (temp_ptr == NULL || *temp_ptr == '\0' || char_count >= buffer_size)
+        HttpRequest *request = CreateHttpRequest(buffer, BUFFER_SIZE); // pass valread here?
+        if (request == NULL)
         {
-            return ERROR_SIZE_T;
+            (void)Log(ERROR, "[4|5XX]:HttpRequest fail to parse\n");
         }
-        temp_ptr++;
-        char_count++;
+        // FIXME ELSE
+        char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+        write(client_socket, hello, strlen(hello));
+        FreeHttpRequest(request);
     }
-    temp_ptr = NULL;
-    return char_count;
+    close(client_socket);
 }
 
 HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
 {
-    printf("\n[INFO]: entering CreateHttpRequest");
-    fflush(stdout);
-    //(void)PrintBuffer(buffer);
-    char *buffer_start = buffer;
-    int line_num = 0;
-    size_t moved = 0;
-    if (buffer == NULL)
+    if (buffer == NULL || buffer_size == 0)
     {
-        printf("\n[ERROR][4XX]: buffer is NULL for CreateHttpRequest\n");
-        buffer = buffer_start;
+        (void)Log(ERROR, "[4XX]: buffer is NULL for CreateHttpRequest or buffer_size is 0\n");
         return NULL;
     }
     HttpRequest *request = malloc(sizeof(CreateHttpRequest));
     if (request == NULL)
     {
-        printf("\n[ERROR][5XX]: buffer is NULL for malloc in CreateHttpRequest\n");
-        buffer = buffer_start;
+        (void)Log(ERROR, "[5XX]: buffer is NULL for malloc in CreateHttpRequest\n");
         return NULL;
     }
     /*
@@ -101,83 +70,17 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     Upgrade: h2c
     HTTP2-Settings: AAMAAABkAAQCAAAAAAIAAAAA
     */
-
     // Run through buffer line by line
-    moved = howMuchToMoveToNewLine(buffer, buffer_size);
-    //(void)PrintBuffer(buffer);
 
-    if (buffer == NULL || moved == 0)
-    {
-        FreeHttpRequest(request);
-        buffer = buffer_start;
-        // printf("\n[ERROR]: couldn't move to the next line in the request: line_num: %d\n", line_num);
-        return NULL;
-    }
-    line_num++;
-    request->method = ParseRequestMethod(buffer, moved);
-    if (request->method == HttpFAKER)
-    {
-        FreeHttpRequest(request);
-        buffer = buffer_start;
-        // printf("\n[ERROR]: couldn't get a valid http reques method");
-        return NULL;
-    }
+    char *buffer_start = buffer;
+    // int line_num = 0;
+    // size_t moved = 0;
 
-    request->version = ParseHttpVersion(buffer, moved);
+    const char space = ' ';
+    char *space_pointer = strchr(buffer, space);
+    size_t suspected_http_method_length = (++space_pointer - buffer_start);
+    request->method = ParseRequestMethod(buffer_start, suspected_http_method_length);
 
-    if (request->version == ERROR_FLOAT)
-    {
-        FreeHttpRequest(request);
-        buffer = buffer_start;
-        // printf("\n[ERROR]: couldn't get a valid http version\n");
-        return NULL;
-    }
-    // //printf("\nVersion: %.1f", request->version);
-    // FIXME: dead memory
-    buffer++; // '\n'
-    buffer += moved;
-    moved = howMuchToMoveToNewLine(buffer, buffer_size);
-
-    if (buffer == NULL || moved == 0)
-    {
-        FreeHttpRequest(request);
-        buffer = buffer_start;
-        printf("\n[ERROR]: couldn't move to the next line in the request: line_num: %d\n", line_num);
-        return NULL;
-    }
-    // PrintBuffer(buffer);
-    request->host = ParseHost(buffer, moved);
-    if (request->host == NULL)
-    {
-        buffer = buffer_start;
-        printf("\n[ERROR][4XX]: couldn't get a valid host\n");
-        FreeHttpRequest(request);
-        return NULL;
-    }
-    request->port = ParsePort(buffer, moved);
-    if (request->port == ERROR_PORT)
-    {
-        buffer = buffer_start;
-        FreeHttpRequest(request);
-        printf("\n[ERROR][4XX]: couldn't get a valid port\n");
-        return NULL;
-    }
-    buffer += moved;
-    moved = howMuchToMoveToNewLine(buffer, buffer_size);
-    request->headers = NULL;
-
-    // FIXME what other request don't have a body
-    if (request->method == HttpGET || request->method == HttpHEAD)
-    {
-        // actually look for body
-        request->body = NULL;
-    }
-    else
-    {
-        request->body = NULL;
-    }
-    // FIXME free line by line but for now just reset it
-    buffer = buffer_start;
     return request;
 }
 
@@ -194,6 +97,7 @@ void FreeHttpRequest(HttpRequest *request)
     free(request);
 }
 
+// FIXME user logger here
 void PrintHttpRequest(HttpRequest *request)
 {
     if (request->method != HttpFAKER)

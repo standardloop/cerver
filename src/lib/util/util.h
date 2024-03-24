@@ -6,7 +6,7 @@
 #define NULL_CHAR '\0'  // WIP
 #define SPACE_CHAR ' '  // WIP
 #define SOCKET_ERROR -1 // WIP
-#define FOREVER 1
+#define ALWAYS 1
 
 void PrintBuffer(char *, size_t);
 

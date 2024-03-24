@@ -1,10 +1,10 @@
-#ifndef METHODS_H
-#define METHODS_H
+#ifndef METHOD_H
+#define METHOD_H
 
 #define MAX_METHOD_LENGTH 10
 #include <stdlib.h>
 #include <stdio.h>
-enum HttpMethods
+enum HttpMethod
 {
     HttpGET,
     HttpHEAD,
@@ -17,7 +17,7 @@ enum HttpMethods
     HttpPATCH,
     HttpFAKER,
 };
-char *HttpMethodToStr(enum HttpMethods);
-enum HttpMethods HttpStrToMethod(char *);
-enum HttpMethods ParseRequestMethod(char *, size_t);
+char *HttpMethodToStr(enum HttpMethod);
+enum HttpMethod HttpStrToMethod(char *);
+enum HttpMethod ParseRequestMethod(char *, size_t);
 #endif

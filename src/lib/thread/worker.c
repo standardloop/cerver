@@ -10,7 +10,7 @@
 void *ThreadWorker(void *arg)
 {
     ThreadArg *args = (ThreadArg *)arg;
-    while (FOREVER)
+    while (ALWAYS)
     {
         int client_socket = AcceptRequest(args->scheduler, args->workers);
         HandleRequest(client_socket);

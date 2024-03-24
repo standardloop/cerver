@@ -1,4 +1,4 @@
-#include <stdio.h>      // perror
+#include <stdio.h>
 #include <sys/socket.h> // socket() bind() listen() accept() sockaddr
 #include <stdlib.h>     // EXIT_FAILURE
 #include <string.h>     // strlen()
@@ -10,6 +10,7 @@
 #include "cerver.h"
 #include "./util/util.h"
 #include "./thread/scheduler.h"
+#include "./logger.h"
 
 HTTPCerver *InitCerver(int port, int num_threads, int queue_buffer_size)
 {
@@ -20,13 +21,11 @@ HTTPCerver *InitCerver(int port, int num_threads, int queue_buffer_size)
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
-        perror("In socket");
-        exit(EXIT_FAILURE);
+        (void)Log(FATAL, "cannot create socker file descriptor\n");
     }
     if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0)
     {
-        perror("setsockopt");
-        exit(EXIT_FAILURE);
+        (void)Log(FATAL, "couldn't set socket options\n");
     }
 
     address.sin_family = AF_INET;
@@ -35,23 +34,19 @@ HTTPCerver *InitCerver(int port, int num_threads, int queue_buffer_size)
 
     memset(address.sin_zero, '\0', sizeof address.sin_zero);
 
-    // TODO: re-use options for this
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
     {
-        perror("In bind");
-        exit(EXIT_FAILURE);
+        (void)Log(FATAL, "Couldnt bind socket");
     }
     if (listen(server_fd, 10) < 0)
     {
-        perror("In listen");
-        exit(EXIT_FAILURE);
+        (void)Log(FATAL, "couldn't listen on socket\n");
     }
 
     HTTPCerver *cerver = (HTTPCerver *)malloc(sizeof(HTTPCerver));
     if (cerver == NULL)
     {
-        perror("cannot allocate memory for cerver");
-        exit(EXIT_FAILURE);
+        (void)Log(FATAL, "cannot allocate memory for cerver\n");
     }
     cerver->server_fd = server_fd;
     cerver->address = address;
@@ -71,26 +66,26 @@ void StartCerver(HTTPCerver *cerver)
     Scheduler *scheduler = InitScheduler(FIFO, cerver->queue_buffer_size);
     if (scheduler == NULL)
     {
-        printf("[FATAL][5XX]: Couldn't allocate memory to scheduler");
-        exit(EXIT_FAILURE);
+        (void)Log(FATAL, "[5XX]: Couldn't allocate memory to scheduler\n");
     }
 
     ThreadPool *thread_pool = InitThreadPool(cerver->num_threads);
     if (thread_pool == NULL)
     {
-        printf("[FATAL][5XX]: Couldn't allocate memory to thread_pool");
-        exit(EXIT_FAILURE);
+        (void)Log(FATAL, "[5XX]: Couldn't allocate memory to thread_pool\n");
     }
     StartThreads(scheduler, thread_pool);
 
-    while (FOREVER)
+    while (ALWAYS)
     {
         if ((new_socket = accept(cerver->server_fd, (struct sockaddr *)&cerver->address, (socklen_t *)&cerver->addrlen)) < 0)
         {
-            printf("[FATAL]: Couldn't accept connections on socket?");
-            exit(EXIT_FAILURE);
+            (void)Log(ERROR, "[5XX]: Couldn't accect connections on socket\n");
         }
-        ScheduleRequestToBeHandled(scheduler, thread_pool, new_socket);
+        else
+        {
+            ScheduleRequestToBeHandled(scheduler, thread_pool, new_socket);
+        }
     }
     FreeThreadPool(thread_pool);
     FreeScheduler(scheduler);
@@ -107,8 +102,7 @@ void StartCerver(HTTPCerver *cerver)
 //     bytes_read = read(client_socket, buffer, BUFFER_SIZE);
 //     if (bytes_read < 0)
 //     {
-//         perror("fai");
-//         exit(EXIT_FAILURE);
+//         (void)Log(FATAL, "cannot allocate memory for cerver\n");
 //     }
 
 //     sscanf(buffer, "GET %s HTTP/1.1\r\n", filename);

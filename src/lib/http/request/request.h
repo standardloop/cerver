@@ -4,7 +4,8 @@
 #define BUFFER_SIZE 1024
 #define MAX_LINE_LENGTH 50
 #define ERROR_SIZE_T 0
-#include "./methods/methods.h"
+
+#include "./method/method.h"
 
 /*
 HEAD / HTTP/1.1
@@ -25,7 +26,7 @@ HTTP2-Settings: AAMAAABkAAQCAAAAAAIAAAAA
 
 typedef struct
 {
-    enum HttpMethods method;
+    enum HttpMethod method;
     float version;  // example: 1.1 // FIXME make a char* instead?
     char *host;     // localhost
     int port;       // 8080

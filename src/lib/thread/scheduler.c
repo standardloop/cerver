@@ -42,7 +42,7 @@ void scheduleRequestInQueue(Scheduler *scheduler, int client_socket)
             printf("\n[WARN][5XX]: queue size error\n");
         }
         scheduler->curr_size++;
-        printf("\n[INFO]: scheduleRequestInQueue QueueSize: %d\n", queue_size);
+        // printf("\n[INFO]: scheduleRequestInQueue QueueSize: %d\n", queue_size);
     }
 }
 
@@ -54,7 +54,7 @@ int deQueueRequest(Scheduler *scheduler)
         client_socket = DeQueue(scheduler->buffer);
     }
     scheduler->curr_size--;
-    printf("\n[INFO]: deQueueRequest QueueSize: %d\n", scheduler->curr_size);
+    // printf("\n[INFO]: deQueueRequest QueueSize: %d\n", scheduler->curr_size);
     return client_socket;
 }
 
@@ -114,7 +114,7 @@ int AcceptRequest(Scheduler *scheduler, ThreadPool *workers)
     }
     int client_socket = deQueueRequest(scheduler);
 
-    printf("Request Scheduled for FD: %d\n", client_socket);
+    // printf("Request Scheduled for FD: %d\n", client_socket);
 
     int signal_fill = pthread_cond_signal(&workers->FILL);
     if (signal_fill != 0)

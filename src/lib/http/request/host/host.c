@@ -5,9 +5,6 @@
 //: localhost:
 char *substrBetweenColons(char *start, char *end, size_t buffer_size)
 {
-    // printf("\n[INFO]: entering substrBetweenColons\n");
-    //(void)PrintBuffer(start, buffer_size);
-    //
     if (*(start) != ':')
     {
         printf("\n[ERROR][4XX]: host is NULL substrBetweenColons\n");
