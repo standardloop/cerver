@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include "./queue.h"
+#include "../../logger.h"
+
+bool isQueueFull(Queue *);
 
 Queue *InitQueue(int capacity)
 {
@@ -20,20 +24,31 @@ Queue *InitQueue(int capacity)
 
     return queue;
 }
+
+bool isQueueFull(Queue *queue)
+{
+    return (queue->size == queue->max_size);
+}
+
+bool isQueueEmpty(Queue *queue)
+{
+    return (queue->size == 0);
+}
+
 int EnQueue(Queue *queue, int client_socket)
 {
-    if ((queue->size + 1) > queue->max_size)
+    if (isQueueFull(queue))
     {
-        printf("\n[WARN][5XX]: queue is full\n");
-        return queue->size;
+        (void)Log(WARN, "queue is full\n");
+        return QUEUE_SIZE_ERROR;
     }
 
     Node *node = malloc(sizeof(Node));
 
     if (node == NULL)
     {
-        printf("\n[WARN][5XX]: could not allocate space for a new node\n");
-        return queue->size;
+        (void)Log(WARN, "[5XX]: could not allocate space for a new node\n");
+        return QUEUE_SIZE_ERROR;
     }
 
     node->client_socket = client_socket;
@@ -57,9 +72,9 @@ int EnQueue(Queue *queue, int client_socket)
 
 int DeQueue(Queue *queue)
 {
-    if (queue->size == 0)
+    if (isQueueEmpty(queue))
     {
-        return QUEUE_ERROR;
+        return QUEUE_SIZE_ERROR;
     }
 
     Node *tmp = NULL;

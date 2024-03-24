@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define QUEUE_ERROR -1
+#define QUEUE_SIZE_ERROR -1
 
 typedef struct node
 {

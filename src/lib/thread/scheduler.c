@@ -40,7 +40,7 @@ void scheduleRequestInQueue(Scheduler *scheduler, int client_socket)
     if (scheduler->policy == FIFO)
     {
         int queue_size = EnQueue(scheduler->buffer, client_socket);
-        if (queue_size == QUEUE_ERROR)
+        if (queue_size == QUEUE_SIZE_ERROR)
         {
             printf("\n[WARN][5XX]: queue size error\n");
         }
