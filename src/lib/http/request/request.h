@@ -5,7 +5,7 @@
 #define MAX_LINE_LENGTH 50
 #define ERROR_SIZE_T 0
 
-#include "./method/method.h"
+#include "./parser/method.h"
 
 /*
 HEAD / HTTP/1.1

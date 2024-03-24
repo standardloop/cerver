@@ -10,7 +10,7 @@
 #include <stdbool.h>
 
 #include "./request.h"
-#include "./method/method.h"
+#include "./parser/method.h"
 #include "./version/version.h"
 #include "./host/host.h"
 #include "./port/port.h"
