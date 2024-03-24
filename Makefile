@@ -11,7 +11,7 @@ build: main.c
 	src/lib/cerver.c \
 	src/lib/logger.c \
 	src/lib/util/util.c \
-	src/lib/http/request/methods/methods.c \
+	src/lib/http/request/method/method.c \
 	src/lib/http/request/version/version.c \
 	src/lib/http/request/host/host.c \
 	src/lib/http/request/port/port.c \

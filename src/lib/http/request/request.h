@@ -35,7 +35,7 @@ typedef struct
 } HttpRequest;
 
 HttpRequest *
-CreateHttpRequest(char *, size_t);
+ParseHttpRequest(char *, size_t);
 
 void FreeHttpRequest(HttpRequest *);
 void PrintHttpRequest(HttpRequest *);

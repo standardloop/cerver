@@ -35,7 +35,7 @@ void HandleRequest(int client_socket)
     }
     else
     {
-        HttpRequest *request = CreateHttpRequest(buffer, BUFFER_SIZE); // pass valread here?
+        HttpRequest *request = ParseHttpRequest(buffer, BUFFER_SIZE); // pass valread here?
         if (request == NULL)
         {
             (void)Log(ERROR, "[4|5XX]:HttpRequest fail to parse\n");
@@ -48,17 +48,17 @@ void HandleRequest(int client_socket)
     close(client_socket);
 }
 
-HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
+HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
 {
     if (buffer == NULL || buffer_size == 0)
     {
-        (void)Log(ERROR, "[4XX]: buffer is NULL for CreateHttpRequest or buffer_size is 0\n");
+        (void)Log(ERROR, "[4XX]: buffer is NULL for ParseHttpRequest or buffer_size is 0\n");
         return NULL;
     }
-    HttpRequest *request = malloc(sizeof(CreateHttpRequest));
+    HttpRequest *request = malloc(sizeof(ParseHttpRequest));
     if (request == NULL)
     {
-        (void)Log(ERROR, "[5XX]: buffer is NULL for malloc in CreateHttpRequest\n");
+        (void)Log(ERROR, "[5XX]: buffer is NULL for malloc in ParseHttpRequest\n");
         return NULL;
     }
     /*
@@ -73,14 +73,14 @@ HttpRequest *CreateHttpRequest(char *buffer, size_t buffer_size)
     // Run through buffer line by line
 
     char *buffer_start = buffer;
-    // int line_num = 0;
-    // size_t moved = 0;
-
     const char space = ' ';
     char *space_pointer = strchr(buffer, space);
-    size_t suspected_http_method_length = (++space_pointer - buffer_start);
+    size_t suspected_http_method_length = (space_pointer - buffer_start);
     request->method = ParseRequestMethod(buffer_start, suspected_http_method_length);
-
+    if (request->method == HttpFAKER)
+    {
+        Log(WARN, "[4XX]: Couldn't parser HTTP Request method\n");
+    }
     return request;
 }
 
@@ -102,9 +102,7 @@ void PrintHttpRequest(HttpRequest *request)
 {
     if (request->method != HttpFAKER)
     {
-        char *method_string = HttpMethodToStr(request->method);
-        printf("[DEBUG][HTTPMETHOD]: %s\n", method_string);
-        free(method_string);
+        printf("[DEBUG][HTTPMETHOD]: %s\n", HttpMethodToStr(request->method));
     }
     if (request->version != ERROR_FLOAT)
     {

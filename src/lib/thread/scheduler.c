@@ -3,17 +3,19 @@
 #include <pthread.h>
 #include <stdbool.h>
 
+#include "./../logger.h"
+
 #include "./scheduler.h"
 #include "./queue/queue.h"
 #include "./worker.h"
 
 Scheduler *InitScheduler(enum ThreadPolicy policy, int buffer_size)
 {
-    printf("\n[INFO]: starting InitScheduler!\n");
+    (void)Log(INFO, "starting InitScheduler!\n");
     Scheduler *scheduler = (Scheduler *)malloc(sizeof(Scheduler));
     if (scheduler == NULL)
     {
-        printf("\n[FATAL]: cannot InitScheduler\n");
+        (void)Log(FATAL, "cannot InitScheduler\n");
         return NULL;
     }
     scheduler->policy = policy;
@@ -25,7 +27,8 @@ Scheduler *InitScheduler(enum ThreadPolicy policy, int buffer_size)
         scheduler->buffer = InitQueue(buffer_size);
         if (scheduler->buffer == NULL)
         {
-            printf("\n[FATAL]: cannot InitQueue\n");
+            free(scheduler);
+            (void)Log(FATAL, "cannot InitQueue\n");
             return NULL;
         }
     }

@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <strings.h>
 
-#include "methods.h"
+#include "method.h"
 #include "./../../../util/util.h"
+#include "./../../../logger.h"
 
-// char *HttpMethodToStr(enum HttpMethods method)
+// char *HttpMethodToStr(enum HttpMethod method)
 // {
 //     char *method_str = NULL;
 //     size_t length = 0;
@@ -91,7 +92,7 @@
 // }
 
 // TODO: do I need to allocate memory for this?
-char *HttpMethodToStr(enum HttpMethods method)
+char *HttpMethodToStr(enum HttpMethod method)
 {
     switch (method)
     {
@@ -119,8 +120,9 @@ char *HttpMethodToStr(enum HttpMethods method)
     }
 }
 
-enum HttpMethods HttpStrToMethod(char *method)
+enum HttpMethod HttpStrToMethod(char *method)
 {
+    // QUESTION, should it be "GET\0"?
     if (strcmp(method, "GET") == 0)
     {
         return HttpGET;
@@ -160,15 +162,26 @@ enum HttpMethods HttpStrToMethod(char *method)
     return HttpFAKER;
 }
 
-enum HttpMethods
+enum HttpMethod
 ParseRequestMethod(char *buffer, size_t buffer_size)
 {
-    printf("[TRACE]: entering ParseRequestMethod\n");
     if (buffer_size == 0 || buffer_size > MAX_METHOD_LENGTH)
     {
-        printf("\n[ERROR][4XX]: buffer_size is 0\n");
+        (void)Log(WARN, "[4XX]: cannot parse HTTP Method\n");
         return HttpFAKER;
     }
-    PrintBuffer(buffer, buffer_size);
-    return HttpFAKER;
+
+    size_t http_method_size = buffer_size + 1; // '\0'
+    char suspected_http_method_str[http_method_size];
+    suspected_http_method_str[http_method_size] = '\0';
+
+    size_t char_count = 0;
+    while (char_count < buffer_size && *buffer != '\n' && *buffer != ' ' && *buffer != '\0' && *buffer != '/')
+    {
+        suspected_http_method_str[char_count] = *buffer;
+        buffer++;
+        char_count++;
+    }
+    enum HttpMethod method = HttpStrToMethod(suspected_http_method_str);
+    return method;
 }

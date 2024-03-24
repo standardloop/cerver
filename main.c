@@ -14,6 +14,6 @@ int main()
 
     HTTPCerver *server = InitCerver(port, num_threads, buffer_size);
     // AddPathCerver
-    StartCerver(server);
+    (void)StartCerver(server);
     return EXIT_SUCCESS;
 }
