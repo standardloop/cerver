@@ -1,1 +1,0 @@
-# Cerver CLI (WIP)

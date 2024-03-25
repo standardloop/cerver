@@ -176,7 +176,7 @@ ParseRequestMethod(char *buffer, size_t buffer_size)
     suspected_http_method_str[http_method_size] = '\0';
 
     size_t char_count = 0;
-    while (char_count < buffer_size && *buffer != '\n' && *buffer != ' ' && *buffer != '\0' && *buffer != '/')
+    while (char_count < buffer_size && *buffer != '\n' && *buffer != SPACE_CHAR && *buffer != '\0' && *buffer != '/')
     {
         suspected_http_method_str[char_count] = *buffer;
         buffer++;

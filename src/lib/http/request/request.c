@@ -10,7 +10,10 @@
 #include <stdbool.h>
 
 #include "./request.h"
+
 #include "./parser/method.h"
+#include "./parser/path.h"
+
 #include "./version/version.h"
 #include "./host/host.h"
 #include "./port/port.h"
@@ -35,7 +38,8 @@ void HandleRequest(int client_socket)
     }
     else
     {
-        HttpRequest *request = ParseHttpRequest(buffer, BUFFER_SIZE); // pass valread here?
+        // printf(c, buffer);//DELETE
+        HttpRequest *request = ParseHttpRequest(buffer, valread); // pass valread here?
         if (request == NULL)
         {
             (void)Log(ERROR, "[4|5XX]:HttpRequest fail to parse\n");
@@ -50,12 +54,13 @@ void HandleRequest(int client_socket)
 
 HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
 {
+    // return NULL; // prove if server will crash or not XD
     if (buffer == NULL || buffer_size == 0)
     {
         (void)Log(ERROR, "[4XX]: buffer is NULL for ParseHttpRequest or buffer_size is 0\n");
         return NULL;
     }
-    HttpRequest *request = malloc(sizeof(ParseHttpRequest));
+    HttpRequest *request = malloc(sizeof(HttpRequest));
     if (request == NULL)
     {
         (void)Log(ERROR, "[5XX]: buffer is NULL for malloc in ParseHttpRequest\n");
@@ -73,13 +78,35 @@ HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
     // Run through buffer line by line
 
     char *buffer_start = buffer;
-    const char space = ' ';
-    char *space_pointer = strchr(buffer, space);
+    char *space_pointer = strchr(buffer, SPACE_CHAR);
+    if (*space_pointer != SPACE_CHAR)
+    {
+        Log(WARN, "[4XX]: space_point is not a space!!!!!\n");
+        return request;
+    }
     size_t suspected_http_method_length = (space_pointer - buffer_start);
+
     request->method = ParseRequestMethod(buffer_start, suspected_http_method_length);
     if (request->method == HttpFAKER)
     {
         Log(WARN, "[4XX]: Couldn't parser HTTP Request method\n");
+        return request;
+    }
+
+    buffer = buffer_start;
+    char *space_pointer_again = strchr((space_pointer + 1), SPACE_CHAR); // +1 because pointer is on space
+    if ((*space_pointer_again != SPACE_CHAR) && (*space_pointer != SPACE_CHAR))
+    {
+        (void)Log(WARN, "error finding appropriate amount of spaces for path+query");
+    }
+    size_t suspected_path_length = (space_pointer_again - space_pointer);
+
+    char *path = ParseRequestPath(space_pointer + 1, suspected_path_length);
+    request->path_and_query = path;
+    if (request->path_and_query == NULL)
+    {
+        Log(WARN, "[4XX]: Couldn't parser HTTP Request path/query\n");
+        return request;
     }
     return request;
 }
@@ -89,6 +116,10 @@ void FreeHttpRequest(HttpRequest *request)
     if (request == NULL)
     {
         return;
+    }
+    if (request->path_and_query != NULL)
+    {
+        free(request->path_and_query);
     }
     if (request->host != NULL)
     {

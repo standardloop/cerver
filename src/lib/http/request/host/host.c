@@ -12,7 +12,7 @@ char *substrBetweenColons(char *start, char *end, size_t buffer_size)
     }
     // localhost:
     start++;
-    while (*(start) == ' ')
+    while (*(start) == SPACE_CHAR)
     {
         start++;
         buffer_size--;

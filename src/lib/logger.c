@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 static enum LogLevel log_level = FATAL;
 
@@ -32,7 +33,14 @@ void Log(enum LogLevel level, char *message)
     switch (level)
     {
     case FATAL:
-        printf("\n[FATAL]: %s", message);
+        if (strlen(message) == 0)
+        {
+            printf("\n[FATAL]: crash on purpose\n");
+        }
+        else
+        {
+            printf("\n[FATAL]: %s", message);
+        }
         exit(EXIT_FAILURE);
     case ERROR:
         printf("\n[ERROR]: %s", message);
