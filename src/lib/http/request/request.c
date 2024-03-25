@@ -11,12 +11,12 @@
 
 #include "./request.h"
 
-#include "./parser/method.h"
 #include "./parser/path.h"
+#include "./parser/port.h"
+#include "./parser/host.h"
+#include "./parser/method.h"
 #include "./parser/version.h"
 
-#include "./host/host.h"
-#include "./port/port.h"
 #include "../../util/util.h"
 
 #include "../../logger.h"
@@ -137,6 +137,27 @@ HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
 
     size_t expected_verion_length = carriage_return_ptr - (second_space_pointer + 1);
     request->version = ParseHttpVersion((second_space_pointer + 1), expected_verion_length);
+    if (request->version == NULL)
+    {
+        (void)Log(WARN, "[4XX]: couldn't parser http version\n");
+        return request;
+    }
+
+    /*
+    *********************************************************************************
+        HOST
+    *********************************************************************************
+    */
+    size_t expected_host_length = buffer_size;
+    request->host = ParseHost(buffer, expected_host_length);
+    /*
+    *********************************************************************************
+        PORT
+    *********************************************************************************
+    */
+
+    size_t expected_port_length = buffer_size;
+    request->port = ParsePort(buffer, expected_port_length);
 
     return request;
 }

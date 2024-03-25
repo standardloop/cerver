@@ -4,4 +4,5 @@
 #include <stdlib.h>
 
 char *ParseHost(char *, size_t);
+
 #endif

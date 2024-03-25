@@ -28,11 +28,11 @@ typedef struct
 {
     enum HttpMethod method;
     char *path_and_query; // FIXME, seperate this at some point
-    char *version;
-    char *host;     // localhost
-    int port;       // 8080
-    char **headers; // FIXM: headers package?
-    char *body;     // FIXME: optional? maybe **
+    char *version;        // 1.1
+    char *host;           // localhost
+    int port;             // 8080
+    char **headers;       // FIXM: headers package?
+    char *body;           // FIXME: optional? maybe **
 } HttpRequest;
 
 HttpRequest *
