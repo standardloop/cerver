@@ -37,7 +37,6 @@ void HandleRequest(int client_socket)
     }
     else
     {
-        // printf(c, buffer);//DELETE
         HttpRequest *request = ParseHttpRequest(buffer, valread); // pass valread here?
         if (request == NULL)
         {
@@ -122,9 +121,21 @@ HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
         VERSION
     *********************************************************************************
     */
+    // HTTP/1.1\r\n
     buffer = buffer_start;
-    char *newline = strchr(second_space_pointer, NEWLINE_CHAR); // +1 because pointer is on space
-    size_t expected_verion_length = newline - space_pointer;
+    char *carriage_return_ptr = strchr(second_space_pointer, CARRIAGE_RETURN_CHAR);
+    if (*carriage_return_ptr != CARRIAGE_RETURN_CHAR)
+    {
+        (void)Log(WARN, "[4XX]: cannot find carriage return\n");
+        return request;
+    }
+    if (*second_space_pointer != SPACE_CHAR)
+    {
+        (void)Log(WARN, "[4XX]: found carriage return but second space error\n");
+        return request;
+    }
+
+    size_t expected_verion_length = carriage_return_ptr - (second_space_pointer + 1);
     request->version = ParseHttpVersion((second_space_pointer + 1), expected_verion_length);
 
     return request;

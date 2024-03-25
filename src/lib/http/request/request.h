@@ -24,7 +24,6 @@ Upgrade: h2c
 HTTP2-Settings: AAMAAABkAAQCAAAAAAIAAAAA
 */
 
-
 typedef struct
 {
     enum HttpMethod method;

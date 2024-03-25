@@ -14,7 +14,6 @@ char *ParseRequestPath(char *buffer, size_t buffer_size)
         return NULL;
     }
 
-
     char *buffer_start = buffer;
 
     size_t http_path_size = buffer_size;

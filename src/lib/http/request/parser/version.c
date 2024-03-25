@@ -23,17 +23,15 @@ char *ParseHttpVersion(char *buffer, size_t buffer_size)
         return NULL;
     }
 
-    size_t version_prefix_size = (slash_point - 1) - buffer;
-
+    size_t version_prefix_size = (slash_point + 1) - buffer;
     if (version_prefix_size != strlen(HTTP_VERSION_PREFIX))
     {
-        (void)Log(WARN, "[JOSH-JOSH]\n");
-        (void)Log(WARN, "[4XX]: cannot parse HTTP version slash not found\n");
+        (void)Log(WARN, "[4XX]: HTTP version prefix no good\n");
         return NULL;
     }
 
     char *buffer_start = slash_point + 1;
-    size_t http_version_size = (slash_point + 1) - buffer;
+    size_t http_version_size = buffer_size - ((slash_point + 1) - buffer);
 
     char *http_version_str = malloc(sizeof(char) * http_version_size);
     if (http_version_str == NULL)
@@ -41,14 +39,27 @@ char *ParseHttpVersion(char *buffer, size_t buffer_size)
         (void)Log(WARN, "[4XX]: cannot parse HTTP version memory error\n");
         return NULL;
     }
+
     char *http_version_str_start = http_version_str;
     *(http_version_str + http_version_size) = '\0';
 
     size_t char_count = 0;
-    while (char_count < buffer_size && *buffer != '\0')
+    buffer = buffer_start;
+    while (char_count < http_version_size && *buffer != '\0')
     {
+        *http_version_str = *buffer;
+        buffer++;
+        http_version_str++;
         char_count++;
     }
 
-    return NULL;
+    buffer = buffer_start;
+    http_version_str = http_version_str_start;
+    if (*(http_version_str + http_version_size) != '\0')
+    {
+        (void)Log(ERROR, "http path string was not null terminated\n");
+        free(http_version_str);
+        return NULL;
+    }
+    return http_version_str;
 }
