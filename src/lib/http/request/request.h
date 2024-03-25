@@ -24,15 +24,16 @@ Upgrade: h2c
 HTTP2-Settings: AAMAAABkAAQCAAAAAAIAAAAA
 */
 
+
 typedef struct
 {
     enum HttpMethod method;
     char *path_and_query; // FIXME, seperate this at some point
-    float version;        // example: 1.1 // FIXME make a char* instead?
-    char *host;           // localhost
-    int port;             // 8080
-    char **headers;       // FIXM: headers package?
-    char *body;           // FIXME: optional? maybe **
+    char *version;
+    char *host;     // localhost
+    int port;       // 8080
+    char **headers; // FIXM: headers package?
+    char *body;     // FIXME: optional? maybe **
 } HttpRequest;
 
 HttpRequest *

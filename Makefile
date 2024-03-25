@@ -13,7 +13,7 @@ build: main.c
 	src/lib/util/util.c \
 	src/lib/http/request/parser/method.c \
 	src/lib/http/request/parser/path.c \
-	src/lib/http/request/version/version.c \
+	src/lib/http/request/parser/version.c \
 	src/lib/http/request/host/host.c \
 	src/lib/http/request/port/port.c \
 	src/lib/http/request/request.c \

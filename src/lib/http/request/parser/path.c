@@ -13,12 +13,11 @@ char *ParseRequestPath(char *buffer, size_t buffer_size)
         (void)Log(WARN, "[4XX]: cannot parse HTTP path\n");
         return NULL;
     }
-    // printf("\nJOSH: %s\n", buffer);
-    // (void)Log(FATAL, "");
+
 
     char *buffer_start = buffer;
 
-    size_t http_path_size = buffer_size + 1; // '\0'
+    size_t http_path_size = buffer_size;
     char *suspected_http_path_str = malloc(sizeof(char) * http_path_size);
     if (suspected_http_path_str == NULL)
     {

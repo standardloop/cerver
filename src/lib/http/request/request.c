@@ -13,8 +13,8 @@
 
 #include "./parser/method.h"
 #include "./parser/path.h"
+#include "./parser/version.h"
 
-#include "./version/version.h"
 #include "./host/host.h"
 #include "./port/port.h"
 #include "../../util/util.h"
@@ -28,7 +28,6 @@
 
 void HandleRequest(int client_socket)
 {
-
     ssize_t valread;
     char buffer[BUFFER_SIZE];
     valread = read(client_socket, buffer, sizeof(char) * BUFFER_SIZE);
@@ -54,7 +53,8 @@ void HandleRequest(int client_socket)
 
 HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
 {
-    // return NULL; // prove if server will crash or not XD
+    // printf("\n%s\n", buffer);
+    //  return NULL; // prove if server will crash or not XD
     if (buffer == NULL || buffer_size == 0)
     {
         (void)Log(ERROR, "[4XX]: buffer is NULL for ParseHttpRequest or buffer_size is 0\n");
@@ -75,13 +75,17 @@ HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
     Upgrade: h2c
     HTTP2-Settings: AAMAAABkAAQCAAAAAAIAAAAA
     */
-    // Run through buffer line by line
+    /*
+    *********************************************************************************
+        METHOD
+    *********************************************************************************
+    */
 
     char *buffer_start = buffer;
     char *space_pointer = strchr(buffer, SPACE_CHAR);
     if (*space_pointer != SPACE_CHAR)
     {
-        Log(WARN, "[4XX]: space_point is not a space!!!!!\n");
+        Log(WARN, "[4XX]: space_point is not a space!\n");
         return request;
     }
     size_t suspected_http_method_length = (space_pointer - buffer_start);
@@ -89,17 +93,22 @@ HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
     request->method = ParseRequestMethod(buffer_start, suspected_http_method_length);
     if (request->method == HttpFAKER)
     {
-        Log(WARN, "[4XX]: Couldn't parser HTTP Request method\n");
+        Log(WARN, "[4XX]: Couldn't parse HTTP Request method (HttpFAKER)\n");
         return request;
     }
-
+    /*
+    *********************************************************************************
+        PATH + QUERY
+    *********************************************************************************
+    */
     buffer = buffer_start;
-    char *space_pointer_again = strchr((space_pointer + 1), SPACE_CHAR); // +1 because pointer is on space
-    if ((*space_pointer_again != SPACE_CHAR) && (*space_pointer != SPACE_CHAR))
+    char *second_space_pointer = strchr((space_pointer + 1), SPACE_CHAR); // +1 because pointer is on space
+    if ((*second_space_pointer != SPACE_CHAR) && (*space_pointer != SPACE_CHAR))
     {
         (void)Log(WARN, "error finding appropriate amount of spaces for path+query");
+        return request;
     }
-    size_t suspected_path_length = (space_pointer_again - space_pointer);
+    size_t suspected_path_length = (second_space_pointer - space_pointer);
 
     char *path = ParseRequestPath(space_pointer + 1, suspected_path_length);
     request->path_and_query = path;
@@ -108,6 +117,16 @@ HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
         Log(WARN, "[4XX]: Couldn't parser HTTP Request path/query\n");
         return request;
     }
+    /*
+    *********************************************************************************
+        VERSION
+    *********************************************************************************
+    */
+    buffer = buffer_start;
+    char *newline = strchr(second_space_pointer, NEWLINE_CHAR); // +1 because pointer is on space
+    size_t expected_verion_length = newline - space_pointer;
+    request->version = ParseHttpVersion((second_space_pointer + 1), expected_verion_length);
+
     return request;
 }
 
@@ -120,6 +139,10 @@ void FreeHttpRequest(HttpRequest *request)
     if (request->path_and_query != NULL)
     {
         free(request->path_and_query);
+    }
+    if (request->version != NULL)
+    {
+        free(request->version);
     }
     if (request->host != NULL)
     {
@@ -134,10 +157,6 @@ void PrintHttpRequest(HttpRequest *request)
     if (request->method != HttpFAKER)
     {
         printf("[DEBUG][HTTPMETHOD]: %s\n", HttpMethodToStr(request->method));
-    }
-    if (request->version != ERROR_FLOAT)
-    {
-        printf("[DEBUG][HTTPVERSION]: %.1f\n", request->version);
     }
     if (request->host != NULL)
     {

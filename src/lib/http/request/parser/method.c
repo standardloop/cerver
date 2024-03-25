@@ -165,23 +165,31 @@ enum HttpMethod HttpStrToMethod(char *method)
 enum HttpMethod
 ParseRequestMethod(char *buffer, size_t buffer_size)
 {
+
     if (buffer_size == 0 || buffer_size > MAX_METHOD_LENGTH)
     {
         (void)Log(WARN, "[4XX]: cannot parse HTTP Method\n");
         return HttpFAKER;
     }
 
-    size_t http_method_size = buffer_size + 1; // '\0'
+    size_t http_method_size = buffer_size;
     char suspected_http_method_str[http_method_size];
     suspected_http_method_str[http_method_size] = '\0';
 
     size_t char_count = 0;
-    while (char_count < buffer_size && *buffer != '\n' && *buffer != SPACE_CHAR && *buffer != '\0' && *buffer != '/')
+    while (char_count < buffer_size && *buffer != '\n' && *buffer != SPACE_CHAR && *buffer != '\0')
     {
         suspected_http_method_str[char_count] = *buffer;
         buffer++;
         char_count++;
     }
+
+    if (suspected_http_method_str[http_method_size] != '\0')
+    {
+        (void)Log(ERROR, "placed a null term wasn't there any more for suspected_http_method_str");
+        return HttpFAKER;
+    }
+
     enum HttpMethod method = HttpStrToMethod(suspected_http_method_str);
     return method;
 }

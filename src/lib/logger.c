@@ -44,13 +44,23 @@ void Log(enum LogLevel level, char *message)
         exit(EXIT_FAILURE);
     case ERROR:
         printf("\n[ERROR]: %s", message);
+        break;
     case WARN:
         printf("\n[WARN]: %s", message);
+        break;
     case DEBUG:
         printf("\n[DEBUG]: %s", message);
+        break;
     case INFO:
         printf("\n[INFO]: %s", message);
+        break;
     case TRACE:
         printf("\n[TRACE]: %s", message);
+        break;
+    }
+    if (true)
+    {
+        // temporary
+        fflush(stdout);
     }
 }
