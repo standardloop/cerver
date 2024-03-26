@@ -3,11 +3,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#define NULL_CHAR '\0'            // WIP
-#define SPACE_CHAR ' '            // WIP
-#define NEWLINE_CHAR '\n'         // WIP
-#define SLASH_CHAR '/'            // WIP
-#define CARRIAGE_RETURN_CHAR '\r' // WIP
+#define NULL_CHAR '\0'
+#define SPACE_CHAR ' '
+#define NEWLINE_CHAR '\n'
+#define SLASH_CHAR '/'
+#define CARRIAGE_RETURN_CHAR '\r'
+#define COLON_CHAR ':'
 
 #define ALWAYS 1
 

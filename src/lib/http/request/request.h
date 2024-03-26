@@ -6,6 +6,7 @@
 #define ERROR_SIZE_T 0
 
 #include "./parser/method.h"
+#include "./../response/codes/codes.h"
 
 /*
 HEAD / HTTP/1.1
@@ -24,15 +25,19 @@ Upgrade: h2c
 HTTP2-Settings: AAMAAABkAAQCAAAAAAIAAAAA
 */
 
+typedef char *Error;
+
 typedef struct
 {
     enum HttpMethod method;
-    char *path_and_query; // FIXME, seperate this at some point
-    char *version;        // 1.1
-    char *host;           // localhost
-    int port;             // 8080
-    char **headers;       // FIXM: headers package?
-    char *body;           // FIXME: optional? maybe **
+    char *path_and_query;             // FIXME, seperate this at some point
+    char *version;                    // 1.1
+    char *host;                       // localhost
+    int port;                         // 8080
+    Error error;                      // WIP possible
+    enum HttpCode possible_resp_code; // WIP possible
+    char **headers;                   // FIXM: headers package?
+    char *body;                       // FIXME: optional? maybe **
 } HttpRequest;
 
 HttpRequest *

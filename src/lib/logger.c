@@ -18,14 +18,14 @@ enum LogLevel GetLogLevel()
 
 void Log(enum LogLevel level, char *message)
 {
-    // FIXME: Log configuration
+    // FIXMELog configuration
     // char buff[1024];
     // memset(buff, '\0', sizeof(buff));
     // setvbuf(stdout, buff, _IOFBF, 1024);
 
-    // FIXME: have time as well
+    // FIXMEhave time as well
     // (int)time(NULL);
-    // FIXME: allow configuration such as JSON logs etc
+    // FIXMEallow configuration such as JSON logs etc
     if (level > log_level)
     {
         return;
@@ -39,23 +39,23 @@ void Log(enum LogLevel level, char *message)
         }
         else
         {
-            printf("\n[FATAL]: %s", message);
+            printf("\n[FATAL]%s", message);
         }
         exit(EXIT_FAILURE);
     case ERROR:
-        printf("\n[ERROR]: %s", message);
+        printf("\n[ERROR]%s", message);
         break;
     case WARN:
-        printf("\n[WARN]: %s", message);
+        printf("\n[WARN]%s", message);
         break;
     case DEBUG:
-        printf("\n[DEBUG]: %s", message);
+        printf("\n[DEBUG]%s", message);
         break;
     case INFO:
-        printf("\n[INFO]: %s", message);
+        printf("\n[INFO]%s", message);
         break;
     case TRACE:
-        printf("\n[TRACE]: %s", message);
+        printf("\n[TRACE]%s", message);
         break;
     }
     if (true)

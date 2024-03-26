@@ -148,17 +148,64 @@ HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
         HOST
     *********************************************************************************
     */
-    size_t expected_host_length = buffer_size;
-    request->host = ParseHost(buffer, expected_host_length);
+
+    buffer = buffer_start;
+    char *newline_ptr = strchr(second_space_pointer, NEWLINE_CHAR);
+    if (*newline_ptr != NEWLINE_CHAR)
+    {
+        (void)Log(ERROR, "[4XX]: cannot find newline\n");
+        return request;
+    }
+    if (*(newline_ptr + 1) != 'H')
+    {
+        (void)Log(ERROR, "[4XX]: H not present after newline\n");
+        return request;
+    }
+    if (*(newline_ptr + 6) != SPACE_CHAR)
+    {
+        (void)Log(ERROR, "[4XX]: cannot find space after Host:\n");
+        return request;
+    }
+    char *suspected_host_start = (newline_ptr + 7); // skip over "Host: "
+    char *colon_ptr = strchr(suspected_host_start, COLON_CHAR);
+    if (*colon_ptr != COLON_CHAR)
+    {
+        (void)Log(WARN, "[4XX]: cannot find colon so port wasn't included?\n");
+        return request;
+    }
+    size_t expected_host_length = (colon_ptr - suspected_host_start);
+    request->host = ParseHost(suspected_host_start, expected_host_length);
+    if (request->host == NULL)
+    {
+        (void)Log(ERROR, "[4XX]: cannot parse host from request\n");
+        return request;
+    }
+
     /*
     *********************************************************************************
         PORT
     *********************************************************************************
     */
 
-    size_t expected_port_length = buffer_size;
-    request->port = ParsePort(buffer, expected_port_length);
+    if (*newline_ptr != NEWLINE_CHAR || *colon_ptr != COLON_CHAR)
+    {
+        (void)Log(ERROR, "[4XX]: cannot parse host from request\n");
+        return request;
+    }
 
+    char *second_carriage_return_ptr = strchr(colon_ptr, CARRIAGE_RETURN_CHAR);
+    if (*second_carriage_return_ptr != CARRIAGE_RETURN_CHAR)
+    {
+        (void)Log(ERROR, "[4XX]: couldn't find 2nd carriage return\n");
+        return request;
+    }
+    size_t expected_port_length = second_carriage_return_ptr - (++colon_ptr);
+    request->port = ParsePort(colon_ptr, expected_port_length);
+    if (request->port == ERROR_PORT)
+    {
+        (void)Log(ERROR, "[4XX]: couldn't parse port");
+        return request;
+    }
     return request;
 }
 

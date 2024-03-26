@@ -48,6 +48,7 @@ char *ParseHttpVersion(char *buffer, size_t buffer_size)
     while (char_count < http_version_size && *buffer != '\0')
     {
         *http_version_str = *buffer;
+    
         buffer++;
         http_version_str++;
         char_count++;

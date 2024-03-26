@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #define ERROR_PORT -1
+#define MAX_PORT_LENGTH 5
 
 int ParsePort(char *, size_t);
 

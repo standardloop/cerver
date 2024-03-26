@@ -2,7 +2,7 @@
 #define CODES_H
 char *HttpClass(int code);
 char *HttpPhrase(int code);
-enum HttpCodes
+enum HttpCode
 {
     // 1XX
     HttpContinue = 100,
