@@ -62,7 +62,7 @@ HTTPCerver *InitCerver(int port, int num_threads, int queue_buffer_size)
 
 void StartCerver(HTTPCerver *cerver)
 {
-    int new_socket;
+    int client_socket;
     Scheduler *scheduler = InitScheduler(FIFO, cerver->queue_buffer_size);
     if (scheduler == NULL)
     {
@@ -78,13 +78,13 @@ void StartCerver(HTTPCerver *cerver)
 
     while (ALWAYS)
     {
-        if ((new_socket = accept(cerver->server_fd, (struct sockaddr *)&cerver->address, (socklen_t *)&cerver->addrlen)) < 0)
+        if ((client_socket = accept(cerver->server_fd, (struct sockaddr *)&cerver->address, (socklen_t *)&cerver->addrlen)) < 0)
         {
             (void)Log(ERROR, "[5XX]: Couldn't accect connections on socket\n");
         }
         else
         {
-            ScheduleRequestToBeHandled(scheduler, thread_pool, new_socket);
+            ScheduleRequestToBeHandled(scheduler, thread_pool, client_socket);
         }
     }
     FreeThreadPool(thread_pool);

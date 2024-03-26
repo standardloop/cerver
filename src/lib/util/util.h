@@ -9,7 +9,6 @@
 #define SLASH_CHAR '/'            // WIP
 #define CARRIAGE_RETURN_CHAR '\r' // WIP
 
-#define SOCKET_ERROR -1 // WIP
 #define ALWAYS 1
 
 void PrintBuffer(char *, size_t);

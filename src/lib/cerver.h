@@ -1,6 +1,8 @@
 #ifndef CERVER_H
 #define CERVER_H
+
 #include <netinet/in.h> // sockaddr_in
+#define SOCKET_ERROR -1 // WIP
 
 typedef struct
 {

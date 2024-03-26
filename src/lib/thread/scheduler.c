@@ -44,7 +44,10 @@ void scheduleRequestInQueue(Scheduler *scheduler, int client_socket)
         {
             (void)Log(WARN, "[5XX]: queue size error\n");
         }
-        scheduler->curr_size++;
+        else
+        {
+            scheduler->curr_size++;
+        }
     }
 }
 
