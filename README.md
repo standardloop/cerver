@@ -1,2 +1,2 @@
 # cerver
-Server written in C
+HTTP Server written in C

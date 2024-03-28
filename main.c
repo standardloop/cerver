@@ -5,7 +5,7 @@
 #include "./src/lib/logger.h"
 
 // int main(int argc, char const *argv[])
-int main()
+int main(void)
 {
     int port = 8080;
     int num_threads = 10;
