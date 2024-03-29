@@ -20,11 +20,6 @@ typedef struct queue
     Node *tail;
 } Queue;
 
-enum ThreadPolicy
-{
-    FIFO = 0
-};
-
 Queue *InitQueue(int);
 int EnQueue(Queue *, int);
 int DeQueue(Queue *);

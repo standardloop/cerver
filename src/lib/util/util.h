@@ -13,5 +13,7 @@
 #define ALWAYS 1
 
 void PrintBuffer(char *, size_t);
+char *StrToUpper(char *);
+char *StrToLower(char *);
 
 #endif

@@ -7,6 +7,11 @@
 
 #include "./queue/queue.h"
 
+enum ThreadPolicy
+{
+    FIFO = 0
+};
+
 typedef struct
 {
     enum ThreadPolicy policy;

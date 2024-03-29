@@ -6,8 +6,8 @@
 typedef struct
 {
     enum HttpCode response_code;
-    char **headers; // FIXM: headers package?
-    char *body;     // FIXME: optional?
+    char **headers;
+    char *body;
 } HttpResponse;
 
 #endif

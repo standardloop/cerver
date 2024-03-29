@@ -10,6 +10,7 @@ build: main.c
 	$(CC) $(CC_FLAGS) main.c \
 	src/lib/cerver.c \
 	src/lib/logger.c \
+	src/lib/map/map.c \
 	src/lib/util/util.c \
 	src/lib/thread/pool.c \
 	src/lib/thread/worker.c \
