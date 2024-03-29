@@ -116,14 +116,16 @@ void MapRemove(Map *map, char *key)
     {
         return;
     }
-    if (map->count == 1)
+    if (strcmp(key, map->head->key) == 0)
     {
-        if (strcmp(key, map->head->key) == 0)
+        Node *temp = map->head;
+        if (map->count != 1)
         {
-            freeNodeFields(map->head);
-            free(map->head);
-            map->count = 0;
+            map->head = map->head->next;
         }
+        freeNodeFields(temp);
+        free(temp);
+        map->count = 0;
         return;
     }
 
