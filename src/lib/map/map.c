@@ -5,14 +5,20 @@
 
 #include "./map.h"
 
-Node *newNode(char *, char *);
 bool isMapFull(Map *);
 bool isMapEmpty(Map *);
+
+Node *newNode(char *, char *);
 void freeNodeFields(Node *);
+void freeNode(Node *node);
 void freeAllNodes(Node *);
 
 Map *InitMap(int max)
 {
+    if (max <= 0)
+    {
+        return NULL;
+    }
     Map *map = malloc(sizeof(Map));
     if (map == NULL)
     {
@@ -51,6 +57,10 @@ bool isMapEmpty(Map *map)
 
 int MapAdd(Map *map, char *key, char *value)
 {
+    if (map == NULL)
+    {
+        return MAP_ERROR_NULL;
+    }
     if (isMapFull(map))
     {
         return MAP_ERROR_FULL;
@@ -94,7 +104,7 @@ int MapAdd(Map *map, char *key, char *value)
 
 char *MapGet(Map *map, char *key)
 {
-    if (isMapEmpty(map))
+    if (map == NULL || isMapEmpty(map))
     {
         return NULL;
     }
@@ -110,23 +120,34 @@ char *MapGet(Map *map, char *key)
     return NULL;
 }
 
-void MapRemove(Map *map, char *key)
+int MapRemove(Map *map, char *key)
 {
-    if (isMapEmpty(map) || key == NULL)
+    if (map == NULL || key == NULL)
     {
-        return;
+        return MAP_ERROR_NULL;
+    }
+    if (isMapEmpty(map) || map->head == NULL)
+    {
+        return MAP_ERROR_EMPTY;
     }
     if (strcmp(key, map->head->key) == 0)
     {
-        Node *temp = map->head;
-        if (map->count != 1)
+        if (map->count == 1)
         {
-            map->head = map->head->next;
+            free(map->head);
+            map->head = NULL;
+            map->count = 0;
+            return 0;
         }
-        freeNodeFields(temp);
-        free(temp);
-        map->count = 0;
-        return;
+
+        if (map->head->next != NULL) // FIXME ALWAYS?
+        {
+            Node *temp = map->head;
+            map->head = map->head->next;
+            free(temp);
+            map->count--;
+            return map->count;
+        }
     }
 
     // guranteed to have more than 1 in list
@@ -139,21 +160,20 @@ void MapRemove(Map *map, char *key)
         {
             if (iterator_next->next == NULL)
             {
-                freeNodeFields(iterator_next);
-                free(iterator_next);
+                freeNode(iterator_next);
                 map->count--;
-                return;
+                map->head->next = NULL;
+                return map->count;
             }
             iterator->next = iterator_next->next;
-            freeNodeFields(iterator_next);
-            free(iterator_next);
+            freeNode(iterator_next);
             map->count--;
-            return;
+            return map->count;
         }
         iterator = iterator_next;
         iterator_next = iterator_next->next;
     }
-    return;
+    return MAP_ERROR_404;
 }
 
 void freeNodeFields(Node *node)
@@ -172,19 +192,29 @@ void freeNodeFields(Node *node)
     }
 }
 
+void freeNode(Node *node)
+{
+    freeNodeFields(node);
+    free(node);
+}
+
 void freeAllNodes(Node *head)
 {
     Node *temp = NULL;
     while (head != NULL)
     {
-        freeNodeFields(head);
         temp = head;
         head = head->next;
-        free(temp);
+        freeNode(temp);
     }
 }
+
 void FreeMap(Map *map)
 {
+    if (map == NULL)
+    {
+        return;
+    }
     freeAllNodes(map->head);
     free(map);
 }
@@ -192,11 +222,16 @@ void FreeMap(Map *map)
 // FIXME Log support?
 void PrintMap(Map *map)
 {
-    Node *iterator = map->head;
+    if (map == NULL)
+    {
+        return;
+    }
 
+    Node *iterator = map->head;
     while (iterator != NULL)
     {
         printf("\n%s : %s\n", iterator->key, iterator->value);
+        fflush(stdout);
         iterator = iterator->next;
     }
 }
