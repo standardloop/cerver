@@ -4,7 +4,7 @@
 #include "./queue/queue.h"
 #include "./worker.h"
 
-#include "./../http/request/request.h"
+#include "./../http/handler.h"
 #include "./../util/util.h"
 
 void *ThreadWorker(void *arg)

@@ -16,6 +16,7 @@ build: main.c
 	src/lib/thread/worker.c \
 	src/lib/thread/scheduler.c \
 	src/lib/thread/queue/queue.c \
+	src/lib/http/handler.c \
 	src/lib/http/request/request.c \
 	src/lib/http/request/parser/host.c \
 	src/lib/http/request/parser/path.c \

@@ -51,5 +51,5 @@ ParseHttpRequest(char *, size_t);
 
 void FreeHttpRequest(HttpRequest *);
 void PrintHttpRequest(HttpRequest *);
-void HandleRequest(int);
+
 #endif
