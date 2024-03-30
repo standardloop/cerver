@@ -2,6 +2,8 @@
 #define METHOD_H
 
 #define MAX_METHOD_LENGTH 10
+#define NUMBER_OF_METHODS 10
+
 #include <stdlib.h>
 #include <stdio.h>
 enum HttpMethod

@@ -26,6 +26,11 @@
 // User-Agent: curl/7.79.1
 // Accept: */*
 
+const char *BAD_GATEWAY_STRING = "HTTP/1.1 503 Bad Gateway\nContent-Type: text/plain\nContent-Length: 3\n\n503";
+const char *NOT_FOUND_STRING = "HTTP/1.1 404 Not Found\nContent-Type: text/plain\nContent-Length: 3\n\n404";
+
+char *handleParserError(HttpRequest *);
+
 void HandleRequest(int client_socket)
 {
     ssize_t valread;
@@ -34,20 +39,40 @@ void HandleRequest(int client_socket)
     if (valread == 0)
     {
         (void)Log(ERROR, "[4XX]: Didn't read more than 0\n");
+        write(client_socket, NOT_FOUND_STRING, strlen(NOT_FOUND_STRING));
     }
     else
     {
         HttpRequest *request = ParseHttpRequest(buffer, valread); // pass valread here?
-        if (request == NULL)
+        if (request == NULL || request->error != NULL)
         {
-            (void)Log(ERROR, "[4|5XX]:HttpRequest fail to parse\n");
+            char *error_response_string = handleParserError(request);
+            if (error_response_string == NULL)
+            {
+                (void)Log(ERROR, "[4|5XX]:HttpRequest fail to parse completely\n");
+                write(client_socket, BAD_GATEWAY_STRING, strlen(BAD_GATEWAY_STRING));
+            }
+            write(client_socket, error_response_string, strlen(error_response_string));
+            free(error_response_string);
         }
-        // FIXME ELSE
-        char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
-        write(client_socket, hello, strlen(hello));
+        else
+        {
+            // Check if HTTP request is in a route table
+            const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+            write(client_socket, hello, strlen(hello));
+        }
         FreeHttpRequest(request);
     }
     close(client_socket);
+}
+
+char *handleParserError(HttpRequest *request)
+{
+    if (request == NULL || request->error == NULL)
+    {
+        return NULL;
+    }
+    return NULL;
 }
 
 HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)

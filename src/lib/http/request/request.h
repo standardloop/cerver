@@ -5,6 +5,7 @@
 #define MAX_LINE_LENGTH 50
 #define ERROR_SIZE_T 0
 
+
 #include "./parser/method.h"
 #include "./../response/codes/codes.h"
 
@@ -25,19 +26,24 @@ Upgrade: h2c
 HTTP2-Settings: AAMAAABkAAQCAAAAAAIAAAAA
 */
 
-typedef char *Error;
+typedef struct
+{
+    enum HttpCode early_resp_code;
+    char *error_message;
+    size_t message_length;
+} Error;
 
 typedef struct
 {
     enum HttpMethod method;
-    char *path_and_query;            // FIXME, seperate this at some point
-    char *version;                   // 1.1
-    char *host;                      // localhost
-    int port;                        // 8080
-    Error __error;                   // WIP possible
-    enum HttpCode __early_resp_code; // WIP possible
-    char **headers;                  // FIXM: map
-    char *body;                      // FIXME: optional? maybe **
+    char *path_and_query; // FIXME, seperate this at some point
+    char *version;        // 1.1
+    char *host;           // localhost
+    int port;             // 8080
+    Error *error;         // WIP possible
+
+    char **headers; // FIXM: map
+    char *body;     // FIXME: optional? maybe **
 } HttpRequest;
 
 HttpRequest *
