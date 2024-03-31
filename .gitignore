@@ -57,3 +57,4 @@ main
 .DS_Store
 .notes.txt
 testing/
+src/lib/pkg
