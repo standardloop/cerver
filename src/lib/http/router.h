@@ -34,30 +34,12 @@ typedef struct
     // RouteTable *delete;
 } RouteTableAll;
 
-RouteTable *InitRouteTable(enum HttpMethod, int);
-
 RouteTableAll *InitRouteTableAll();
 
-int AddRouteToTable(RouteTable *, enum HttpMethod, char *, RouterFunction *);
+RouteTable *InitRouteTable(enum HttpMethod, int);
+void PrintRouteTable(RouteTable *tabe);
+int AddRouteToTable(RouteTable *, char *, RouterFunction *);
+
 Route *GetRouteFromTable(RouteTable *, char *);
 
 #endif
-
-/*
-
-Want an ability to associate a function with a route(path + method)
-
-Ability to add a simple route such as GET to /hello
-void AddRouteToTable(enum HttpMethod method, char * path,  )
-{
-
-}
-
-Ability to add a router (like api router)
-void AddRouteToTabler()
-{
-
-}
-
-
-*/

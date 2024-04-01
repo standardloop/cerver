@@ -11,7 +11,7 @@
 
 Scheduler *InitScheduler(enum ThreadPolicy policy, int buffer_size)
 {
-    (void)Log(INFO, "starting InitScheduler!\n");
+    //(void)Log(INFO, "starting InitScheduler!\n");
     Scheduler *scheduler = (Scheduler *)malloc(sizeof(Scheduler));
     if (scheduler == NULL)
     {

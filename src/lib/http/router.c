@@ -48,6 +48,20 @@ bool isRouteTableFull(RouteTable *table)
     return (table->max == table->size);
 }
 
+void PrintRouteTable(RouteTable *table)
+{
+    if (isRouteTableEmpty(table))
+    {
+        return;
+    }
+    Route *iterator = table->routes;
+    while (iterator != NULL)
+    {
+        printf("\n[PrintRouteTable]: %s\n", iterator->path);
+        iterator = iterator->next;
+    }
+}
+
 Route *GetRouteFromTable(RouteTable *table, char *path)
 {
     if (isRouteTableEmpty(table))
@@ -83,12 +97,10 @@ RouteTableAll *InitRouteTableAll()
     return router;
 }
 
-int AddRouteToTable(RouteTable *table, enum HttpMethod method, char *path,
+int AddRouteToTable(RouteTable *table, char *path,
                     RouterFunction *router_function)
 {
-    if (table == NULL ||
-        path == NULL ||
-        table->method != method ||
+    if (table == NULL || path == NULL ||
         table->method == HttpFAKER)
     {
         return -420;
@@ -101,9 +113,9 @@ int AddRouteToTable(RouteTable *table, enum HttpMethod method, char *path,
     }
 
     Route *head = table->routes;
-    if (table->routes == NULL)
+    if (head == NULL)
     {
-        table->routes = head;
+        table->routes = route;
         table->size = 1;
         return table->size;
     }

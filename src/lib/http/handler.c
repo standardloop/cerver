@@ -43,35 +43,50 @@ void HandleRequest(RouteTableAll *router, int client_socket)
                 (void)Log(ERROR, "[4|5XX]:HttpRequest fail to parse completely\n");
                 write(client_socket, BAD_GATEWAY_STRING, strlen(BAD_GATEWAY_STRING));
             }
-            write(client_socket, error_response_string, strlen(error_response_string));
-            // free(error_response_string);
+            else
+            {
+                write(client_socket, error_response_string, strlen(error_response_string));
+            }
         }
         else
         {
-            // Check if HTTP request is in a route table
             if (router != NULL)
             {
+                printf("\n[JOSH]: %s\n", request->path_and_query);
+                fflush(stdin);
                 switch (request->method)
                 {
                 case HttpGET:
-
+                    (void)Log(INFO, "HttpGET\n");
                     if (router->get != NULL)
                     {
+                        (void)PrintRouteTable(router->get);
                         Route *route = GetRouteFromTable(router->get, request->path_and_query);
                         if (route != NULL)
                         {
+                            (void)Log(INFO, "route != NULL\n");
                             route->handler(request, NULL);
+                            const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
+                            write(client_socket, hello, strlen(hello));
                             // route->handler(request, response);
                         }
+                        else
+                        {
+                            (void)Log(WARN, "[JOSH]: 404\n");
+                        }
+                    }
+                    else
+                    {
+                        (void)Log(WARN, "[JOSH]: get router not found\n");
                     }
                     break;
                 case HttpFAKER:
+                    (void)Log(INFO, "HttpFAKER\n");
+                    break;
                 default:
                     return;
                 }
             }
-            const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
-            write(client_socket, hello, strlen(hello));
         }
         FreeHttpRequest(request);
     }
