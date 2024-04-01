@@ -25,7 +25,6 @@ int main(void)
     (void)SetLogLevel(TRACE);
 
     HTTPCerver *server = InitCerver(port, num_threads, buffer_size);
-    // AddPathCerver
 
     int route_count = AddRouteToTable(server->router->get, "/foo", (RouterFunction *)foo);
     if (route_count < 0)
