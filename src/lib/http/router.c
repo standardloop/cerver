@@ -9,7 +9,7 @@ void freeRoute(Route *);
 void freeRouteTable(RouteTable *);
 bool isRouteTableEmpty(RouteTable *);
 
-RouteTable *InitRouteTable(int max, enum HttpMethod method)
+RouteTable *InitRouteTable(enum HttpMethod method, int max)
 {
     RouteTable *table = malloc(sizeof(RouteTable));
     if (table == NULL)
@@ -58,6 +58,8 @@ Route *GetRouteFromTable(RouteTable *table, char *path)
     while (iterator != NULL)
     {
         // FIXME add logic for /:id or similiar
+        // query rip
+
         if (strcmp(path, iterator->path) == 0)
         {
             return iterator;
@@ -65,6 +67,20 @@ Route *GetRouteFromTable(RouteTable *table, char *path)
         iterator = iterator->next;
     }
     return NULL;
+}
+
+// (RouteTableAll *)malloc(sizeof(RouteTableAll));
+
+RouteTableAll *InitRouteTableAll()
+{
+    RouteTableAll *router = (RouteTableAll *)malloc(sizeof(RouteTableAll));
+    if (router == NULL)
+    {
+        // FIXME LOG
+        return NULL;
+    }
+    router->get = InitRouteTable(HttpGET, 10);
+    return router;
 }
 
 int AddRouteToTable(RouteTable *table, enum HttpMethod method, char *path,

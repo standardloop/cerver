@@ -34,7 +34,9 @@ typedef struct
     // RouteTable *delete;
 } RouteTableAll;
 
-RouteTable *InitRouteTable(int, enum HttpMethod);
+RouteTable *InitRouteTable(enum HttpMethod, int);
+
+RouteTableAll *InitRouteTableAll();
 
 int AddRouteToTable(RouteTable *, enum HttpMethod, char *, RouterFunction *);
 Route *GetRouteFromTable(RouteTable *, char *);

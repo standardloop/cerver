@@ -54,7 +54,13 @@ HTTPCerver *InitCerver(int port, int num_threads, int queue_buffer_size)
     cerver->num_threads = num_threads;
     cerver->queue_buffer_size = queue_buffer_size;
 
-    cerver->router = NULL;
+    cerver->router = InitRouteTableAll();
+    if (cerver->router == NULL)
+    {
+        free(cerver);
+        (void)Log(FATAL, "cannot allocate memory for cerver\n");
+        return NULL;
+    }
 
     // if (router != NULL)
     // {

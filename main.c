@@ -28,6 +28,8 @@ int main(void)
 
     int foo = AddRouteToTable(server->router->get, HttpGET, "/foo", test);
     printf("\n%d\n", foo);
+
+    return EXIT_SUCCESS;
     (void)StartCerver(server);
     return EXIT_SUCCESS;
 }
