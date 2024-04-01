@@ -5,7 +5,7 @@
 
 #include "./response/response.h"
 
-typedef void (*RouterFunction)(HttpRequest *req, HttpResponse *res);
+typedef void(RouterFunction)(HttpRequest *, HttpResponse *);
 
 // Routes a Compile time
 
@@ -28,7 +28,7 @@ typedef struct
 
 RouteTable *InitRouteTable(int, enum HttpMethod);
 
-int AddRouteToTable(RouteTable *, enum HttpMethod, char *, RouterFunction *(HttpRequest *, HttpResponse *));
+int AddRouteToTable(RouteTable *, enum HttpMethod, char *, RouterFunction *);
 
 #endif
 

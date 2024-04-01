@@ -23,7 +23,7 @@ RouteTable *InitRouteTable(int max, enum HttpMethod method)
     return route_table;
 }
 
-Route *newRoute(char *path, RouterFunction *router_function(HttpRequest *, HttpResponse *))
+Route *newRoute(char *path, RouterFunction *router_function)
 {
     Route *route = (Route *)malloc(sizeof(Route));
     if (route == NULL)
@@ -48,7 +48,7 @@ bool isRouteTableFull(RouteTable *route_table)
 }
 
 int AddRouteToTable(RouteTable *route_table, enum HttpMethod method, char *path,
-                    RouterFunction *router_function(HttpRequest *, HttpResponse *))
+                    RouterFunction *router_function)
 {
     if (route_table == NULL ||
         path == NULL ||
@@ -96,9 +96,9 @@ void freeRoute(Route *route)
     {
         free(route->path);
     }
+    // Dont need to freee
     if (route->handler != NULL)
     {
-        free(route->handler);
     }
 }
 

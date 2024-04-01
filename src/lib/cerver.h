@@ -13,7 +13,10 @@ typedef struct
     int addrlen;
     int num_threads;
     int queue_buffer_size;
-    RouteTable *route_tables;
+    RouteTable *get_route_table;
+
+    // FIXME do we need more?
+    // RouteTable *_route_table;
 } HTTPCerver;
 
 HTTPCerver *InitCerver(int, int, int);
