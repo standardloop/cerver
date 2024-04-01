@@ -80,3 +80,7 @@ const char *handleParserError(HttpRequest *request)
     }
     return NULL;
 }
+
+void handleStaticPath()
+{
+}

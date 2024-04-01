@@ -7,12 +7,17 @@
 
 typedef void (*RouterFunction)(HttpRequest *req, HttpResponse *res);
 
-typedef struct
+// Routes a Compile time
+
+typedef struct route
 {
+    struct route *next;
     char *path;
     RouterFunction *handler;
+
 } Route;
 
+// Create multiple route tables for each method
 typedef struct
 {
     Route *routes;
@@ -21,7 +26,9 @@ typedef struct
     enum HttpMethod method;
 } RouteTable;
 
-int AddRoute(RouteTable *, enum HttpMethod, char *, void (*RouterFunction)(HttpRequest *, HttpResponse *));
+RouteTable *InitRouteTable(int, enum HttpMethod);
+
+int AddRouteToTable(RouteTable *, enum HttpMethod, char *, RouterFunction *(HttpRequest *, HttpResponse *));
 
 #endif
 
@@ -30,23 +37,15 @@ int AddRoute(RouteTable *, enum HttpMethod, char *, void (*RouterFunction)(HttpR
 Want an ability to associate a function with a route(path + method)
 
 Ability to add a simple route such as GET to /hello
-void AddRoute(enum HttpMethod method, char * path,  )
+void AddRouteToTable(enum HttpMethod method, char * path,  )
 {
 
 }
 
 Ability to add a router (like api router)
-void AddRouter()
+void AddRouteToTabler()
 {
 
-}
-
-void RouterTemplate(HttpRequest *req, HttpResponse *res)
-{
-    if (req == NULL || res == NULL)
-    {
-        return;
-    }
 }
 
 

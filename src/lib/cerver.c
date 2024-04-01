@@ -54,6 +54,8 @@ HTTPCerver *InitCerver(int port, int num_threads, int queue_buffer_size)
     cerver->num_threads = num_threads;
     cerver->queue_buffer_size = queue_buffer_size;
 
+    cerver->route_tables = NULL;
+
     // if (router != NULL)
     // {
     // }

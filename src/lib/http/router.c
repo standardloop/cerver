@@ -1,27 +1,87 @@
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include "./router.h"
 #include "./../logger.h"
 
-void freeRoute(Route *route);
+void freeRoute(Route *);
+void freeRouteTable(RouteTable *);
+bool isRouteTableEmpty(RouteTable *);
 
-int AddRoute(RouteTable *route_table, enum HttpMethod method, char *path, void (*RouterFunction)(HttpRequest *, HttpResponse *))
+RouteTable *InitRouteTable(int max, enum HttpMethod method)
+{
+    RouteTable *route_table = malloc(sizeof(RouteTable));
+    if (route_table == NULL)
+    {
+        return NULL;
+    }
+    route_table->size = 0;
+    route_table->max = max;
+    route_table->method = method;
+    route_table->routes = NULL;
+
+    return route_table;
+}
+
+Route *newRoute(char *path, RouterFunction *router_function(HttpRequest *, HttpResponse *))
+{
+    Route *route = (Route *)malloc(sizeof(Route));
+    if (route == NULL)
+    {
+        return NULL;
+    }
+    route->next = NULL;
+    route->handler = router_function;
+    route->path = path;
+
+    return route;
+}
+
+bool isRouteTableEmpty(RouteTable *route_table)
+{
+    return (route_table->routes == NULL || route_table->size == 0);
+}
+
+bool isRouteTableFull(RouteTable *route_table)
+{
+    return (route_table->max == route_table->size);
+}
+
+int AddRouteToTable(RouteTable *route_table, enum HttpMethod method, char *path,
+                    RouterFunction *router_function(HttpRequest *, HttpResponse *))
 {
     if (route_table == NULL ||
         path == NULL ||
         route_table->method != method ||
         route_table->method == HttpFAKER)
     {
-        return 0;
+        return -420;
     }
-    if (RouterFunction == NULL)
+
+    Route *route = newRoute(path, router_function);
+    if (route == NULL)
     {
-        // static
-        route_table->size++;
+        return -420;
+    }
+
+    Route *head = route_table->routes;
+    if (route_table->routes == NULL)
+    {
+        route_table->routes = head;
+        route_table->size = 1;
         return route_table->size;
     }
 
+    Route *last = route_table->routes;
+
+    while (last->next != NULL)
+    {
+        last = last->next;
+    }
+
+    last->next = route;
     route_table->size++;
+
     return route_table->size;
 }
 

@@ -4,6 +4,8 @@
 #include <netinet/in.h> // sockaddr_in
 #define SOCKET_ERROR -1 // WIP
 
+#include "./http/router.h"
+
 typedef struct
 {
     int server_fd;
@@ -11,12 +13,7 @@ typedef struct
     int addrlen;
     int num_threads;
     int queue_buffer_size;
-    // route table
-    /*
-    char * host;
-    int port;
-    // other settings
-    */
+    RouteTable *route_tables;
 } HTTPCerver;
 
 HTTPCerver *InitCerver(int, int, int);
