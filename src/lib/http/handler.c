@@ -10,6 +10,7 @@
 #include <stdbool.h>
 
 #include "./handler.h"
+#include "./router.h"
 #include "./request/request.h"
 #include "./response/codes/codes.h"
 #include "./../logger.h"
@@ -21,7 +22,7 @@ const char *BAD_REQUEST_STRING = "HTTP/1.1 400 Bad Request\nContent-Type: text/p
 
 const char *handleParserError(HttpRequest *);
 
-void HandleRequest(int client_socket)
+void HandleRequest(RouteTableAll *router, int client_socket)
 {
     ssize_t valread;
     char buffer[BUFFER_SIZE];
@@ -48,6 +49,27 @@ void HandleRequest(int client_socket)
         else
         {
             // Check if HTTP request is in a route table
+            if (router != NULL)
+            {
+                switch (request->method)
+                {
+                case HttpGET:
+
+                    if (router->get != NULL)
+                    {
+                        Route *route = GetRouteFromTable(router->get, request->path_and_query);
+                        if (route != NULL)
+                        {
+                            route->handler(request, NULL);
+                            // route->handler(request, response);
+                        }
+                    }
+                    break;
+                case HttpFAKER:
+                default:
+                    return;
+                }
+            }
             const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
             write(client_socket, hello, strlen(hello));
         }

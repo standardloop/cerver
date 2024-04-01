@@ -37,7 +37,7 @@ ThreadPool *InitThreadPool(int num_threads)
     return workers;
 }
 
-void StartThreads(Scheduler *scheduler, ThreadPool *workers)
+void StartThreads(RouteTableAll *router, Scheduler *scheduler, ThreadPool *workers)
 {
     for (int i = 0; i < workers->num_threads; i++)
     {
@@ -52,6 +52,7 @@ void StartThreads(Scheduler *scheduler, ThreadPool *workers)
             arg->workers = workers;
             arg->scheduler = scheduler;
             arg->worker_number = i;
+            arg->router = router;
             int check_thread = pthread_create(&workers->pool[i], NULL, ThreadWorker, arg);
             if (check_thread != 0)
             {

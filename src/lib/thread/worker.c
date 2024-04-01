@@ -13,7 +13,7 @@ void *ThreadWorker(void *arg)
     while (ALWAYS)
     {
         int client_socket = AcceptRequest(args->scheduler, args->workers);
-        HandleRequest(client_socket);
+        HandleRequest(NULL, client_socket);
     }
     return NULL;
 }

@@ -54,7 +54,7 @@ HTTPCerver *InitCerver(int port, int num_threads, int queue_buffer_size)
     cerver->num_threads = num_threads;
     cerver->queue_buffer_size = queue_buffer_size;
 
-    cerver->get_route_table = NULL;
+    cerver->router = NULL;
 
     // if (router != NULL)
     // {
@@ -77,7 +77,7 @@ void StartCerver(HTTPCerver *cerver)
     {
         (void)Log(FATAL, "[5XX]: Couldn't allocate memory to thread_pool\n");
     }
-    StartThreads(scheduler, thread_pool);
+    StartThreads(cerver->router, scheduler, thread_pool);
 
     while (ALWAYS)
     {

@@ -7,7 +7,6 @@
 
 // int main(int argc, char const *argv[])
 
-void test(HttpRequest *req, HttpResponse *res);
 void test(HttpRequest *req, HttpResponse *res)
 {
     if (req == NULL || res == NULL)
@@ -27,7 +26,8 @@ int main(void)
     HTTPCerver *server = InitCerver(port, num_threads, buffer_size);
     // AddPathCerver
 
-    int foo = AddRouteToTable(server->get_route_table, HttpGET, "/foo", test);
+    int foo = AddRouteToTable(server->router->get, HttpGET, "/foo", test);
+    printf("\n%d\n", foo);
     (void)StartCerver(server);
     return EXIT_SUCCESS;
 }

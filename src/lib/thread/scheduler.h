@@ -6,6 +6,7 @@
 #include <pthread.h>
 
 #include "./queue/queue.h"
+#include "./../http/router.h"
 
 enum ThreadPolicy
 {
@@ -34,7 +35,7 @@ typedef struct
 
 ThreadPool *InitThreadPool(int);
 void FreeThreadPool(ThreadPool *thread_pool);
-void StartThreads(Scheduler *, ThreadPool *);
+void StartThreads(RouteTableAll *router, Scheduler *, ThreadPool *);
 Scheduler *InitScheduler(enum ThreadPolicy, int);
 void ScheduleRequestToBeHandled(Scheduler *, ThreadPool *, int);
 int AcceptRequest(Scheduler *, ThreadPool *);

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <strings.h>
 
 #include "./router.h"
 #include "./../logger.h"
@@ -10,17 +11,17 @@ bool isRouteTableEmpty(RouteTable *);
 
 RouteTable *InitRouteTable(int max, enum HttpMethod method)
 {
-    RouteTable *route_table = malloc(sizeof(RouteTable));
-    if (route_table == NULL)
+    RouteTable *table = malloc(sizeof(RouteTable));
+    if (table == NULL)
     {
         return NULL;
     }
-    route_table->size = 0;
-    route_table->max = max;
-    route_table->method = method;
-    route_table->routes = NULL;
+    table->size = 0;
+    table->max = max;
+    table->method = method;
+    table->routes = NULL;
 
-    return route_table;
+    return table;
 }
 
 Route *newRoute(char *path, RouterFunction *router_function)
@@ -37,23 +38,42 @@ Route *newRoute(char *path, RouterFunction *router_function)
     return route;
 }
 
-bool isRouteTableEmpty(RouteTable *route_table)
+bool isRouteTableEmpty(RouteTable *table)
 {
-    return (route_table->routes == NULL || route_table->size == 0);
+    return (table->routes == NULL || table->size == 0);
 }
 
-bool isRouteTableFull(RouteTable *route_table)
+bool isRouteTableFull(RouteTable *table)
 {
-    return (route_table->max == route_table->size);
+    return (table->max == table->size);
 }
 
-int AddRouteToTable(RouteTable *route_table, enum HttpMethod method, char *path,
+Route *GetRouteFromTable(RouteTable *table, char *path)
+{
+    if (isRouteTableEmpty(table))
+    {
+        return NULL;
+    }
+    Route *iterator = table->routes;
+    while (iterator != NULL)
+    {
+        // FIXME add logic for /:id or similiar
+        if (strcmp(path, iterator->path) == 0)
+        {
+            return iterator;
+        }
+        iterator = iterator->next;
+    }
+    return NULL;
+}
+
+int AddRouteToTable(RouteTable *table, enum HttpMethod method, char *path,
                     RouterFunction *router_function)
 {
-    if (route_table == NULL ||
+    if (table == NULL ||
         path == NULL ||
-        route_table->method != method ||
-        route_table->method == HttpFAKER)
+        table->method != method ||
+        table->method == HttpFAKER)
     {
         return -420;
     }
@@ -64,15 +84,15 @@ int AddRouteToTable(RouteTable *route_table, enum HttpMethod method, char *path,
         return -420;
     }
 
-    Route *head = route_table->routes;
-    if (route_table->routes == NULL)
+    Route *head = table->routes;
+    if (table->routes == NULL)
     {
-        route_table->routes = head;
-        route_table->size = 1;
-        return route_table->size;
+        table->routes = head;
+        table->size = 1;
+        return table->size;
     }
 
-    Route *last = route_table->routes;
+    Route *last = table->routes;
 
     while (last->next != NULL)
     {
@@ -80,9 +100,9 @@ int AddRouteToTable(RouteTable *route_table, enum HttpMethod method, char *path,
     }
 
     last->next = route;
-    route_table->size++;
+    table->size++;
 
-    return route_table->size;
+    return table->size;
 }
 
 void freeRoute(Route *route)

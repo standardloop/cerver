@@ -12,9 +12,9 @@ typedef void(RouterFunction)(HttpRequest *, HttpResponse *);
 typedef struct route
 {
     struct route *next;
+
     char *path;
     RouterFunction *handler;
-
 } Route;
 
 // Create multiple route tables for each method
@@ -26,9 +26,18 @@ typedef struct
     enum HttpMethod method;
 } RouteTable;
 
+typedef struct
+{
+    RouteTable *get;
+    // RouteTable *post;
+    // RouteTable *put;
+    // RouteTable *delete;
+} RouteTableAll;
+
 RouteTable *InitRouteTable(int, enum HttpMethod);
 
 int AddRouteToTable(RouteTable *, enum HttpMethod, char *, RouterFunction *);
+Route *GetRouteFromTable(RouteTable *, char *);
 
 #endif
 
