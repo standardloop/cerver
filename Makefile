@@ -7,7 +7,8 @@ clean:
 	rm main
 
 build: main.c
-	$(CC) $(CC_FLAGS) main.c \
+	$(CC) $(CC_FLAGS) \
+	main.c \
 	src/lib/cerver.c \
 	src/lib/logger.c \
 	src/lib/map/map.c \
@@ -18,6 +19,7 @@ build: main.c
 	src/lib/thread/queue/queue.c \
 	src/lib/http/handler.c \
 	src/lib/http/router.c \
+	src/lib/http/response/response.c \
 	src/lib/http/request/request.c \
 	src/lib/http/request/parser/host.c \
 	src/lib/http/request/parser/path.c \

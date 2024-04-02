@@ -12,7 +12,7 @@
 #include "./handler.h"
 #include "./router.h"
 #include "./request/request.h"
-#include "./response/codes/codes.h"
+#include "./response/response.h"
 #include "./../logger.h"
 
 // FIXME — source of truth needs to be in "./response/codes/codes.h"
@@ -68,10 +68,9 @@ void HandleRequest(RouteTableAll *router, int client_socket)
                             Route *route = GetRouteFromTable(router->get, request->path_and_query);
                             if (route != NULL)
                             {
-                                route->handler(request, NULL);
+                                route->handler(request, response);
                                 const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
-                                write(client_socket, hello, strlen(hello));
-                                // route->handler(request, response);
+                                (void)write(client_socket, hello, strlen(hello)); // FIXME return code
                             }
                             else
                             {
@@ -89,10 +88,11 @@ void HandleRequest(RouteTableAll *router, int client_socket)
                     default:
                         return;
                     }
+                    FreeHttpResponse(response);
                 }
             }
+            FreeHttpRequest(request);
         }
-        FreeHttpRequest(request);
     }
     close(client_socket);
 }

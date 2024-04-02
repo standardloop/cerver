@@ -10,4 +10,6 @@ typedef struct
     char *body;
 } HttpResponse;
 
+void FreeHttpResponse(HttpResponse *);
+
 #endif
