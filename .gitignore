@@ -58,3 +58,5 @@ main
 .notes.txt
 testing/
 src/lib/pkg
+src/lib/http/middleware.c
+src/lib/http/middleware.h

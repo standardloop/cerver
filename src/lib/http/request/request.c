@@ -26,7 +26,6 @@
 // User-Agent: curl/7.79.1
 // Accept: */*
 
-
 HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
 {
     // printf("\n%s\n", buffer);
@@ -36,7 +35,7 @@ HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
         (void)Log(ERROR, "[4XX]: buffer is NULL for ParseHttpRequest or buffer_size is 0\n");
         return NULL;
     }
-    HttpRequest *request = malloc(sizeof(HttpRequest));
+    HttpRequest *request = (HttpRequest *)malloc(sizeof(HttpRequest));
     if (request == NULL)
     {
         (void)Log(ERROR, "[5XX]: buffer is NULL for malloc in ParseHttpRequest\n");

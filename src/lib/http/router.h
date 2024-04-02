@@ -1,23 +1,17 @@
 #ifndef ROUTER_H
 #define ROUTER_H
 #include "./request/request.h"
-// #include "./request/parser/method.h"
-
 #include "./response/response.h"
 
 typedef void(RouterFunction)(HttpRequest *, HttpResponse *);
 
-// Routes a Compile time
-
 typedef struct route
 {
     struct route *next;
-
     char *path;
     RouterFunction *handler;
 } Route;
 
-// Create multiple route tables for each method
 typedef struct
 {
     Route *routes;

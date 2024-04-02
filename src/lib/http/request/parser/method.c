@@ -6,92 +6,6 @@
 #include "./../../../util/util.h"
 #include "./../../../logger.h"
 
-// char *HttpMethodToStr(enum HttpMethod method)
-// {
-//     char *method_str = NULL;
-//     size_t length = 0;
-//     switch (method)
-//     {
-//     case HttpGET:
-//         length = 3 + 1;
-//         method_str = malloc(sizeof(char) * length);
-//         if (method_str != NULL)
-//         {
-//             memcpy(method_str, "GET", length);
-//         }
-//         break;
-//     case HttpHEAD:
-//         length = 4 + 1;
-//         method_str = malloc(sizeof(char) * length);
-//         if (method_str != NULL)
-//         {
-//             memcpy(method_str, "HEAD", length);
-//         }
-//         break;
-//     case HttpPOST:
-//         length = 4 + 1;
-//         method_str = malloc(sizeof(char) * length);
-//         if (method_str != NULL)
-//         {
-//             memcpy(method_str, "POST", length);
-//         }
-//         break;
-//     case HttpPUT:
-//         length = 3 + 1;
-//         method_str = malloc(sizeof(char) * length);
-//         if (method_str != NULL)
-//         {
-//             memcpy(method_str, "PUT", length);
-//         }
-//         break;
-//     case HttpDELETE:
-//         length = 6 + 1;
-//         method_str = malloc(sizeof(char) * length);
-//         if (method_str != NULL)
-//         {
-//             memcpy(method_str, "DELETE", length);
-//         }
-//         break;
-//     case HttpCONNECT:
-//         length = 7 + 1;
-//         method_str = malloc(sizeof(char) * length);
-//         if (method_str != NULL)
-//         {
-//             memcpy(method_str, "CONNECT", length);
-//         }
-//         break;
-//     case HttpOPTIONS:
-//         length = 7 + 1;
-//         method_str = malloc(sizeof(char) * length);
-//         if (method_str != NULL)
-//         {
-//             memcpy(method_str, "OPTIONS", length);
-//         }
-//         break;
-//     case HttpTRACE:
-//         length = 5 + 1;
-//         method_str = malloc(sizeof(char) * length);
-//         if (method_str != NULL)
-//         {
-//             memcpy(method_str, "TRACE", length);
-//         }
-//         break;
-//     case HttpPATCH:
-//         length = 5 + 1;
-//         method_str = malloc(sizeof(char) * length);
-//         if (method_str != NULL)
-//         {
-//             memcpy(method_str, "PATCH", length);
-//         }
-//         break;
-//     case HttpFAKER:
-//     default:
-//         method_str = NULL;
-//     }
-//     return method_str;
-// }
-
-// TODO: do I need to allocate memory for this?
 char *HttpMethodToStr(enum HttpMethod method)
 {
     switch (method)
@@ -122,7 +36,6 @@ char *HttpMethodToStr(enum HttpMethod method)
 
 enum HttpMethod HttpStrToMethod(char *method)
 {
-    // QUESTION, should it be "GET\0"?
     if (strcmp(method, "GET") == 0)
     {
         return HttpGET;
@@ -162,8 +75,7 @@ enum HttpMethod HttpStrToMethod(char *method)
     return HttpFAKER;
 }
 
-enum HttpMethod
-ParseRequestMethod(char *buffer, size_t buffer_size)
+enum HttpMethod ParseRequestMethod(char *buffer, size_t buffer_size)
 {
 
     if (buffer_size == 0 || buffer_size > MAX_METHOD_LENGTH)

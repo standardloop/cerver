@@ -13,7 +13,7 @@ char *ParseHost(char *buffer, size_t buffer_size)
     }
 
     size_t host_size = buffer_size;
-    char *host_str = malloc(sizeof(char) * host_size);
+    char *host_str = (char *)malloc(sizeof(char) * host_size);
     if (host_str == NULL)
     {
         (void)Log(WARN, "[5XX]: cannot allocate memory to parse host\n");

@@ -16,7 +16,7 @@ ThreadPool *InitThreadPool(int num_threads)
     }
     workers->num_threads = num_threads;
     workers->working_threads = 0;
-    workers->pool = malloc(num_threads * sizeof(pthread_t));
+    workers->pool = (pthread_t *)malloc(num_threads * sizeof(pthread_t));
 
     int mutex_init = pthread_mutex_init(&workers->LOCK, NULL);
     if (mutex_init != 0)

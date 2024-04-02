@@ -43,7 +43,7 @@ int EnQueue(Queue *queue, int client_socket)
         return QUEUE_SIZE_ERROR;
     }
 
-    Node *node = malloc(sizeof(Node));
+    Node *node = (Node *)malloc(sizeof(Node));
 
     if (node == NULL)
     {

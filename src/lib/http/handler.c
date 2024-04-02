@@ -52,39 +52,43 @@ void HandleRequest(RouteTableAll *router, int client_socket)
         {
             if (router != NULL)
             {
-                printf("\n[JOSH]: %s\n", request->path_and_query);
-                fflush(stdin);
-                switch (request->method)
+                HttpResponse *response = (HttpResponse *)malloc(sizeof(HttpResponse));
+                if (response == NULL)
                 {
-                case HttpGET:
-                    (void)Log(INFO, "HttpGET\n");
-                    if (router->get != NULL)
+                    (void)Log(ERROR, "cannot allocate memory for HttpResponse\n");
+                }
+                else
+                {
+                    switch (request->method)
                     {
-                        (void)PrintRouteTable(router->get);
-                        Route *route = GetRouteFromTable(router->get, request->path_and_query);
-                        if (route != NULL)
+                    case HttpGET:
+                        if (router->get != NULL)
                         {
-                            (void)Log(INFO, "route != NULL\n");
-                            route->handler(request, NULL);
-                            const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
-                            write(client_socket, hello, strlen(hello));
-                            // route->handler(request, response);
+                            // (void)PrintRouteTable(router->get);
+                            Route *route = GetRouteFromTable(router->get, request->path_and_query);
+                            if (route != NULL)
+                            {
+                                route->handler(request, NULL);
+                                const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
+                                write(client_socket, hello, strlen(hello));
+                                // route->handler(request, response);
+                            }
+                            else
+                            {
+                                (void)Log(WARN, "[JOSH]: 404\n");
+                            }
                         }
                         else
                         {
-                            (void)Log(WARN, "[JOSH]: 404\n");
+                            (void)Log(WARN, "[JOSH]: get router not found\n");
                         }
+                        break;
+                    case HttpFAKER:
+                        (void)Log(INFO, "HttpFAKER\n");
+                        break;
+                    default:
+                        return;
                     }
-                    else
-                    {
-                        (void)Log(WARN, "[JOSH]: get router not found\n");
-                    }
-                    break;
-                case HttpFAKER:
-                    (void)Log(INFO, "HttpFAKER\n");
-                    break;
-                default:
-                    return;
                 }
             }
         }

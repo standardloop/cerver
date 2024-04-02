@@ -2,21 +2,19 @@
 #include <stdlib.h>
 
 #include "./src/lib/cerver.h"
-
 #include "./src/lib/logger.h"
-
-// int main(int argc, char const *argv[])
 
 void foo(HttpRequest *req, HttpResponse *res)
 {
+    (void)Log(TRACE, "[JOSH]: entering special test function\n");
     if (req == NULL || res == NULL)
     {
         return;
     }
-    (void)Log(TRACE, "[JOSH]: entering special test function\n");
     return;
 }
 
+// int main(int argc, char const *argv[])
 int main(void)
 {
     int port = 8080;

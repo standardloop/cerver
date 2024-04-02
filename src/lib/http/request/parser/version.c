@@ -33,7 +33,7 @@ char *ParseHttpVersion(char *buffer, size_t buffer_size)
     char *buffer_start = slash_point + 1;
     size_t http_version_size = buffer_size - ((slash_point + 1) - buffer);
 
-    char *http_version_str = malloc(sizeof(char) * http_version_size);
+    char *http_version_str = (char *)malloc(sizeof(char) * http_version_size);
     if (http_version_str == NULL)
     {
         (void)Log(WARN, "[4XX]: cannot parse HTTP version memory error\n");
@@ -48,7 +48,7 @@ char *ParseHttpVersion(char *buffer, size_t buffer_size)
     while (char_count < http_version_size && *buffer != '\0')
     {
         *http_version_str = *buffer;
-    
+
         buffer++;
         http_version_str++;
         char_count++;

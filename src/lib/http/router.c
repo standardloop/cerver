@@ -11,7 +11,7 @@ bool isRouteTableEmpty(RouteTable *);
 
 RouteTable *InitRouteTable(enum HttpMethod method, int max)
 {
-    RouteTable *table = malloc(sizeof(RouteTable));
+    RouteTable *table = (RouteTable *)malloc(sizeof(RouteTable));
     if (table == NULL)
     {
         return NULL;

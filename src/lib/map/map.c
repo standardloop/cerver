@@ -19,7 +19,7 @@ Map *InitMap(int max)
     {
         return NULL;
     }
-    Map *map = malloc(sizeof(Map));
+    Map *map = (Map *)malloc(sizeof(Map));
     if (map == NULL)
     {
         return NULL;
