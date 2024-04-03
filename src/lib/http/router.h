@@ -3,13 +3,13 @@
 #include "./request/request.h"
 #include "./response/response.h"
 
-typedef void(RouterFunction)(HttpRequest *, HttpResponse *);
+typedef void(RouteHandler)(HttpRequest *, HttpResponse *);
 
 typedef struct route
 {
     struct route *next;
     char *path;
-    RouterFunction *handler;
+    RouteHandler *handler;
 } Route;
 
 typedef struct
@@ -32,7 +32,7 @@ RouteTableAll *InitRouteTableAll();
 
 RouteTable *InitRouteTable(enum HttpMethod, int);
 void PrintRouteTable(RouteTable *tabe);
-int AddRouteToTable(RouteTable *, char *, RouterFunction *);
+int AddRouteToTable(RouteTable *, char *, RouteHandler *);
 
 Route *GetRouteFromTable(RouteTable *, char *);
 

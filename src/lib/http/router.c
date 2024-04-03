@@ -24,7 +24,7 @@ RouteTable *InitRouteTable(enum HttpMethod method, int max)
     return table;
 }
 
-Route *newRoute(char *path, RouterFunction *router_function)
+Route *newRoute(char *path, RouteHandler *router_function)
 {
     Route *route = (Route *)malloc(sizeof(Route));
     if (route == NULL)
@@ -98,7 +98,7 @@ RouteTableAll *InitRouteTableAll()
 }
 
 int AddRouteToTable(RouteTable *table, char *path,
-                    RouterFunction *router_function)
+                    RouteHandler *router_function)
 {
     if (table == NULL || path == NULL ||
         table->method == HttpFAKER)
