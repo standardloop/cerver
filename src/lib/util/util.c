@@ -1,15 +1,24 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include "./util.h"
 
-void PrintBuffer(char *buffer, size_t buffer_size)
+void PrintBuffer(char *buffer, size_t buffer_size, bool print_code)
 {
     char *buffer_ptr = buffer;
     size_t i = 0;
     while (i < buffer_size && buffer_ptr != NULL && *buffer_ptr != '\0' && *buffer_ptr != '\0')
     {
-        printf("%c", *buffer_ptr);
+        if (print_code)
+        {
+            printf("%d", *buffer_ptr);
+        }
+        else
+        {
+            printf("%c", *buffer_ptr);
+        }
+
         i++;
         buffer_ptr++;
     }

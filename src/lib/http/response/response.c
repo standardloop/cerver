@@ -5,5 +5,8 @@
 
 void FreeHttpResponse(HttpResponse *response)
 {
-    free(response);
+    if (response != NULL)
+    {
+        free(response);
+    }
 }

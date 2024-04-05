@@ -5,7 +5,6 @@
 #define MAX_LINE_LENGTH 50
 #define ERROR_SIZE_T 0
 
-
 #include "./parser/method.h"
 #include "./../response/codes/codes.h"
 
@@ -36,11 +35,13 @@ typedef struct
 typedef struct
 {
     enum HttpMethod method;
-    char *path_and_query; // FIXME, seperate this at some point
-    char *version;        // 1.1
-    char *host;           // localhost
-    int port;             // 8080
-    Error *error;         // WIP possible
+    char *path;
+    char *query;   // FIXME probably want to use a map for this
+                   // but tempoarility just store it all in a string
+    char *version; // 1.1
+    char *host;    // localhost
+    int port;      // 8080
+    Error *error;  // WIP possible
 
     char **headers; // FIXM: map
     char *body;     // FIXME: optional? maybe **

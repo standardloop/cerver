@@ -14,6 +14,7 @@
 #include "./parser/path.h"
 #include "./parser/port.h"
 #include "./parser/host.h"
+#include "./parser/query.h"
 #include "./parser/method.h"
 #include "./parser/version.h"
 
@@ -74,6 +75,7 @@ HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
     /*
     *********************************************************************************
         PATH + QUERY
+        HEAD /asdsadsd/ash?id=3 HTTP/1.1
     *********************************************************************************
     */
     buffer = buffer_start;
@@ -83,11 +85,31 @@ HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
         (void)Log(WARN, "error finding appropriate amount of spaces for path+query");
         return request;
     }
-    size_t suspected_path_length = (second_space_pointer - space_pointer);
 
-    char *path = ParseRequestPath(space_pointer + 1, suspected_path_length);
-    request->path_and_query = path;
-    if (request->path_and_query == NULL)
+    size_t suspected_path_length;
+    char *question_mark_char = strchr((space_pointer + 1), QUESTION_CHAR);
+
+    if (question_mark_char == NULL)
+    {
+        (void)Log(INFO, "the request does not contain a query\n");
+        request->query = NULL;
+
+        suspected_path_length = (second_space_pointer - space_pointer);
+    }
+    else
+    {
+        (void)Log(INFO, "the request contains a query!\n");
+        size_t suspected_query_length = second_space_pointer - question_mark_char;
+        request->query = ParseQuery(question_mark_char + 1, suspected_query_length);
+        if (request->query == NULL)
+        {
+            (void)Log(FATAL, "request->query is NULL");
+            // FIXME
+        }
+        suspected_path_length = ((question_mark_char - 1) - space_pointer);
+    }
+    request->path = ParseRequestPath(space_pointer + 1, suspected_path_length);
+    if (request->path == NULL)
     {
         Log(WARN, "[4XX]: Couldn't parser HTTP Request path/query\n");
         return request;
@@ -191,9 +213,13 @@ void FreeHttpRequest(HttpRequest *request)
     {
         return;
     }
-    if (request->path_and_query != NULL)
+    if (request->path != NULL)
     {
-        free(request->path_and_query);
+        free(request->path);
+    }
+    if (request->query != NULL)
+    {
+        free(request->query);
     }
     if (request->version != NULL)
     {

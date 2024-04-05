@@ -24,6 +24,7 @@ build: main.c
 	src/lib/http/request/parser/host.c \
 	src/lib/http/request/parser/path.c \
 	src/lib/http/request/parser/port.c \
+	src/lib/http/request/parser/query.c \
 	src/lib/http/request/parser/method.c \
 	src/lib/http/request/parser/version.c \
 	-o main
