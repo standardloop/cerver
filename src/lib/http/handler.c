@@ -22,7 +22,6 @@ const char *NOT_FOUND_STRING = "HTTP/1.1 404 Not Found\nContent-Type: text/plain
 const char *BAD_REQUEST_STRING = "HTTP/1.1 400 Bad Request\nContent-Type: text/plain\nContent-Length: 3\n\n400";
 const char *STRING_405 = "HTTP/1.1 405 Method Not Allowed \nContent-Type: text/plain\nContent-Length: 3\n\n405";
 
-const char *handleParserError(HttpRequest *);
 void handleGenericError(int, enum HttpCode);
 
 void HandleRequest(RouteTableAll *router, int client_socket)
@@ -40,19 +39,9 @@ void HandleRequest(RouteTableAll *router, int client_socket)
     else
     {
         request = ParseHttpRequest(buffer, valread); // pass valread here?
-        if (request == NULL || request->error != NULL)
+        if (request == NULL || request->early_resp_code != 0)
         {
-            const char *error_response_string = handleParserError(request);
-            if (error_response_string == NULL)
-            {
-                (void)Log(ERROR, "[4|5XX]:HttpRequest fail to parse completely\n");
-                (void)handleGenericError(client_socket, HttpBadGateway);
-            }
-            else
-            {
-                // WIP custom error message
-                (void)write(client_socket, error_response_string, strlen(error_response_string));
-            }
+            (void)handleGenericError(client_socket, request->early_resp_code);
         }
         else
         {
@@ -148,31 +137,6 @@ void HandleRequest(RouteTableAll *router, int client_socket)
     (void)FreeHttpResponse(response);
     (void)FreeHttpRequest(request);
     close(client_socket);
-}
-
-const char *handleParserError(HttpRequest *request)
-{
-    if (request == NULL || request->error == NULL)
-    {
-        return NULL;
-    }
-    if (request->host)
-    {
-    }
-    if (request->method == HttpFAKER)
-    {
-        return BAD_REQUEST_STRING;
-    }
-    if (request->path)
-    {
-    }
-    if (request->port)
-    {
-    }
-    if (request->version)
-    {
-    }
-    return NULL;
 }
 
 void handleStaticPath()

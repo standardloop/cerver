@@ -9,28 +9,28 @@
 #include "./../response/codes.h"
 
 /*
-HEAD / HTTP/1.1
-Host: localhost:8080
-User-Agent: curl/7.79.1
-Accept: wildcard
+    HEAD / HTTP/1.1
+    Host: localhost:8080
+    User-Agent: curl/7.79.1
+    Accept: wildcard
 */
 
 /*
-GET / HTTP/1.1
-Host: localhost:8080
-User-Agent: curl/7.79.1
-Accept: wildcard
-Connection: Upgrade, HTTP2-Settings
-Upgrade: h2c
-HTTP2-Settings: AAMAAABkAAQCAAAAAAIAAAAA
+    GET / HTTP/1.1
+    Host: localhost:8080
+    User-Agent: curl/7.79.1
+    Accept: wildcard
+    Connection: Upgrade, HTTP2-Settings
+    Upgrade: h2c
+    HTTP2-Settings: AAMAAABkAAQCAAAAAAIAAAAA
 */
 
-typedef struct
-{
-    enum HttpCode early_resp_code;
-    char *error_message;
-    size_t message_length;
-} Error;
+// typedef struct
+// {
+//     enum HttpCode early_resp_code;
+//     char *error_message;
+//     size_t message_length;
+// } Error;
 
 typedef struct
 {
@@ -41,7 +41,7 @@ typedef struct
     char *version; // 1.1
     char *host;    // localhost
     int port;      // 8080
-    Error *error;  // WIP possible
+    enum HttpCode early_resp_code;
 
     char **headers; // FIXM: map
     char *body;     // FIXME: optional? maybe **
