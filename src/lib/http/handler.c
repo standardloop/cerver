@@ -20,7 +20,7 @@
 const char *BAD_GATEWAY_STRING = "HTTP/1.1 503 Bad Gateway\nContent-Type: text/plain\nContent-Length: 3\n\n503";
 const char *NOT_FOUND_STRING = "HTTP/1.1 404 Not Found\nContent-Type: text/plain\nContent-Length: 3\n\n404";
 const char *BAD_REQUEST_STRING = "HTTP/1.1 400 Bad Request\nContent-Type: text/plain\nContent-Length: 3\n\n400";
-const char *STRING_405 = "HTTP/1.1 405 Method Not Allowed \nContent-Type: text/plain\nContent-Length: 3\n\n405";
+const char *METHOD_NOT_SUPP_STRING = "HTTP/1.1 405 Method Not Allowed \nContent-Type: text/plain\nContent-Length: 3\n\n405";
 
 void handleGenericError(int, enum HttpCode);
 
@@ -148,7 +148,7 @@ void handleGenericError(int client_socket, enum HttpCode response_code)
     switch (response_code)
     {
     case HttpMethodNotAllowed:
-        (void)write(client_socket, STRING_405, strlen(STRING_405));
+        (void)write(client_socket, METHOD_NOT_SUPP_STRING, strlen(METHOD_NOT_SUPP_STRING));
         break;
     case HttpNotFound:
         (void)write(client_socket, NOT_FOUND_STRING, strlen(NOT_FOUND_STRING));
@@ -160,6 +160,7 @@ void handleGenericError(int client_socket, enum HttpCode response_code)
         (void)write(client_socket, BAD_REQUEST_STRING, strlen(BAD_REQUEST_STRING));
         break;
     default:
+        (void)write(client_socket, METHOD_NOT_SUPP_STRING, strlen(METHOD_NOT_SUPP_STRING));
         break;
     }
 }
