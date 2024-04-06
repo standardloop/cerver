@@ -106,7 +106,7 @@ int AddRouteToTable(RouteTable *table, char *path,
                     RouteHandler *router_function)
 {
     if (table == NULL || path == NULL ||
-        table->method == HttpFAKER)
+        table->method == HttpFAKE)
     {
         return -420;
     }

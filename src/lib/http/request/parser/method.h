@@ -17,7 +17,7 @@ enum HttpMethod
     HttpOPTIONS,
     HttpTRACE,
     HttpPATCH,
-    HttpFAKER,
+    HttpFAKE,
 };
 char *HttpMethodToStr(enum HttpMethod);
 enum HttpMethod HttpStrToMethod(char *);

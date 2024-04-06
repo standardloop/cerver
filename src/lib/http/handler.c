@@ -125,9 +125,9 @@ void HandleRequest(RouteTableAll *router, int client_socket)
                             (void)handleGenericError(client_socket, HttpMethodNotAllowed);
                         }
                         break;
-                    case HttpFAKER:
+                    case HttpFAKE:
                     default:
-                        (void)Log(INFO, "HttpFAKER\n");
+                        (void)Log(INFO, "HttpFAKE\n");
                         (void)handleGenericError(client_socket, HttpBadGateway);
                     }
                 }

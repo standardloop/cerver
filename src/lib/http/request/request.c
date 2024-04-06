@@ -53,9 +53,9 @@ HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
     size_t suspected_http_method_length = (space_pointer - buffer_start);
 
     request->method = ParseRequestMethod(buffer_start, suspected_http_method_length);
-    if (request->method == HttpFAKER)
+    if (request->method == HttpFAKE)
     {
-        Log(WARN, "[4XX]: Couldn't parse HTTP Request method (HttpFAKER)\n");
+        Log(WARN, "[4XX]: Couldn't parse HTTP Request method (HttpFAKE)\n");
         request->early_resp_code = HttpBadRequest;
         return request;
     }
@@ -235,7 +235,7 @@ void FreeHttpRequest(HttpRequest *request)
 // FIXME user logger here
 void PrintHttpRequest(HttpRequest *request)
 {
-    if (request->method != HttpFAKER)
+    if (request->method != HttpFAKE)
     {
         printf("[DEBUG][HTTPMETHOD]: %s\n", HttpMethodToStr(request->method));
     }
