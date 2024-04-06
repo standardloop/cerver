@@ -1,7 +1,7 @@
 #ifndef RESPONSE_H
 #define RESPONSE_H
 
-#include "./codes/codes.h"
+#include "./codes.h"
 
 typedef struct
 {

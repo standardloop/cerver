@@ -6,7 +6,7 @@
 #define ERROR_SIZE_T 0
 
 #include "./parser/method.h"
-#include "./../response/codes/codes.h"
+#include "./../response/codes.h"
 
 /*
 HEAD / HTTP/1.1

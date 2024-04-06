@@ -22,10 +22,15 @@ typedef struct
 
 typedef struct
 {
+    RouteTable *head;
     RouteTable *get;
-    // RouteTable *post;
-    // RouteTable *put;
-    // RouteTable *delete;
+    RouteTable *options;
+    RouteTable *post;
+    RouteTable *put;
+    RouteTable *delete;
+    RouteTable *connect;
+    RouteTable *patch;
+    RouteTable *trace;
 } RouteTableAll;
 
 RouteTableAll *InitRouteTableAll();

@@ -72,8 +72,6 @@ Route *GetRouteFromTable(RouteTable *table, char *path)
     while (iterator != NULL)
     {
         // FIXME add logic for /:id or similiar
-        // query rip
-
         if (strcmp(path, iterator->path) == 0)
         {
             return iterator;
@@ -83,8 +81,6 @@ Route *GetRouteFromTable(RouteTable *table, char *path)
     return NULL;
 }
 
-// (RouteTableAll *)malloc(sizeof(RouteTableAll));
-
 RouteTableAll *InitRouteTableAll()
 {
     RouteTableAll *router = (RouteTableAll *)malloc(sizeof(RouteTableAll));
@@ -93,7 +89,16 @@ RouteTableAll *InitRouteTableAll()
         // FIXME LOG
         return NULL;
     }
+    router->head = NULL;
     router->get = InitRouteTable(HttpGET, 10);
+    router->options = NULL;
+    router->post = NULL;
+    router->put = NULL;
+    router->delete = NULL;
+    router->connect = NULL;
+    router->patch = NULL;
+    router->trace = NULL;
+
     return router;
 }
 

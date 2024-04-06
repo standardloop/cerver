@@ -91,7 +91,7 @@ HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
 
     if (question_mark_char == NULL)
     {
-        (void)Log(INFO, "the request does not contain a query\n");
+        //(void)Log(INFO, "the request does not contain a query\n");
         request->query = NULL;
 
         suspected_path_length = (second_space_pointer - space_pointer);
