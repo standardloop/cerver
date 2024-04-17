@@ -3,6 +3,7 @@
 
 #include "./src/lib/cerver.h"
 #include "./src/lib/logger.h"
+#include "./src/lib/util/util.h"
 
 void foo(HttpRequest *req, HttpResponse *res)
 {
@@ -21,9 +22,15 @@ int main(void)
     int num_threads = 10;
     int buffer_size = 100;
 
-    (void)SetLogLevel(TRACE);
+    const char *log_level_str = GetEnv("LOG_LEVEL", "TRACE");
+    enum LogLevel log_level_enum = StringToLogLevel(log_level_str);
+    (void)SetLogLevel(log_level_enum);
 
     Cerver *server = InitCerver(port, num_threads, buffer_size);
+
+    // You should now at compile time how many routes you have
+    // int num_routes = 1;
+
     (void)AddRouteToTable(server->router->get, "/foo", (RouteHandler *)foo);
     (void)StartCerver(server);
 

@@ -13,6 +13,7 @@ build: main.c
 	src/lib/logger.c \
 	src/lib/map/map.c \
 	src/lib/util/util.c \
+	src/lib/util/env.c \
 	src/lib/thread/pool.c \
 	src/lib/thread/worker.c \
 	src/lib/thread/scheduler.c \

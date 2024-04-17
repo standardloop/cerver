@@ -14,5 +14,6 @@ enum LogLevel
 
 void Log(enum LogLevel, char *);
 void SetLogLevel(enum LogLevel);
+enum LogLevel StringToLogLevel(const char *);
 
 #endif

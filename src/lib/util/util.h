@@ -18,5 +18,6 @@
 void PrintBuffer(char *, size_t, bool);
 char *StrToUpper(char *);
 char *StrToLower(char *);
+const char *GetEnv(char *, char *);
 
 #endif

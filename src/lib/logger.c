@@ -6,6 +6,36 @@
 
 static enum LogLevel log_level = FATAL;
 
+enum LogLevel StringToLogLevel(const char *input_str)
+{
+    if (strcmp(input_str, "TRACE") == 0)
+    {
+        return TRACE;
+    }
+    else if (strcmp(input_str, "DEBUG") == 0)
+    {
+        return DEBUG;
+    }
+    else if (strcmp(input_str, "INFO") == 0)
+    {
+        return INFO;
+    }
+    else if (strcmp(input_str, "WARN") == 0)
+    {
+        return WARN;
+    }
+    else if (strcmp(input_str, "ERROR") == 0)
+    {
+        return ERROR;
+    }
+    else if (strcmp(input_str, "FATAL") == 0)
+    {
+        return FATAL;
+    }
+    (void)Log(ERROR, "cannot parse log level, will default to TRACE");
+    return TRACE;
+}
+
 void SetLogLevel(enum LogLevel level)
 {
     log_level = level;
