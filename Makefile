@@ -4,7 +4,7 @@ include Makefile.properties
 all: build run
 
 clean:
-	rm main
+	rm cerver
 
 build: main.c
 	$(CC) $(CC_FLAGS) \
@@ -29,10 +29,10 @@ build: main.c
 	src/lib/http/request/parser/query.c \
 	src/lib/http/request/parser/method.c \
 	src/lib/http/request/parser/version.c \
-	-o main
+	-o cerver
 
 run:
-	./main
+	./cerver
 
 test:
 

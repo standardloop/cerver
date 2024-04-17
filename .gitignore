@@ -53,6 +53,7 @@ dkms.conf
 
 # Custom
 main
+cerver
 .vscode
 .DS_Store
 .notes.txt
@@ -60,3 +61,4 @@ testing/
 src/lib/pkg
 src/lib/http/middleware.c
 src/lib/http/middleware.h
+Dockerfile.alpine
