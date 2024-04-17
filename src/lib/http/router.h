@@ -31,9 +31,9 @@ typedef struct
     RouteTable *connect;
     RouteTable *patch;
     RouteTable *trace;
-} RouteTableAll;
+} Router;
 
-RouteTableAll *InitRouteTableAll();
+Router *InitRouter();
 
 RouteTable *InitRouteTable(enum HttpMethod, int);
 void PrintRouteTable(RouteTable *tabe);

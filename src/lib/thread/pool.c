@@ -37,7 +37,7 @@ ThreadPool *InitThreadPool(int num_threads)
     return workers;
 }
 
-void StartThreads(RouteTableAll *router, Scheduler *scheduler, ThreadPool *workers)
+void StartThreads(Router *router, Scheduler *scheduler, ThreadPool *workers)
 {
     for (int i = 0; i < workers->num_threads; i++)
     {

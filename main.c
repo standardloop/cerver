@@ -23,7 +23,7 @@ int main(void)
 
     (void)SetLogLevel(TRACE);
 
-    HTTPCerver *server = InitCerver(port, num_threads, buffer_size);
+    Cerver *server = InitCerver(port, num_threads, buffer_size);
     (void)AddRouteToTable(server->router->get, "/foo", (RouteHandler *)foo);
     (void)StartCerver(server);
 

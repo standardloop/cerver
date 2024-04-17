@@ -10,7 +10,7 @@ typedef struct
     Scheduler *scheduler;
     ThreadPool *workers;
     int worker_number;
-    RouteTableAll *router;
+    Router *router;
 } ThreadArg;
 
 void *ThreadWorker(void *arg);

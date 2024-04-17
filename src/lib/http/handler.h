@@ -3,6 +3,6 @@
 
 #include "./router.h"
 
-void HandleRequest(RouteTableAll *, int);
+void HandleRequest(Router *, int);
 
 #endif

@@ -81,9 +81,9 @@ Route *GetRouteFromTable(RouteTable *table, char *path)
     return NULL;
 }
 
-RouteTableAll *InitRouteTableAll()
+Router *InitRouter()
 {
-    RouteTableAll *router = (RouteTableAll *)malloc(sizeof(RouteTableAll));
+    Router *router = (Router *)malloc(sizeof(Router));
     if (router == NULL)
     {
         // FIXME LOG

@@ -24,7 +24,7 @@ const char *METHOD_NOT_SUPP_STRING = "HTTP/1.1 405 Method Not Allowed \nContent-
 
 void handleGenericError(int, enum HttpCode);
 
-void HandleRequest(RouteTableAll *router, int client_socket)
+void HandleRequest(Router *router, int client_socket)
 {
     HttpRequest *request = NULL;
     HttpResponse *response = NULL;

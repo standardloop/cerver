@@ -12,7 +12,7 @@
 #include "./thread/scheduler.h"
 #include "./logger.h"
 
-HTTPCerver *InitCerver(int port, int num_threads, int queue_buffer_size)
+Cerver *InitCerver(int port, int num_threads, int queue_buffer_size)
 {
     int server_fd;
     struct sockaddr_in address;
@@ -43,7 +43,7 @@ HTTPCerver *InitCerver(int port, int num_threads, int queue_buffer_size)
         (void)Log(FATAL, "couldn't listen on socket\n");
     }
 
-    HTTPCerver *cerver = (HTTPCerver *)malloc(sizeof(HTTPCerver));
+    Cerver *cerver = (Cerver *)malloc(sizeof(Cerver));
     if (cerver == NULL)
     {
         (void)Log(FATAL, "cannot allocate memory for cerver\n");
@@ -54,7 +54,7 @@ HTTPCerver *InitCerver(int port, int num_threads, int queue_buffer_size)
     cerver->num_threads = num_threads;
     cerver->queue_buffer_size = queue_buffer_size;
 
-    cerver->router = InitRouteTableAll();
+    cerver->router = InitRouter();
     if (cerver->router == NULL)
     {
         free(cerver);
@@ -69,7 +69,7 @@ HTTPCerver *InitCerver(int port, int num_threads, int queue_buffer_size)
     return cerver;
 }
 
-void StartCerver(HTTPCerver *cerver)
+void StartCerver(Cerver *cerver)
 {
     int client_socket;
     Scheduler *scheduler = InitScheduler(FIFO, cerver->queue_buffer_size);
