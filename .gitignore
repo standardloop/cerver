@@ -53,7 +53,6 @@ dkms.conf
 
 # Custom
 main
-cerver
 .vscode
 .DS_Store
 .notes.txt

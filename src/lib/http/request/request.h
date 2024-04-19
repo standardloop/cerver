@@ -5,8 +5,9 @@
 #define MAX_LINE_LENGTH 50
 #define ERROR_SIZE_T 0
 
-#include "./parser/method.h"
+#include "./parser/parser.h"
 #include "./../response/codes.h"
+// #include "./../../map/map.h"
 
 /*
     HEAD / HTTP/1.1
@@ -43,8 +44,8 @@ typedef struct
     int port;      // 8080
     enum HttpCode early_resp_code;
 
-    char **headers; // FIXM: map
-    char *body;     // FIXME: optional? maybe **
+    // Map *headers;
+    char *body; // FIXME:
 } HttpRequest;
 
 HttpRequest *

@@ -139,9 +139,23 @@ void HandleRequest(Router *router, int client_socket)
     close(client_socket);
 }
 
-void handleStaticPath()
-{
-}
+// void handleStaticPath(int client_socket, char *path)
+// {
+//     FILE *file;
+//     file = fopen(path + 1, "r");
+//     if (file == NULL)
+//     {
+//         (void)handleGenericError(client_socket, HttpNotFound);
+//     }
+//     sprintf(buffer, "HTTP/1.1 200 OK\r\n\r\n");
+//     write(client_socket, buffer, strlen(buffer));
+
+//     while ((bytes_read = fread(buffer, 1, BUFFER_SIZE, file)) > 0)
+//     {
+//         write(client_socket, buffer, bytes_read);
+//     }
+//     fclose(file);
+// }
 
 void handleGenericError(int client_socket, enum HttpCode response_code)
 {

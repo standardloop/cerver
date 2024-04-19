@@ -12,12 +12,7 @@
 #include "./request.h"
 #include "./../response/codes.h"
 
-#include "./parser/path.h"
-#include "./parser/port.h"
-#include "./parser/host.h"
-#include "./parser/query.h"
-#include "./parser/method.h"
-#include "./parser/version.h"
+#include "./parser/parser.h"
 
 #include "../../util/util.h"
 #include "../../logger.h"
