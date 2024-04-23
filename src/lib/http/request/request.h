@@ -7,7 +7,7 @@
 
 #include "./parser/parser.h"
 #include "./../response/codes.h"
-// #include "./../../map/map.h"
+#include "./../../map/map.h"
 
 /*
     HEAD / HTTP/1.1
@@ -44,7 +44,7 @@ typedef struct
     int port;      // 8080
     enum HttpCode early_resp_code;
 
-    // Map *headers;
+    Map *headers;
     char *body; // FIXME:
 } HttpRequest;
 

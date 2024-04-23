@@ -177,6 +177,7 @@ HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
     *********************************************************************************
     */
 
+    buffer = buffer_start;
     if (*newline_ptr != NEWLINE_CHAR || *colon_ptr != COLON_CHAR)
     {
         (void)Log(ERROR, "[4XX]: cannot parse host from request\n");
@@ -199,6 +200,31 @@ HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
         request->early_resp_code = HttpBadRequest;
         return request;
     }
+
+    /*
+    *********************************************************************************
+        REMAINING? HEADERS
+    *********************************************************************************
+    */
+
+    buffer = buffer_start;
+    newline_ptr = strchr(newline_ptr + 1, NEWLINE_CHAR);
+    PrintBuffer(newline_ptr + 1, buffer_size, false);
+    (void)Log(FATAL, "");
+    char *headers_ptr = newline_ptr + 1;
+    /*
+        Take up till colon as key and from colon to carriage return as value)
+    */
+    request->headers = NULL;
+    request->headers = ParseHeaders(buffer, buffer_size);
+    // while (headers_ptr != NULL && *headers_ptr != '\0')
+    // {
+    //     if (headers_ptr == NEWLINE_CHAR)
+    //     {
+    //     }
+    //     headers_ptr++;
+    // }
+
     return request;
 }
 

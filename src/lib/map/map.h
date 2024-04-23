@@ -9,16 +9,16 @@
 #define MAP_ERROR_EMPTY -6
 #define MAP_ERROR_404 -7
 
-typedef struct node
+typedef struct mapNode
 {
-    struct node *next;
+    struct mapNode *next;
     char *key;
     char *value;
-} Node;
+} MapNode;
 
 typedef struct
 {
-    Node *head;
+    MapNode *head;
     int count;
     int max;
 } Map;

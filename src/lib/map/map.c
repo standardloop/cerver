@@ -8,10 +8,10 @@
 bool isMapFull(Map *);
 bool isMapEmpty(Map *);
 
-Node *newNode(char *, char *);
-void freeNodeFields(Node *);
-void freeNode(Node *node);
-void freeAllNodes(Node *);
+MapNode *newMapNode(char *, char *);
+void freeMapNodeFields(MapNode *);
+void freeMapNode(MapNode *mapNode);
+void freeAllMapNodes(MapNode *);
 
 Map *InitMap(int max)
 {
@@ -31,18 +31,18 @@ Map *InitMap(int max)
     return map;
 }
 
-Node *newNode(char *key, char *value)
+MapNode *newMapNode(char *key, char *value)
 {
-    Node *node = (Node *)malloc(sizeof(Node));
-    if (node == NULL)
+    MapNode *mapNode = (MapNode *)malloc(sizeof(MapNode));
+    if (mapNode == NULL)
     {
         return NULL;
     }
-    node->key = key;
-    node->value = value;
-    node->next = NULL;
+    mapNode->key = key;
+    mapNode->value = value;
+    mapNode->next = NULL;
 
-    return node;
+    return mapNode;
 }
 
 bool isMapFull(Map *map)
@@ -68,7 +68,7 @@ int MapAdd(Map *map, char *key, char *value)
 
     if (isMapEmpty(map))
     {
-        map->head = newNode(key, value);
+        map->head = newMapNode(key, value);
         if (map->head == NULL)
         {
             return MAP_ERROR_ALLOCATE;
@@ -77,8 +77,8 @@ int MapAdd(Map *map, char *key, char *value)
         return 1;
     }
 
-    Node *start = map->head;
-    Node *iterator = start;
+    MapNode *start = map->head;
+    MapNode *iterator = start;
     while (iterator != NULL)
     {
         if (strcmp(key, iterator->key) == 0)
@@ -87,7 +87,7 @@ int MapAdd(Map *map, char *key, char *value)
         }
         if (iterator->next == NULL && iterator)
         {
-            iterator->next = newNode(key, value);
+            iterator->next = newMapNode(key, value);
 
             if (iterator->next == NULL)
             {
@@ -108,7 +108,7 @@ char *MapGet(Map *map, char *key)
     {
         return NULL;
     }
-    Node *iterator = map->head;
+    MapNode *iterator = map->head;
     while (iterator != NULL)
     {
         if (strcmp(key, iterator->key) == 0)
@@ -142,7 +142,7 @@ int MapRemove(Map *map, char *key)
 
         if (map->head->next != NULL) // FIXME ALWAYS?
         {
-            Node *temp = map->head;
+            MapNode *temp = map->head;
             map->head = map->head->next;
             free(temp);
             map->count--;
@@ -151,8 +151,8 @@ int MapRemove(Map *map, char *key)
     }
 
     // guranteed to have more than 1 in list
-    Node *iterator = map->head;
-    Node *iterator_next = iterator->next;
+    MapNode *iterator = map->head;
+    MapNode *iterator_next = iterator->next;
 
     while (iterator_next != NULL)
     {
@@ -160,13 +160,13 @@ int MapRemove(Map *map, char *key)
         {
             if (iterator_next->next == NULL)
             {
-                freeNode(iterator_next);
+                freeMapNode(iterator_next);
                 map->count--;
                 map->head->next = NULL;
                 return map->count;
             }
             iterator->next = iterator_next->next;
-            freeNode(iterator_next);
+            freeMapNode(iterator_next);
             map->count--;
             return map->count;
         }
@@ -176,36 +176,36 @@ int MapRemove(Map *map, char *key)
     return MAP_ERROR_404;
 }
 
-void freeNodeFields(Node *node)
+void freeMapNodeFields(MapNode *mapNode)
 {
-    if (node == NULL)
+    if (mapNode == NULL)
     {
         return;
     }
-    if (node->key != NULL)
+    if (mapNode->key != NULL)
     {
-        free(node->key);
+        free(mapNode->key);
     }
-    if (node->value != NULL)
+    if (mapNode->value != NULL)
     {
-        free(node->value);
+        free(mapNode->value);
     }
 }
 
-void freeNode(Node *node)
+void freeMapNode(MapNode *mapNode)
 {
-    freeNodeFields(node);
-    free(node);
+    freeMapNodeFields(mapNode);
+    free(mapNode);
 }
 
-void freeAllNodes(Node *head)
+void freeAllMapNodes(MapNode *head)
 {
-    Node *temp = NULL;
+    MapNode *temp = NULL;
     while (head != NULL)
     {
         temp = head;
         head = head->next;
-        freeNode(temp);
+        freeMapNode(temp);
     }
 }
 
@@ -215,7 +215,7 @@ void FreeMap(Map *map)
     {
         return;
     }
-    freeAllNodes(map->head);
+    freeAllMapNodes(map->head);
     free(map);
 }
 
@@ -227,7 +227,7 @@ void PrintMap(Map *map)
         return;
     }
 
-    Node *iterator = map->head;
+    MapNode *iterator = map->head;
     while (iterator != NULL)
     {
         printf("\n%s : %s\n", iterator->key, iterator->value);
