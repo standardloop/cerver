@@ -26,7 +26,15 @@ Map *ParseHeaders(char *buffer, size_t buffer_size)
     {
         if (*buffer == NEWLINE_CHAR)
         {
-            (void)addHeaderFromLine(headers, line_start, (size_t)(buffer - line_start));
+            char *line_without_carriage_return = buffer;
+            line_without_carriage_return--;
+
+            // remove carriage return from line
+            while (*line_without_carriage_return == CARRIAGE_RETURN_CHAR)
+            {
+                line_without_carriage_return--;
+            }
+            (void)addHeaderFromLine(headers, line_start, (size_t)(line_without_carriage_return - line_start));
             line_start = buffer + 1;
         }
         buffer++;
@@ -37,14 +45,16 @@ Map *ParseHeaders(char *buffer, size_t buffer_size)
 
 void addHeaderFromLine(Map *headers, char *line_start, size_t line_size)
 {
+    // FIXME
+    // http headers to be case insensitve
     if (headers == NULL || line_start == NULL)
     {
         return;
     }
     char *colon_ptr = strchr(line_start, COLON_CHAR);
+    // FIXME error checking
     size_t header_key_size = (colon_ptr - line_start) + 1;
 
-    // char *header_key = line_start;
     char *header_key = malloc(sizeof(char) * header_key_size);
     if (header_key == NULL)
     {
@@ -64,6 +74,7 @@ void addHeaderFromLine(Map *headers, char *line_start, size_t line_size)
         line_start_iterator++;
     }
     // char *header_value = colon_ptr + 1;
+    // FIXME: not prooerly accounting for length (space char, carriage return, newline, etc)
     size_t header_value_size = line_size - header_key_size;
     char *header_value = malloc(sizeof(char) * header_value_size);
     if (header_value == NULL)
@@ -82,6 +93,7 @@ void addHeaderFromLine(Map *headers, char *line_start, size_t line_size)
     }
 
     while (*value_iterator != NEWLINE_CHAR &&
+           *value_iterator != CARRIAGE_RETURN_CHAR &&
            *value_iterator != '\0' &&
            value_iterator != NULL)
     {

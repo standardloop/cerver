@@ -220,8 +220,13 @@ HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
         return request;
     }
 
-    PrintMap(request->headers);
-    (void)Log(FATAL, "");
+    // PrintMap(request->headers);
+
+    // char *foo = MapGet(request->headers, "Accept");
+    // printf("\n\n[JOSH]: %s\n\n", foo);
+    // printf("\n\n[JOSH]: %d\n\n", (int)request->headers->count);
+    // PrintBuffer(foo, strlen(foo), true);
+    // (void)Log(FATAL, "");
 
     return request;
 }

@@ -8,6 +8,10 @@
 void foo(HttpRequest *req, HttpResponse *res)
 {
     // (void)Log(TRACE, "[JOSH]: entering special test function\n");
+    char *accepted_types = MapGet(req->headers, "Accept");
+    if (accepted_types == NULL)
+    {
+    }
     if (req == NULL || res == NULL)
     {
         return;
