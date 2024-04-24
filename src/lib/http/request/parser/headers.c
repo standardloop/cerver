@@ -10,7 +10,7 @@ void addHeaderFromLine(Map *, char *, size_t);
 
 Map *ParseHeaders(char *buffer, size_t buffer_size)
 {
-    if (buffer == NULL || buffer_size == 0 || buffer_size > MAX_PORT_LENGTH)
+    if (buffer == NULL || buffer_size == 0)
     {
         (void)Log(ERROR, "[ERROR][4XX]: invalid buffer for parsing headers");
         return NULL;
@@ -27,6 +27,7 @@ Map *ParseHeaders(char *buffer, size_t buffer_size)
         if (*buffer == NEWLINE_CHAR)
         {
             (void)addHeaderFromLine(headers, line_start, (size_t)(buffer - line_start));
+            line_start = buffer + 1;
         }
         buffer++;
     }
@@ -74,6 +75,12 @@ void addHeaderFromLine(Map *headers, char *line_start, size_t line_size)
     *(header_value + header_value_size) = '\0';
     char *header_value_iterator = header_value;
     char *value_iterator = colon_ptr + 1;
+
+    while (*value_iterator == SPACE_CHAR)
+    {
+        value_iterator++;
+    }
+
     while (*value_iterator != NEWLINE_CHAR &&
            *value_iterator != '\0' &&
            value_iterator != NULL)
