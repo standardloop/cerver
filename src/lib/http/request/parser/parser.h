@@ -49,6 +49,13 @@ char *ParseHttpVersion(char *, size_t);
 
 // HEADERS
 #include "./../../../map/map.h"
+
+/*
+    individually header size can matter more though
+    413 Entity Too Large
+*/
+#define MAX_NUM_REQUEST_HEADERS 10
+
 Map *ParseHeaders(char *, size_t);
 
 #endif

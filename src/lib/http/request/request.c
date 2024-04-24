@@ -209,21 +209,19 @@ HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
 
     buffer = buffer_start;
     newline_ptr = strchr(newline_ptr + 1, NEWLINE_CHAR);
-    PrintBuffer(newline_ptr + 1, buffer_size, false);
-    (void)Log(FATAL, "");
+
     char *headers_ptr = newline_ptr + 1;
-    /*
-        Take up till colon as key and from colon to carriage return as value)
-    */
-    request->headers = NULL;
-    request->headers = ParseHeaders(buffer, buffer_size);
-    // while (headers_ptr != NULL && *headers_ptr != '\0')
-    // {
-    //     if (headers_ptr == NEWLINE_CHAR)
-    //     {
-    //     }
-    //     headers_ptr++;
-    // }
+    request->headers = ParseHeaders(headers_ptr, buffer_size);
+
+    if (request->headers == NULL)
+    {
+        (void)Log(ERROR, "[4XX]: couldn't parse headers\n");
+        request->early_resp_code = HttpBadRequest;
+        return request;
+    }
+
+    PrintMap(request->headers);
+    (void)Log(FATAL, "");
 
     return request;
 }
@@ -249,6 +247,10 @@ void FreeHttpRequest(HttpRequest *request)
     if (request->host != NULL)
     {
         free(request->host);
+    }
+    if (request->headers != NULL)
+    {
+        FreeMap(request->headers);
     }
     free(request);
 }
