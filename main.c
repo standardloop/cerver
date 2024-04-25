@@ -1,23 +1,41 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
 
 #include "./src/lib/cerver.h"
 #include "./src/lib/logger.h"
 #include "./src/lib/util/util.h"
 
-void foo(HttpRequest *req, HttpResponse *res)
+void foo(HttpRequest *request, HttpResponse *response)
 {
     // (void)Log(TRACE, "[JOSH]: entering special test function\n");
-    char *accepted_types = MapGet(req->headers, "Accept");
+    char *accepted_types = MapGet(request->headers, "Accept");
     if (accepted_types == NULL)
     {
     }
-    if (req == NULL || res == NULL)
+    if (request == NULL || response == NULL)
     {
         return;
     }
-    return;
+    const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
+    (void)write(request->client_socket, hello, strlen(hello));
 }
+
+// void fooStatic(HttpRequest *request, HttpResponse *response)
+// {
+//     // (void)Log(TRACE, "[JOSH]: entering special test function\n");
+//     char *accepted_types = MapGet(request->headers, "Accept");
+//     if (accepted_types == NULL)
+//     {
+//     }
+//     if (request == NULL || response == NULL)
+//     {
+//         return;
+//     }
+//     //handleStaticPath();
+//     return;
+// }
 
 // int main(int argc, char const *argv[])
 int main(void)

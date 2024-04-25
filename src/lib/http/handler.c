@@ -38,13 +38,14 @@ void HandleRequest(Router *router, int client_socket)
     }
     else
     {
-        request = ParseHttpRequest(buffer, valread); // pass valread here?
+        request = CreateParsedHttpRequest(buffer, valread); // pass valread here?
         if (request == NULL || request->early_resp_code != 0)
         {
             (void)handleGenericError(client_socket, request->early_resp_code);
         }
         else
         {
+            request->client_socket = client_socket;
             if (router != NULL)
             {
                 //(void)Log(TRACE, "Router is not NULL\n");
@@ -56,6 +57,7 @@ void HandleRequest(Router *router, int client_socket)
                 }
                 else
                 {
+                    Route *route = NULL;
                     switch (request->method)
                     {
                         // FIXME: treating HEAD and GET the same
@@ -69,17 +71,11 @@ void HandleRequest(Router *router, int client_socket)
                         else
                         {
                             // (void)PrintRouteTable(router->get);
-                            Route *route = GetRouteFromTable(router->get, request->path);
+                            route = GetRouteFromTable(router->get, request->path);
                             if (route == NULL)
                             {
                                 (void)Log(WARN, "404\n");
                                 (void)handleGenericError(client_socket, HttpNotFound);
-                            }
-                            else
-                            {
-                                route->handler(request, response);
-                                const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
-                                (void)write(client_socket, hello, strlen(hello));
                             }
                         }
                         break;
@@ -129,6 +125,14 @@ void HandleRequest(Router *router, int client_socket)
                     default:
                         (void)Log(INFO, "HttpFAKE\n");
                         (void)handleGenericError(client_socket, HttpBadGateway);
+                    }
+                    if (route == NULL)
+                    {
+                        (void)handleGenericError(client_socket, HttpBadGateway);
+                    }
+                    else
+                    {
+                        route->handler(request, response);
                     }
                 }
             }

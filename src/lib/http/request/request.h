@@ -35,6 +35,7 @@
 
 typedef struct
 {
+    int client_socket;
     enum HttpMethod method;
     char *path;
     char *query;   // FIXME probably want to use a map for this
@@ -49,7 +50,7 @@ typedef struct
 } HttpRequest;
 
 HttpRequest *
-ParseHttpRequest(char *, size_t);
+CreateParsedHttpRequest(char *, size_t);
 
 void FreeHttpRequest(HttpRequest *);
 void PrintHttpRequest(HttpRequest *);

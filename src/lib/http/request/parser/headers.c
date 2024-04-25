@@ -40,6 +40,12 @@ Map *ParseHeaders(char *buffer, size_t buffer_size)
         buffer++;
     }
     buffer = buffer_start;
+
+    // char *accepted_types = MapGet(headers, "Accept");
+    // if (accepted_types == NULL)
+    // {
+    //     MapAdd(headers, );
+    // }
     return headers;
 }
 

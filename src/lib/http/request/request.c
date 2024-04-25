@@ -17,17 +17,17 @@
 #include "../../util/util.h"
 #include "../../logger.h"
 
-HttpRequest *ParseHttpRequest(char *buffer, size_t buffer_size)
+HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
 {
     if (buffer == NULL || buffer_size == 0)
     {
-        (void)Log(ERROR, "[4XX]: buffer is NULL for ParseHttpRequest or buffer_size is 0\n");
+        (void)Log(ERROR, "[4XX]: buffer is NULL for CreateParsedHttpRequest or buffer_size is 0\n");
         return NULL;
     }
     HttpRequest *request = (HttpRequest *)malloc(sizeof(HttpRequest));
     if (request == NULL)
     {
-        (void)Log(ERROR, "[5XX]: buffer is NULL for malloc in ParseHttpRequest\n");
+        (void)Log(ERROR, "[5XX]: buffer is NULL for malloc in CreateParsedHttpRequest\n");
         return NULL;
     }
     request->early_resp_code = 0;
