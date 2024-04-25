@@ -7,6 +7,11 @@
 #include "./src/lib/logger.h"
 #include "./src/lib/util/util.h"
 
+void handleStaticPath(int, char *);
+
+void foo(HttpRequest *, HttpResponse *);
+void fooStatic(HttpRequest *, HttpResponse *);
+
 void foo(HttpRequest *request, HttpResponse *response)
 {
     // (void)Log(TRACE, "[JOSH]: entering special test function\n");
@@ -22,20 +27,40 @@ void foo(HttpRequest *request, HttpResponse *response)
     (void)write(request->client_socket, hello, strlen(hello));
 }
 
-// void fooStatic(HttpRequest *request, HttpResponse *response)
-// {
-//     // (void)Log(TRACE, "[JOSH]: entering special test function\n");
-//     char *accepted_types = MapGet(request->headers, "Accept");
-//     if (accepted_types == NULL)
-//     {
-//     }
-//     if (request == NULL || response == NULL)
-//     {
-//         return;
-//     }
-//     //handleStaticPath();
-//     return;
-// }
+void handleStaticPath(int client_socket, char *path)
+{
+    FILE *file;
+    file = fopen(path + 1, "r");
+    if (file == NULL)
+    {
+       // (void)handleGenericError(client_socket, HttpNotFound);
+    }
+    size_t bytes_read;
+    char buffer[BUFFER_SIZE];
+    sprintf(buffer, "HTTP/1.1 200 OK\r\n\r\n");
+    write(client_socket, buffer, strlen(buffer));
+
+    while ((bytes_read = fread(buffer, 1, BUFFER_SIZE, file)) > 0)
+    {
+        write(client_socket, buffer, bytes_read);
+    }
+    fclose(file);
+}
+
+void fooStatic(HttpRequest *request, HttpResponse *response)
+{
+    // (void)Log(TRACE, "[JOSH]: entering special test function\n");
+    char *accepted_types = MapGet(request->headers, "Accept");
+    if (accepted_types == NULL)
+    {
+    }
+    if (request == NULL || response == NULL)
+    {
+        return;
+    }
+    handleStaticPath(request->client_socket, "/static/foo");
+    return;
+}
 
 // int main(int argc, char const *argv[])
 int main(void)
@@ -54,6 +79,7 @@ int main(void)
     // int num_routes = 1;
 
     (void)AddRouteToTable(server->router->get, "/foo", (RouteHandler *)foo);
+    (void)AddRouteToTable(server->router->get, "/static/foo.html", (RouteHandler *)fooStatic);
     (void)StartCerver(server);
 
     return EXIT_SUCCESS;
