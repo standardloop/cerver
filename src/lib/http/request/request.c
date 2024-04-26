@@ -220,6 +220,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
         return request;
     }
 
+    // printf("\n%s\n", request->path);
     // PrintMap(request->headers);
 
     // char *foo = MapGet(request->headers, "Accept");

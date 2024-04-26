@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "./src/lib/cerver.h"
+#include "./src/lib/http/handler.h"
 #include "./src/lib/logger.h"
 #include "./src/lib/util/util.h"
 
@@ -29,11 +30,13 @@ void foo(HttpRequest *request, HttpResponse *response)
 
 void handleStaticPath(int client_socket, char *path)
 {
+    printf("\n[handleStaticPath]: %s\n", path);
     FILE *file;
     file = fopen(path + 1, "r");
     if (file == NULL)
     {
-       // (void)handleGenericError(client_socket, HttpNotFound);
+        (void)HandleGenericError(client_socket, HttpNotFound);
+        return;
     }
     size_t bytes_read;
     char buffer[BUFFER_SIZE];
@@ -58,7 +61,7 @@ void fooStatic(HttpRequest *request, HttpResponse *response)
     {
         return;
     }
-    handleStaticPath(request->client_socket, "/static/foo");
+    handleStaticPath(request->client_socket, "/static/foo.html");
     return;
 }
 

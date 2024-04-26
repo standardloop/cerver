@@ -4,5 +4,6 @@
 #include "./router.h"
 
 void HandleRequest(Router *, int);
+void HandleGenericError(int, enum HttpCode);
 
 #endif

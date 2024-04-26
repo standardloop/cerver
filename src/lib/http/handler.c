@@ -22,7 +22,7 @@ const char *NOT_FOUND_STRING = "HTTP/1.1 404 Not Found\nContent-Type: text/plain
 const char *BAD_REQUEST_STRING = "HTTP/1.1 400 Bad Request\nContent-Type: text/plain\nContent-Length: 3\n\n400";
 const char *METHOD_NOT_SUPP_STRING = "HTTP/1.1 405 Method Not Allowed \nContent-Type: text/plain\nContent-Length: 3\n\n405";
 
-void handleGenericError(int, enum HttpCode);
+void HandleGenericError(int, enum HttpCode);
 
 void HandleRequest(Router *router, int client_socket)
 {
@@ -34,14 +34,14 @@ void HandleRequest(Router *router, int client_socket)
     if (valread == 0)
     {
         (void)Log(WARN, "[4XX]: Didn't read more than 0\n");
-        handleGenericError(client_socket, HttpBadRequest);
+        HandleGenericError(client_socket, HttpBadRequest);
     }
     else
     {
         request = CreateParsedHttpRequest(buffer, valread); // pass valread here?
         if (request == NULL || request->early_resp_code != 0)
         {
-            (void)handleGenericError(client_socket, request->early_resp_code);
+            (void)HandleGenericError(client_socket, request->early_resp_code);
         }
         else
         {
@@ -53,7 +53,7 @@ void HandleRequest(Router *router, int client_socket)
                 if (response == NULL)
                 {
                     (void)Log(ERROR, "cannot allocate memory for HttpResponse\n");
-                    (void)handleGenericError(client_socket, HttpBadGateway);
+                    (void)HandleGenericError(client_socket, HttpBadGateway);
                 }
                 else
                 {
@@ -66,7 +66,7 @@ void HandleRequest(Router *router, int client_socket)
                         if (router->get == NULL)
                         {
                             //(void)Log(TRACE, "[JOSH]: get router not found\n");
-                            (void)handleGenericError(client_socket, HttpMethodNotAllowed);
+                            (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
                         }
                         else
                         {
@@ -75,60 +75,60 @@ void HandleRequest(Router *router, int client_socket)
                             if (route == NULL)
                             {
                                 (void)Log(WARN, "404\n");
-                                (void)handleGenericError(client_socket, HttpNotFound);
+                                (void)HandleGenericError(client_socket, HttpNotFound);
                             }
                         }
                         break;
                     case HttpOPTIONS:
                         if (router->options == NULL)
                         {
-                            (void)handleGenericError(client_socket, HttpMethodNotAllowed);
+                            (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
                         }
                         break;
                     case HttpPOST:
                         if (router->post == NULL)
                         {
-                            (void)handleGenericError(client_socket, HttpMethodNotAllowed);
+                            (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
                         }
                         break;
                     case HttpPUT:
                         if (router->put == NULL)
                         {
-                            (void)handleGenericError(client_socket, HttpMethodNotAllowed);
+                            (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
                         }
                         break;
                     case HttpPATCH:
                         if (router->patch == NULL)
                         {
-                            (void)handleGenericError(client_socket, HttpMethodNotAllowed);
+                            (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
                         }
                         break;
                     case HttpDELETE:
                         if (router->delete == NULL)
                         {
-                            (void)handleGenericError(client_socket, HttpMethodNotAllowed);
+                            (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
                         }
                         break;
                     case HttpCONNECT:
                         if (router->delete == NULL)
                         {
-                            (void)handleGenericError(client_socket, HttpMethodNotAllowed);
+                            (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
                         }
                         break;
                     case HttpTRACE:
                         if (router->trace == NULL)
                         {
-                            (void)handleGenericError(client_socket, HttpMethodNotAllowed);
+                            (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
                         }
                         break;
                     case HttpFAKE:
                     default:
                         (void)Log(INFO, "HttpFAKE\n");
-                        (void)handleGenericError(client_socket, HttpBadGateway);
+                        (void)HandleGenericError(client_socket, HttpBadGateway);
                     }
                     if (route == NULL)
                     {
-                        (void)handleGenericError(client_socket, HttpBadGateway);
+                        (void)HandleGenericError(client_socket, HttpBadGateway);
                     }
                     else
                     {
@@ -143,7 +143,7 @@ void HandleRequest(Router *router, int client_socket)
     close(client_socket);
 }
 
-void handleGenericError(int client_socket, enum HttpCode response_code)
+void HandleGenericError(int client_socket, enum HttpCode response_code)
 {
     switch (response_code)
     {
