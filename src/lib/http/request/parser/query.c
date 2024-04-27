@@ -56,8 +56,6 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
         {
             value_start = buffer_iterator + 1;
             size_t key_size = (value_start - key_start);
-            // printf("\n[JOSH]: %d\n", (int)key_size);
-            //  (void)Log(FATAL, "");
             query_key = malloc(sizeof(char) * key_size);
             if (query_key == NULL)
             {
@@ -72,7 +70,6 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
         {
             key_start = buffer_iterator + 1;                         // next key start
             size_t value_size = (buffer_iterator - value_start) + 1; // +1 for NULL char
-            printf("\n[value_size]: %d\n", (int)value_size);
             query_value = malloc(sizeof(char) * value_size);
             if (query_value == NULL)
             {
@@ -115,6 +112,6 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
         (void)Log(WARN, "Query Map Size is not equal to our expected count\n");
     }
 
-    (void)PrintMap(query_map);
+    //(void)PrintMap(query_map);
     return query_map;
 }
