@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "./../../../map/map.h"
+
 // HOST
 char *ParseHost(char *, size_t);
 
@@ -30,6 +32,7 @@ enum HttpMethod ParseRequestMethod(char *, size_t);
 
 // PATH
 #define MAX_PATH_SIZE 50
+#define MAX_QUERY_ENTRIES 50 // this doesn't exactly matter since an individual entry can be large — look into later
 
 char *ParseRequestPath(char *, size_t);
 
@@ -40,7 +43,7 @@ char *ParseRequestPath(char *, size_t);
 int ParsePort(char *, size_t);
 
 // QUERY
-char *ParseQuery(char *, size_t);
+Map *ParseQuery(char *, size_t);
 
 // VERSION
 #define HTTP_VERSION_PREFIX "HTTP/"
@@ -48,7 +51,6 @@ char *ParseQuery(char *, size_t);
 char *ParseHttpVersion(char *, size_t);
 
 // HEADERS
-#include "./../../../map/map.h"
 
 /*
     individually header size can matter more though

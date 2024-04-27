@@ -233,7 +233,7 @@ void PrintMap(Map *map)
     MapNode *iterator = map->head;
     while (iterator != NULL)
     {
-        printf("\n%s : %s\n", iterator->key, iterator->value);
+        printf("\n%s: %s\n", iterator->key, iterator->value);
         fflush(stdout);
         iterator = iterator->next;
     }

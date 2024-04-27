@@ -38,8 +38,7 @@ typedef struct
     int client_socket;
     enum HttpMethod method;
     char *path;
-    char *query;   // FIXME probably want to use a map for this
-                   // but tempoarility just store it all in a string
+    Map *query;
     char *version; // 1.1
     char *host;    // localhost
     int port;      // 8080

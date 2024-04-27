@@ -12,6 +12,8 @@
 #define CARRIAGE_RETURN_CHAR '\r'
 #define COLON_CHAR ':'
 #define QUESTION_CHAR '?'
+#define EQUAL_CHAR '='
+#define AND_CHAR '&'
 
 #define ALWAYS 1
 

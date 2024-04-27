@@ -1,45 +1,113 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "./parser.h"
 #include "./../../../util/util.h"
 #include "./../../../logger.h"
+#include "./../../../map/map.h"
 
-char *ParseQuery(char *buffer, size_t buffer_size)
+void copyString(char *, char *, size_t);
+
+// FIXME: move to util and finalize this one
+void copyString(char *src, char *des, size_t len)
 {
-    if (buffer == NULL || buffer_size == 0)
+    char *src_it = src;
+    char *dest_it = des;
+    size_t size = 0;
+    while (size < len)
     {
-        (void)Log(WARN, "\n[4XX]: buffer input for ParseQuery is NULL \n");
-        return NULL;
+        *dest_it = *src_it;
+        dest_it++;
+        src_it++;
+        size++;
     }
-    char *buffer_start = buffer;
+}
 
-    size_t http_query_size = buffer_size;
-    char *suspected_http_query_str = (char *)malloc(sizeof(char) * http_query_size);
-    if (suspected_http_query_str == NULL)
+Map *ParseQuery(char *buffer, size_t buffer_size)
+{
+    if (buffer == NULL || buffer_size <= 0)
     {
-        (void)Log(WARN, "[5XX]: cannot parse HTTP query memory error\n");
+        (void)Log(WARN, "invalid inputs to ParserQuery\n");
         return NULL;
     }
-    char *suspected_http_query_str_start = suspected_http_query_str;
-    *(suspected_http_query_str + http_query_size) = '\0';
-    size_t char_count = 0;
-    while (char_count < buffer_size && *buffer != SPACE_CHAR && *buffer != '\0')
+    // (void)PrintBuffer(buffer, buffer_size, false);
+    // (void)Log(FATAL, "");
+    Map *query_map = InitMap(MAX_QUERY_ENTRIES);
+    if (query_map == NULL)
     {
-        *suspected_http_query_str = *buffer;
-        buffer++;
-        suspected_http_query_str++;
-        char_count++;
+        (void)Log(WARN, "[5XX] unable to allocate memory to create query map\n");
+        return NULL;
     }
-    // reset to start
-    buffer = buffer_start;
-    suspected_http_query_str = suspected_http_query_str_start;
 
-    if (*(suspected_http_query_str + http_query_size) != '\0')
+    size_t temp_size = 0;
+    char *buffer_iterator = buffer;
+
+    char *key_start = buffer;
+    char *value_start = NULL;
+
+    char *query_key = NULL;
+    char *query_value = NULL;
+
+    while (buffer_iterator != NULL && *buffer_iterator != CARRIAGE_RETURN_CHAR && temp_size < buffer_size)
     {
-        (void)Log(ERROR, "http query string was not null terminated\n");
-        free(suspected_http_query_str);
-        return NULL;
+        // printf("\n%c\n", *buffer_iterator);
+        if (*buffer_iterator == EQUAL_CHAR)
+        {
+            value_start = buffer_iterator + 1;
+            size_t key_size = (value_start - key_start);
+            // printf("\n[JOSH]: %d\n", (int)key_size);
+            // (void)Log(FATAL, "");
+            query_key = malloc(sizeof(char) * key_size);
+            if (query_key == NULL)
+            {
+                (void)Log(WARN, "cannot allocate memory to parse a query key\n");
+                // FIXME memory leak
+                return query_map;
+            }
+            *(query_key + key_size) = NULL_CHAR;
+            (void)copyString(key_start, query_key, key_size - 1);
+            // printf("\n[JOSH]: %s\n", query_key);
+        }
+        else if (*buffer_iterator == AND_CHAR)
+        {
+            key_start = buffer_iterator + 1;
+            size_t value_size = (value_start - key_start);
+            query_value = malloc(sizeof(char) * value_size);
+            if (query_value == NULL)
+            {
+                (void)Log(WARN, "cannot allocate memory to parse a query value\n");
+                // FIXME memory leak
+                return query_map;
+            }
+            *(query_value + value_size) = NULL_CHAR;
+            (void)copyString(value_start, query_value, value_size - 1);
+            // printf("\n[JOSH]: %s\n", query_value);
+        }
+        else if (*buffer_iterator == NULL_CHAR)
+        {
+            size_t value_size = (buffer_iterator - value_start) + 1;
+            printf("\n[JOSH]: %d\n", (int)value_size);
+            query_value = malloc(sizeof(char) * value_size);
+            if (query_value == NULL)
+            {
+                (void)Log(WARN, "cannot allocate memory to parse a query value\n");
+                // FIXME memory leak
+                return query_map;
+            }
+            *(query_value + value_size) = NULL_CHAR;
+            (void)copyString(value_start, query_value, value_size - 1);
+            // printf("\n[JOSH]: %s\n", query_value);
+        }
+
+        if (query_key != NULL && query_value != NULL && query_key != query_value)
+        {
+            (void)Log(TRACE, "adding a query entry to the map!\n");
+            (void)MapAdd(query_map, query_key, query_value);
+        }
+        buffer_iterator++;
+        temp_size++;
     }
-    return suspected_http_query_str;
+    (void)PrintMap(query_map);
+    return query_map;
 }

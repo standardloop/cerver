@@ -19,6 +19,8 @@
 
 HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
 {
+    // PrintBuffer(buffer, buffer_size, false);
+    //(void)Log(FATAL, "");
     if (buffer == NULL || buffer_size == 0)
     {
         (void)Log(ERROR, "[4XX]: buffer is NULL for CreateParsedHttpRequest or buffer_size is 0\n");
@@ -62,35 +64,17 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     */
     buffer = buffer_start;
     char *second_space_pointer = strchr((space_pointer + 1), SPACE_CHAR); // +1 because pointer is on space
-    if ((*second_space_pointer != SPACE_CHAR) && (*space_pointer != SPACE_CHAR))
+    if ((*second_space_pointer != SPACE_CHAR) || (*space_pointer != SPACE_CHAR))
     {
+        // if (second_space_pointer == space_pointer)
+        // {
+        //     (void)Log(FATAL, "");
+        // }
         (void)Log(WARN, "error finding appropriate amount of spaces for path+query");
         request->early_resp_code = HttpBadRequest;
         return request;
     }
-
-    size_t suspected_path_length;
-    char *question_mark_char = strchr((space_pointer + 1), QUESTION_CHAR);
-
-    if (question_mark_char == NULL)
-    {
-        //(void)Log(INFO, "the request does not contain a query\n");
-        request->query = NULL;
-        suspected_path_length = (second_space_pointer - space_pointer);
-    }
-    else
-    {
-        (void)Log(INFO, "the request contains a query!\n");
-        size_t suspected_query_length = second_space_pointer - question_mark_char;
-        request->query = ParseQuery(question_mark_char + 1, suspected_query_length);
-        if (request->query == NULL)
-        {
-            (void)Log(ERROR, "request->query is NULL");
-            request->early_resp_code = HttpBadGateway; // FIXME
-            return request;
-        }
-        suspected_path_length = ((question_mark_char - 1) - space_pointer);
-    }
+    size_t suspected_path_length = second_space_pointer - space_pointer;
     request->path = ParseRequestPath(space_pointer + 1, suspected_path_length);
     if (request->path == NULL)
     {
@@ -98,6 +82,20 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
         request->early_resp_code = HttpBadGateway;
         return request;
     }
+
+    char *question_mark_char = strchr(request->path, QUESTION_CHAR);
+    if (question_mark_char == NULL)
+    {
+        (void)Log(TRACE, "the request does not contain a query\n");
+        request->query = NULL;
+    }
+    else
+    {
+        (void)Log(TRACE, "the request contains a query\n");
+        request->query = ParseQuery(question_mark_char + 1, strlen(request->path) - strlen(question_mark_char + 1));
+    }
+    // printf("\n%s\n", question_mark_char);
+    //(void)Log(FATAL, "");
     /*
     *********************************************************************************
         VERSION
@@ -244,7 +242,7 @@ void FreeHttpRequest(HttpRequest *request)
     }
     if (request->query != NULL)
     {
-        free(request->query);
+        FreeMap(request->query);
     }
     if (request->version != NULL)
     {
