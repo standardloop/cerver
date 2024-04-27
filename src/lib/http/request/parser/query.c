@@ -44,20 +44,20 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
     char *buffer_iterator = buffer;
 
     char *key_start = buffer;
-    char *value_start = NULL;
+    char *value_start = buffer;
 
     char *query_key = NULL;
     char *query_value = NULL;
 
-    while (buffer_iterator != NULL && *buffer_iterator != CARRIAGE_RETURN_CHAR && temp_size < buffer_size)
+    int query_entry_count = 0;
+    while (buffer_iterator != NULL && temp_size < buffer_size)
     {
-        printf("\n%c\n", *buffer_iterator);
         if (*buffer_iterator == EQUAL_CHAR)
         {
             value_start = buffer_iterator + 1;
             size_t key_size = (value_start - key_start);
             // printf("\n[JOSH]: %d\n", (int)key_size);
-            // (void)Log(FATAL, "");
+            //  (void)Log(FATAL, "");
             query_key = malloc(sizeof(char) * key_size);
             if (query_key == NULL)
             {
@@ -67,13 +67,12 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
             }
             *(query_key + key_size) = NULL_CHAR;
             (void)copyString(key_start, query_key, key_size - 1);
-            // printf("\n[JOSH]: %s\n", query_key);
         }
         else if (*buffer_iterator == AND_CHAR)
         {
-            size_t value_size = (value_start - key_start) - 1; // -1 for space char
-            key_start = buffer_iterator + 1;                   // next key start
-            // printf("\n[JOSH]: %d\n", (int)value_size);
+            key_start = buffer_iterator + 1;                         // next key start
+            size_t value_size = (buffer_iterator - value_start) + 1; // +1 for NULL char
+            printf("\n[value_size]: %d\n", (int)value_size);
             query_value = malloc(sizeof(char) * value_size);
             if (query_value == NULL)
             {
@@ -83,13 +82,11 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
             }
             *(query_value + value_size) = NULL_CHAR;
             (void)copyString(value_start, query_value, value_size - 1); // -1 because nullchar is accounted for
-            // printf("\n[JOSH]: %s\n", query_value);
         }
-        else if (*buffer_iterator == NULL_CHAR)
+        // FIXME: allowed characters in query string?
+        else if (*buffer_iterator == NULL_CHAR || *buffer_iterator == CARRIAGE_RETURN_CHAR || *buffer_iterator == SPACE_CHAR || *buffer_iterator == CARRIAGE_RETURN_CHAR)
         {
-            printf("\n[JOSH]: reached null char\n");
             size_t value_size = (buffer_iterator - value_start) + 1;
-            // printf("\n[JOSH]: %d\n", (int)value_size);
             query_value = malloc(sizeof(char) * value_size);
             if (query_value == NULL)
             {
@@ -99,19 +96,25 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
             }
             *(query_value + value_size) = NULL_CHAR;
             (void)copyString(value_start, query_value, value_size - 1);
-            //printf("\n[JOSH]: %s\n", query_value);
         }
 
         if (query_key != NULL && query_value != NULL && query_key != query_value)
         {
-            (void)Log(TRACE, "adding a query entry to the map!\n");
-            (void)MapAdd(query_map, query_key, query_value);
+            //(void)Log(TRACE, "adding a query entry to the map!\n");
+            (void)MapAdd(query_map, query_key, query_value); // FIXME error checking
+            query_entry_count++;
             query_key = NULL;
             query_value = NULL;
         }
         buffer_iterator++;
         temp_size++;
     }
+    if (query_entry_count != query_map->count)
+    {
+        // FIXME
+        (void)Log(WARN, "Query Map Size is not equal to our expected count\n");
+    }
+
     (void)PrintMap(query_map);
     return query_map;
 }

@@ -21,6 +21,8 @@
 // {
 // }
 
+char *locateQueryStart(char *, size_t);
+
 char *locateQueryStart(char *buffer, size_t size)
 {
     size_t char_count = 0;
@@ -106,24 +108,20 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
         return request;
     }
     size_t path_length = strlen(request->path);
-    if (path_length < suspected_path_length)
+    if (path_length + 1 < suspected_path_length)
     {
         (void)Log(TRACE, "the request contains a query\n");
 
         char *question_mark_char = locateQueryStart((space_pointer + 1 + path_length), suspected_path_length - path_length);
-        if (question_mark_char == NULL)
-        {
-            request->query = NULL;
-            (void)Log(FATAL, "");
-        }
-        else if (*question_mark_char != QUESTION_CHAR)
+        if (question_mark_char == NULL || *question_mark_char != QUESTION_CHAR)
         {
             request->query = NULL;
             (void)Log(FATAL, "");
         }
         else
         {
-            request->query = ParseQuery(question_mark_char + 1, suspected_path_length - path_length);
+            size_t query_length = suspected_path_length - path_length;
+            request->query = ParseQuery(question_mark_char + 1, query_length);
             if (request->query == NULL)
             {
                 request->early_resp_code = HttpBadGateway;
