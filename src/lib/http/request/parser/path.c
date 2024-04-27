@@ -26,7 +26,7 @@ char *ParseRequestPath(char *buffer, size_t buffer_size)
     char *suspected_http_path_str_start = suspected_http_path_str;
     *(suspected_http_path_str + http_path_size) = '\0';
     size_t char_count = 0;
-    while (char_count < buffer_size && *buffer != SPACE_CHAR && *buffer != '\0')
+    while (char_count < buffer_size && *buffer != SPACE_CHAR && *buffer != NULL_CHAR && *buffer != QUESTION_CHAR)
     {
         *suspected_http_path_str = *buffer;
         buffer++;

@@ -23,7 +23,7 @@ void copyString(char *src, char *des, size_t len)
         size++;
     }
 }
-
+// id=3&bar=1
 Map *ParseQuery(char *buffer, size_t buffer_size)
 {
     if (buffer == NULL || buffer_size <= 0)
@@ -51,7 +51,7 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
 
     while (buffer_iterator != NULL && *buffer_iterator != CARRIAGE_RETURN_CHAR && temp_size < buffer_size)
     {
-        // printf("\n%c\n", *buffer_iterator);
+        printf("\n%c\n", *buffer_iterator);
         if (*buffer_iterator == EQUAL_CHAR)
         {
             value_start = buffer_iterator + 1;
@@ -71,39 +71,43 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
         }
         else if (*buffer_iterator == AND_CHAR)
         {
-            key_start = buffer_iterator + 1;
-            size_t value_size = (value_start - key_start);
+            size_t value_size = (value_start - key_start) - 1; // -1 for space char
+            key_start = buffer_iterator + 1;                   // next key start
+            // printf("\n[JOSH]: %d\n", (int)value_size);
             query_value = malloc(sizeof(char) * value_size);
             if (query_value == NULL)
             {
-                (void)Log(WARN, "cannot allocate memory to parse a query value\n");
+                (void)Log(WARN, "& char cannot allocate memory to parse a query value\n");
                 // FIXME memory leak
                 return query_map;
             }
             *(query_value + value_size) = NULL_CHAR;
-            (void)copyString(value_start, query_value, value_size - 1);
+            (void)copyString(value_start, query_value, value_size - 1); // -1 because nullchar is accounted for
             // printf("\n[JOSH]: %s\n", query_value);
         }
         else if (*buffer_iterator == NULL_CHAR)
         {
+            printf("\n[JOSH]: reached null char\n");
             size_t value_size = (buffer_iterator - value_start) + 1;
-            printf("\n[JOSH]: %d\n", (int)value_size);
+            // printf("\n[JOSH]: %d\n", (int)value_size);
             query_value = malloc(sizeof(char) * value_size);
             if (query_value == NULL)
             {
-                (void)Log(WARN, "cannot allocate memory to parse a query value\n");
+                (void)Log(WARN, "end of line cannot allocate memory to parse a query value\n");
                 // FIXME memory leak
                 return query_map;
             }
             *(query_value + value_size) = NULL_CHAR;
             (void)copyString(value_start, query_value, value_size - 1);
-            // printf("\n[JOSH]: %s\n", query_value);
+            //printf("\n[JOSH]: %s\n", query_value);
         }
 
         if (query_key != NULL && query_value != NULL && query_key != query_value)
         {
             (void)Log(TRACE, "adding a query entry to the map!\n");
             (void)MapAdd(query_map, query_key, query_value);
+            query_key = NULL;
+            query_value = NULL;
         }
         buffer_iterator++;
         temp_size++;

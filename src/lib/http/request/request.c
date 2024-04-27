@@ -17,6 +17,29 @@
 #include "../../util/util.h"
 #include "../../logger.h"
 
+// char *strchrWithSize(char *buffer, char target_char, size_t buffer_size)
+// {
+// }
+
+char *locateQueryStart(char *buffer, size_t size)
+{
+    size_t char_count = 0;
+    char *buffer_iterator = buffer;
+    while (char_count < size && buffer_iterator != NULL &&
+           *buffer_iterator != CARRIAGE_RETURN_CHAR &&
+           *buffer_iterator != NEWLINE_CHAR &&
+           *buffer_iterator != NULL_CHAR)
+    {
+        if (*buffer_iterator == QUESTION_CHAR)
+        {
+            return buffer_iterator;
+        }
+        buffer_iterator++;
+        char_count++;
+    }
+    return NULL;
+}
+
 HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
 {
     // PrintBuffer(buffer, buffer_size, false);
@@ -82,18 +105,37 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
         request->early_resp_code = HttpBadGateway;
         return request;
     }
-
-    char *question_mark_char = strchr(request->path, QUESTION_CHAR);
-    if (question_mark_char == NULL)
+    size_t path_length = strlen(request->path);
+    if (path_length < suspected_path_length)
     {
-        (void)Log(TRACE, "the request does not contain a query\n");
-        request->query = NULL;
+        (void)Log(TRACE, "the request contains a query\n");
+
+        char *question_mark_char = locateQueryStart((space_pointer + 1 + path_length), suspected_path_length - path_length);
+        if (question_mark_char == NULL)
+        {
+            request->query = NULL;
+            (void)Log(FATAL, "");
+        }
+        else if (*question_mark_char != QUESTION_CHAR)
+        {
+            request->query = NULL;
+            (void)Log(FATAL, "");
+        }
+        else
+        {
+            request->query = ParseQuery(question_mark_char + 1, suspected_path_length - path_length);
+            if (request->query == NULL)
+            {
+                request->early_resp_code = HttpBadGateway;
+                return request;
+            }
+        }
     }
     else
     {
-        (void)Log(TRACE, "the request contains a query\n");
-        request->query = ParseQuery(question_mark_char + 1, strlen(request->path) - strlen(question_mark_char + 1));
+        (void)Log(TRACE, "the request does not contain a query\n");
     }
+
     // printf("\n%s\n", question_mark_char);
     //(void)Log(FATAL, "");
     /*
