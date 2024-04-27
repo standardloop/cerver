@@ -215,7 +215,10 @@ void FreeMap(Map *map)
     {
         return;
     }
-    freeAllMapNodes(map->head);
+    if (map->head != NULL)
+    {
+        freeAllMapNodes(map->head);
+    }
     free(map);
 }
 

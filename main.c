@@ -16,10 +16,10 @@ void fooStatic(HttpRequest *, HttpResponse *);
 void foo(HttpRequest *request, HttpResponse *response)
 {
     // (void)Log(TRACE, "[JOSH]: entering special test function\n");
-    char *accepted_types = MapGet(request->headers, "Accept");
-    if (accepted_types == NULL)
-    {
-    }
+    // char *accepted_types = MapGet(request->headers, "Accept");
+    // if (accepted_types == NULL)
+    // {
+    // }
     if (request == NULL || response == NULL)
     {
         return;

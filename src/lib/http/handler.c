@@ -22,8 +22,6 @@ const char *NOT_FOUND_STRING = "HTTP/1.1 404 Not Found\nContent-Type: text/plain
 const char *BAD_REQUEST_STRING = "HTTP/1.1 400 Bad Request\nContent-Type: text/plain\nContent-Length: 3\n\n400";
 const char *METHOD_NOT_SUPP_STRING = "HTTP/1.1 405 Method Not Allowed \nContent-Type: text/plain\nContent-Length: 3\n\n405";
 
-void HandleGenericError(int, enum HttpCode);
-
 void HandleRequest(Router *router, int client_socket)
 {
     HttpRequest *request = NULL;
@@ -77,6 +75,10 @@ void HandleRequest(Router *router, int client_socket)
                                 (void)Log(WARN, "404\n");
                                 (void)HandleGenericError(client_socket, HttpNotFound);
                             }
+                            else
+                            {
+                                route->handler(request, response);
+                            }
                         }
                         break;
                     case HttpOPTIONS:
@@ -125,14 +127,6 @@ void HandleRequest(Router *router, int client_socket)
                     default:
                         (void)Log(INFO, "HttpFAKE\n");
                         (void)HandleGenericError(client_socket, HttpBadGateway);
-                    }
-                    if (route == NULL)
-                    {
-                        (void)HandleGenericError(client_socket, HttpBadGateway);
-                    }
-                    else
-                    {
-                        route->handler(request, response);
                     }
                 }
             }
