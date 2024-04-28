@@ -5,7 +5,7 @@
 #include "./parser.h"
 #include "./../../../util/util.h"
 #include "./../../../logger.h"
-#include "./../../../map/map.h"
+#include "./../../../structures/map/map.h"
 
 void copyString(char *, char *, size_t);
 

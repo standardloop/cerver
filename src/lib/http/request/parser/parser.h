@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "./../../../map/map.h"
+#include "./../../../structures/map/map.h"
 
 // HOST
 char *ParseHost(char *, size_t);

@@ -11,15 +11,15 @@ build: main.c
 	main.c \
 	src/lib/cerver.c \
 	src/lib/logger.c \
-	src/lib/map/map.c \
 	src/lib/util/util.c \
 	src/lib/util/env.c \
 	src/lib/thread/pool.c \
 	src/lib/thread/worker.c \
 	src/lib/thread/scheduler.c \
-	src/lib/thread/queue/queue.c \
 	src/lib/http/handler.c \
 	src/lib/http/router.c \
+	src/lib/structures/map/map.c \
+	src/lib/structures/queue/queue.c \
 	src/lib/http/response/codes.c \
 	src/lib/http/response/response.c \
 	src/lib/http/request/request.c \

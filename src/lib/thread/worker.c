@@ -1,7 +1,7 @@
 #include <pthread.h>
 
 #include "./scheduler.h"
-#include "./queue/queue.h"
+#include "./../structures/queue/queue.h"
 #include "./worker.h"
 
 #include "./../http/handler.h"

@@ -37,6 +37,7 @@ void HandleRequest(Router *router, int client_socket)
     else
     {
         request = CreateParsedHttpRequest(buffer, valread); // pass valread here?
+        // can we parse path params here?
         if (request == NULL || request->early_resp_code != 0)
         {
             (void)HandleGenericError(client_socket, request->early_resp_code);
@@ -58,17 +59,23 @@ void HandleRequest(Router *router, int client_socket)
                     Route *route = NULL;
                     switch (request->method)
                     {
-                        // FIXME: treating HEAD and GET the same
+                    // FIXME: treating HEAD and GET the same
                     case HttpHEAD:
                     case HttpGET:
                         if (router->get == NULL)
                         {
-                            //(void)Log(TRACE, "[JOSH]: get router not found\n");
                             (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
                         }
                         else
                         {
-                            // (void)PrintRouteTable(router->get);
+                            // FIXME
+                            // check base path and number of slashes (sub paths?)
+                            // /foo/{id=int}
+                            // /foo/4 (path params)
+
+                            // loop through all the routes in the router
+                            // see if it matches if not go to next one
+
                             route = GetRouteFromTable(router->get, request->path);
                             if (route == NULL)
                             {
@@ -157,4 +164,26 @@ void HandleGenericError(int client_socket, enum HttpCode response_code)
         (void)write(client_socket, METHOD_NOT_SUPP_STRING, strlen(METHOD_NOT_SUPP_STRING));
         break;
     }
+}
+
+void HandleStaticPath(int client_socket, char *path)
+{
+    printf("\n[handleStaticPath]: %s\n", path);
+    FILE *file;
+    file = fopen(path + 1, "r");
+    if (file == NULL)
+    {
+        (void)HandleGenericError(client_socket, HttpNotFound);
+        return;
+    }
+    size_t bytes_read;
+    char buffer[BUFFER_SIZE];
+    sprintf(buffer, "HTTP/1.1 200 OK\r\n\r\n");
+    write(client_socket, buffer, strlen(buffer));
+
+    while ((bytes_read = fread(buffer, 1, BUFFER_SIZE, file)) > 0)
+    {
+        write(client_socket, buffer, bytes_read);
+    }
+    fclose(file);
 }

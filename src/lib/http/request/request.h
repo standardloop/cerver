@@ -7,7 +7,7 @@
 
 #include "./parser/parser.h"
 #include "./../response/codes.h"
-#include "./../../map/map.h"
+#include "./../../structures/map/map.h"
 
 /*
     HEAD / HTTP/1.1
@@ -38,7 +38,7 @@ typedef struct
     int client_socket;
     enum HttpMethod method;
     char *path;
-    Map *query;
+    Map *query_params;
     char *version; // 1.1
     char *host;    // localhost
     int port;      // 8080

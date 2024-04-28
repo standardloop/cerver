@@ -43,7 +43,7 @@ int EnQueue(Queue *queue, int client_socket)
         return QUEUE_SIZE_ERROR;
     }
 
-    Node *node = (Node *)malloc(sizeof(Node));
+    QueueNode *node = (QueueNode *)malloc(sizeof(QueueNode));
 
     if (node == NULL)
     {
@@ -77,7 +77,7 @@ int DeQueue(Queue *queue)
         return QUEUE_SIZE_ERROR;
     }
 
-    Node *tmp = NULL;
+    QueueNode *tmp = NULL;
 
     int client_socket = queue->head->client_socket;
     tmp = queue->head;
@@ -98,7 +98,7 @@ void FreeQueue(Queue *queue)
 
     while (queue->head != NULL)
     {
-        Node *tmp = queue->head;
+        QueueNode *tmp = queue->head;
         queue->head = queue->head->next;
         free(tmp);
     }

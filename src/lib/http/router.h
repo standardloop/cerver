@@ -3,12 +3,30 @@
 #include "./request/request.h"
 #include "./response/response.h"
 
+#define ROUTER_ERROR -1
+
 typedef void(RouteHandler)(HttpRequest *, HttpResponse *);
+
+// enum PathParamType
+// {
+//     PARAM_BOOL,
+//     PARAM_INT,
+//     PARAM_FLOAT,
+//     PARAM_STRING
+// };
+
+// typedef struct
+// {
+//     enum PathParamType param_type;
+//     int path_index;
+
+// } RouteParam;
 
 typedef struct route
 {
     struct route *next;
     char *path;
+    // RouteParam *route_params;
     RouteHandler *handler;
 } Route;
 

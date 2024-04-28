@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-#include "./queue/queue.h"
+#include "./../structures/queue/queue.h"
 #include "./../http/router.h"
 
 enum ThreadPolicy

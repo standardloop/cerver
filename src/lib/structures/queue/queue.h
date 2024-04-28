@@ -6,18 +6,18 @@
 
 #define QUEUE_SIZE_ERROR -1
 
-typedef struct node
+typedef struct queue_node
 {
     int client_socket;
-    struct node *next;
-} Node;
+    struct queue_node *next;
+} QueueNode;
 
 typedef struct queue
 {
     int size;
     int max_size;
-    Node *head;
-    Node *tail;
+    QueueNode *head;
+    QueueNode *tail;
 } Queue;
 
 Queue *InitQueue(int);

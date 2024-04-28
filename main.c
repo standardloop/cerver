@@ -8,9 +8,8 @@
 #include "./src/lib/logger.h"
 #include "./src/lib/util/util.h"
 
-void handleStaticPath(int, char *);
-
 void foo(HttpRequest *, HttpResponse *);
+void fooID(HttpRequest *, HttpResponse *);
 void fooStatic(HttpRequest *, HttpResponse *);
 
 void foo(HttpRequest *request, HttpResponse *response)
@@ -28,26 +27,17 @@ void foo(HttpRequest *request, HttpResponse *response)
     (void)write(request->client_socket, hello, strlen(hello));
 }
 
-void handleStaticPath(int client_socket, char *path)
+// "/foo/:id"
+void fooID(HttpRequest *request, HttpResponse *response)
 {
-    printf("\n[handleStaticPath]: %s\n", path);
-    FILE *file;
-    file = fopen(path + 1, "r");
-    if (file == NULL)
+    // char * path_param_id = GetPathParam(request->path_params, "id");
+    (void)Log(TRACE, "[JOSH]: entering special test ID function\n");
+    if (request == NULL || response == NULL)
     {
-        (void)HandleGenericError(client_socket, HttpNotFound);
         return;
     }
-    size_t bytes_read;
-    char buffer[BUFFER_SIZE];
-    sprintf(buffer, "HTTP/1.1 200 OK\r\n\r\n");
-    write(client_socket, buffer, strlen(buffer));
-
-    while ((bytes_read = fread(buffer, 1, BUFFER_SIZE, file)) > 0)
-    {
-        write(client_socket, buffer, bytes_read);
-    }
-    fclose(file);
+    const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
+    (void)write(request->client_socket, hello, strlen(hello));
 }
 
 void fooStatic(HttpRequest *request, HttpResponse *response)
@@ -61,7 +51,7 @@ void fooStatic(HttpRequest *request, HttpResponse *response)
     {
         return;
     }
-    handleStaticPath(request->client_socket, "/static/foo.html");
+    HandleStaticPath(request->client_socket, "/static/foo.html");
     return;
 }
 
@@ -82,7 +72,17 @@ int main(void)
     // int num_routes = 1;
 
     (void)AddRouteToTable(server->router->get, "/foo", (RouteHandler *)foo);
+
+    // WIP parse this (path params) /foo/4 (match) /foo/bar (no match)
+    (void)AddRouteToTable(server->router->get, "/foo/{id=int}", (RouteHandler *)fooID);
+    // WIP parse wildcard as well
+    (void)AddRouteToTable(server->router->get, "/foo/*", (RouteHandler *)foo);
+
+    (void)AddRouteToTable(server->router->get, "/foo/bar", (RouteHandler *)foo); // WIP parse this (no params)
     (void)AddRouteToTable(server->router->get, "/static/foo.html", (RouteHandler *)fooStatic);
+
+    //(void)AddRouteToTable(server->router->get, "/client/{clientID}/department/{departmentID}/employees", (RouteHandler *)foo); // WIP parse this (no params)
+    //(void)AddRouteToTable(server->router->get, "/static/*", (RouteHandler *)fooStatic); // WIP parse this (wildcard)
     (void)StartCerver(server);
 
     return EXIT_SUCCESS;

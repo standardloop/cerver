@@ -91,10 +91,6 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     char *second_space_pointer = strchr((space_pointer + 1), SPACE_CHAR); // +1 because pointer is on space
     if ((*second_space_pointer != SPACE_CHAR) || (*space_pointer != SPACE_CHAR))
     {
-        // if (second_space_pointer == space_pointer)
-        // {
-        //     (void)Log(FATAL, "");
-        // }
         (void)Log(WARN, "error finding appropriate amount of spaces for path+query");
         request->early_resp_code = HttpBadRequest;
         return request;
@@ -107,6 +103,9 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
         request->early_resp_code = HttpBadGateway;
         return request;
     }
+    // check for path params
+    // char *second_space_pointer = strchr(request->path, COLON_CHAR);
+
     size_t path_length = strlen(request->path);
     if (path_length + 1 < suspected_path_length)
     {
@@ -115,14 +114,14 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
         char *question_mark_char = locateQueryStart((space_pointer + 1 + path_length), suspected_path_length - path_length);
         if (question_mark_char == NULL || *question_mark_char != QUESTION_CHAR)
         {
-            request->query = NULL;
+            request->query_params = NULL;
             (void)Log(FATAL, "");
         }
         else
         {
             size_t query_length = suspected_path_length - path_length;
-            request->query = ParseQuery(question_mark_char + 1, query_length);
-            if (request->query == NULL)
+            request->query_params = ParseQuery(question_mark_char + 1, query_length);
+            if (request->query_params == NULL)
             {
                 request->early_resp_code = HttpBadGateway;
                 return request;
@@ -267,6 +266,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     // PrintBuffer(foo, strlen(foo), true);
     // (void)Log(FATAL, "");
 
+    printf("\n[JOSH]: %s\n", request->path);
     return request;
 }
 
@@ -280,9 +280,9 @@ void FreeHttpRequest(HttpRequest *request)
     {
         free(request->path);
     }
-    if (request->query != NULL)
+    if (request->query_params != NULL)
     {
-        FreeMap(request->query);
+        FreeMap(request->query_params);
     }
     if (request->version != NULL)
     {

@@ -4,6 +4,7 @@
 
 #include "./router.h"
 #include "./../logger.h"
+#include "./../util/util.h"
 
 void freeRoute(Route *);
 void freeRouteTable(RouteTable *);
@@ -71,7 +72,7 @@ Route *GetRouteFromTable(RouteTable *table, char *path)
     Route *iterator = table->routes;
     while (iterator != NULL)
     {
-        // FIXME add logic for /:id or similiar
+        // FIXME add logic for /{id=int}
         if (strcmp(path, iterator->path) == 0)
         {
             return iterator;
@@ -102,19 +103,19 @@ Router *InitRouter()
     return router;
 }
 
-int AddRouteToTable(RouteTable *table, char *path,
-                    RouteHandler *router_function)
+int AddRouteToTable(RouteTable *table, char *path, RouteHandler *router_function)
 {
+    // maybe need to check if path is correct syntax?
     if (table == NULL || path == NULL ||
         table->method == HttpFAKE)
     {
-        return -420;
+        return ROUTER_ERROR;
     }
 
     Route *route = newRoute(path, router_function);
     if (route == NULL)
     {
-        return -420;
+        return ROUTER_ERROR;
     }
 
     Route *head = table->routes;
@@ -149,7 +150,7 @@ void freeRoute(Route *route)
     {
         free(route->path);
     }
-    // Dont need to freee
+    // Dont need to free
     if (route->handler != NULL)
     {
     }

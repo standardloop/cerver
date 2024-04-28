@@ -3,7 +3,7 @@
 #include <pthread.h>
 
 #include "./scheduler.h"
-#include "./queue/queue.h"
+#include "./../structures/queue/queue.h"
 #include "./worker.h"
 
 ThreadPool *InitThreadPool(int num_threads)

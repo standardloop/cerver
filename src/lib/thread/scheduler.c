@@ -6,7 +6,7 @@
 #include "./../logger.h"
 
 #include "./scheduler.h"
-#include "./queue/queue.h"
+#include "./../structures/queue/queue.h"
 #include "./worker.h"
 
 Scheduler *InitScheduler(enum ThreadPolicy policy, int buffer_size)

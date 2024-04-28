@@ -1,7 +1,7 @@
 #ifndef WORKER_H
 #define WORKER_H
 
-#include "./queue/queue.h"
+#include "./../structures/queue/queue.h"
 #include "./scheduler.h"
 #include "./../http/router.h"
 
