@@ -25,6 +25,28 @@ RouteTable *InitRouteTable(enum HttpMethod method, int max)
     return table;
 }
 
+/*
+    turn:     /foo/{id=int}/bar/{name=string}
+    into:     ^/foo/[[:digit:]]+/bar/[[:alpha:]]+$
+    to match: /foo/211111/bar/josh
+*/
+
+// EARLY WIP
+char *createRouteRegex(char *raw_path)
+{
+    const char explode_char[2] = "/";
+    char *token;
+
+    token = strtok(raw_path, explode_char);
+    while (token != NULL)
+    {
+        printf(" %s\n", token);
+        token = strtok(NULL, explode_char);
+    }
+
+    return NULL;
+}
+
 Route *newRoute(char *path, RouteHandler *router_function)
 {
     Route *route = (Route *)malloc(sizeof(Route));
@@ -34,7 +56,10 @@ Route *newRoute(char *path, RouteHandler *router_function)
     }
     route->next = NULL;
     route->handler = router_function;
-    route->path = path;
+    // route->route_regex = createRouteRegex(path);
+    route->route_regex = path; // only for testing we can pass regex directly in
+
+    route->path = path; // FIXME: deprecate in favor of route_regex
 
     return route;
 }
@@ -73,7 +98,11 @@ Route *GetRouteFromTable(RouteTable *table, char *path)
     while (iterator != NULL)
     {
         // FIXME add logic for /{id=int}
-        if (strcmp(path, iterator->path) == 0)
+        // if (strcmp(path, iterator->path) == 0)
+        // {
+        //     return iterator;
+        // }
+        if (RegexBoolMatch(iterator->route_regex, path))
         {
             return iterator;
         }

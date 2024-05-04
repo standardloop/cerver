@@ -22,4 +22,8 @@ char *StrToUpper(char *);
 char *StrToLower(char *);
 const char *GetEnv(char *, char *);
 
+// regex
+bool RegexBoolMatch(char *, char *);
+char *RegexReturnMatch(char *, char *, int *, int *);
+
 #endif

@@ -71,15 +71,20 @@ int main(void)
     // You should now at compile time how many routes you have
     // int num_routes = 1;
 
-    (void)AddRouteToTable(server->router->get, "/foo", (RouteHandler *)foo);
+    // FIXME: TEMP: pass regex router directly
+    (void)AddRouteToTable(server->router->get, "^/foo$", (RouteHandler *)foo);
+    /*
+        turn:     /foo/{id=int}/bar/{name=string}
+        into:     ^/foo/[[:digit:]]+/bar/[[:alpha:]]+$
+        to match: /foo/211111/bar/josh
+    */
+    (void)AddRouteToTable(server->router->get, "^/foo/[[:digit:]]+/bar/[[:alpha:]]+$", (RouteHandler *)fooID);
 
-    // WIP parse this (path params) /foo/4 (match) /foo/bar (no match)
-    (void)AddRouteToTable(server->router->get, "/foo/{id=int}", (RouteHandler *)fooID);
     // WIP parse wildcard as well
-    (void)AddRouteToTable(server->router->get, "/foo/*", (RouteHandler *)foo);
+    // (void)AddRouteToTable(server->router->get, "/foo/*", (RouteHandler *)foo);
 
-    (void)AddRouteToTable(server->router->get, "/foo/bar", (RouteHandler *)foo); // WIP parse this (no params)
-    (void)AddRouteToTable(server->router->get, "/static/foo.html", (RouteHandler *)fooStatic);
+    // (void)AddRouteToTable(server->router->get, "/foo/bar", (RouteHandler *)foo); // WIP parse this (no params)
+    // (void)AddRouteToTable(server->router->get, "/static/foo.html", (RouteHandler *)fooStatic);
 
     //(void)AddRouteToTable(server->router->get, "/client/{clientID}/department/{departmentID}/employees", (RouteHandler *)foo); // WIP parse this (no params)
     //(void)AddRouteToTable(server->router->get, "/static/*", (RouteHandler *)fooStatic); // WIP parse this (wildcard)
