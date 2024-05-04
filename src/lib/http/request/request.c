@@ -130,7 +130,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     }
     else
     {
-        (void)Log(TRACE, "the request does not contain a query\n");
+        //(void)Log(TRACE, "the request does not contain a query\n");
     }
 
     // printf("\n%s\n", question_mark_char);
@@ -266,7 +266,8 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     // PrintBuffer(foo, strlen(foo), true);
     // (void)Log(FATAL, "");
 
-    printf("\n[JOSH]: %s\n", request->path);
+    // printf("\n[JOSH]: %s\n", request->path);
+    request->path_params = NULL; // can't parse this yet
     return request;
 }
 
@@ -295,6 +296,10 @@ void FreeHttpRequest(HttpRequest *request)
     if (request->headers != NULL)
     {
         FreeMap(request->headers);
+    }
+    if (request->path_params != NULL)
+    {
+        FreeMap(request->path_params);
     }
     free(request);
 }

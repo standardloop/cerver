@@ -57,83 +57,54 @@ void HandleRequest(Router *router, int client_socket)
                 else
                 {
                     Route *route = NULL;
+                    bool router_found = false;
                     switch (request->method)
                     {
                     // FIXME: treating HEAD and GET the same
                     case HttpHEAD:
                     case HttpGET:
-                        if (router->get == NULL)
+                        if (router->get != NULL)
                         {
-                            (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
-                        }
-                        else
-                        {
-                            // FIXME
-                            // check base path and number of slashes (sub paths?)
-                            // /foo/{id=int}
-                            // /foo/4 (path params)
-
-                            // loop through all the routes in the router
-                            // see if it matches if not go to next one
-
+                            router_found = true;
                             route = GetRouteFromTable(router->get, request->path);
-                            if (route == NULL)
-                            {
-                                (void)Log(WARN, "404\n");
-                                (void)HandleGenericError(client_socket, HttpNotFound);
-                            }
-                            else
-                            {
-                                route->handler(request, response);
-                            }
                         }
                         break;
                     case HttpOPTIONS:
-                        if (router->options == NULL)
-                        {
-                            (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
-                        }
                         break;
                     case HttpPOST:
-                        if (router->post == NULL)
-                        {
-                            (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
-                        }
                         break;
                     case HttpPUT:
-                        if (router->put == NULL)
-                        {
-                            (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
-                        }
                         break;
                     case HttpPATCH:
-                        if (router->patch == NULL)
-                        {
-                            (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
-                        }
                         break;
                     case HttpDELETE:
-                        if (router->delete == NULL)
-                        {
-                            (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
-                        }
                         break;
                     case HttpCONNECT:
-                        if (router->delete == NULL)
-                        {
-                            (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
-                        }
                         break;
                     case HttpTRACE:
-                        if (router->trace == NULL)
-                        {
-                            (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
-                        }
                         break;
                     case HttpFAKE:
                     default:
                         (void)Log(INFO, "HttpFAKE\n");
-                        (void)HandleGenericError(client_socket, HttpBadGateway);
+                        break;
+                    }
+                    if (!router_found)
+                    {
+                        (void)Log(WARN, "405\n");
+                        (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
+                    }
+                    else if (route == NULL)
+                    {
+                        (void)Log(WARN, "404\n");
+                        (void)HandleGenericError(client_socket, HttpNotFound);
+                    }
+                    else
+                    {
+                        if (route->params != NULL)
+                        {
+                            request->path_params = ParsePathParams(route->params);
+                        }
+                        route->handler(request, response);
                     }
                 }
             }

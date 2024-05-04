@@ -1,11 +1,15 @@
 #ifndef ROUTER_H
 #define ROUTER_H
+
 #include "./request/request.h"
 #include "./response/response.h"
+#include "./../structures/map/map.h"
 
 #define ROUTER_ERROR -1
 
 typedef void(RouteHandler)(HttpRequest *, HttpResponse *);
+
+#define MAX_PATH_PARAMS 10
 
 // enum PathParamType
 // {
@@ -15,18 +19,16 @@ typedef void(RouteHandler)(HttpRequest *, HttpResponse *);
 //     PARAM_STRING
 // };
 
-// typedef struct
-// {
-//     enum PathParamType param_type;
-//     int path_index;
-
-// } RouteParam;
+typedef struct
+{
+    char *param_name;
+    int path_index;
+} RouteParam;
 
 typedef struct route
 {
     struct route *next;
-    char *path;
-    // RouteParam *route_params;
+    RouteParam *params;
     char *route_regex;
     RouteHandler *handler;
 } Route;
@@ -51,6 +53,8 @@ typedef struct
     RouteTable *patch;
     RouteTable *trace;
 } Router;
+
+Map *ParsePathParams(RouteParam *);
 
 Router *InitRouter();
 

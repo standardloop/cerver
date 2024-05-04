@@ -46,6 +46,7 @@ typedef struct
 
     Map *headers;
     char *body; // FIXME:
+    Map *path_params;
 } HttpRequest;
 
 HttpRequest *

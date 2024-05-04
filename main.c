@@ -27,10 +27,15 @@ void foo(HttpRequest *request, HttpResponse *response)
     (void)write(request->client_socket, hello, strlen(hello));
 }
 
-// "/foo/:id"
 void fooID(HttpRequest *request, HttpResponse *response)
 {
-    // char * path_param_id = GetPathParam(request->path_params, "id");
+    // char *path_param_id = GetPathParam(request->path_params, "id");
+    char *path_param_id = MapGet(request->path_params, "id");
+    if (path_param_id != NULL)
+    {
+        printf("\npath_param_id: %s\n", path_param_id);
+    }
+
     (void)Log(TRACE, "[JOSH]: entering special test ID function\n");
     if (request == NULL || response == NULL)
     {
@@ -73,21 +78,18 @@ int main(void)
 
     // FIXME: TEMP: pass regex router directly
     (void)AddRouteToTable(server->router->get, "^/foo$", (RouteHandler *)foo);
+    //(void)AddRouteToTable(server->router->get, "/foo", (RouteHandler *)foo);
+
     /*
         turn:     /foo/{id=int}/bar/{name=string}
         into:     ^/foo/[[:digit:]]+/bar/[[:alpha:]]+$
         to match: /foo/211111/bar/josh
     */
     (void)AddRouteToTable(server->router->get, "^/foo/[[:digit:]]+/bar/[[:alpha:]]+$", (RouteHandler *)fooID);
+    //(void)AddRouteToTable(server->router->get, "/foo/{id=int}/bar/{name=string}", (RouteHandler *)fooID);
 
-    // WIP parse wildcard as well
-    // (void)AddRouteToTable(server->router->get, "/foo/*", (RouteHandler *)foo);
+    //(void)AddRouteToTable(server->router->get, "^/foo/[[:print:]]*$", (RouteHandler *)foo); // catch all
 
-    // (void)AddRouteToTable(server->router->get, "/foo/bar", (RouteHandler *)foo); // WIP parse this (no params)
-    // (void)AddRouteToTable(server->router->get, "/static/foo.html", (RouteHandler *)fooStatic);
-
-    //(void)AddRouteToTable(server->router->get, "/client/{clientID}/department/{departmentID}/employees", (RouteHandler *)foo); // WIP parse this (no params)
-    //(void)AddRouteToTable(server->router->get, "/static/*", (RouteHandler *)fooStatic); // WIP parse this (wildcard)
     (void)StartCerver(server);
 
     return EXIT_SUCCESS;

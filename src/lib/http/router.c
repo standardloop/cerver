@@ -10,6 +10,15 @@ void freeRoute(Route *);
 void freeRouteTable(RouteTable *);
 bool isRouteTableEmpty(RouteTable *);
 
+Map *ParsePathParams(RouteParam *params)
+{
+    if (params == NULL)
+    {
+        return NULL;
+    }
+    return NULL;
+}
+
 RouteTable *InitRouteTable(enum HttpMethod method, int max)
 {
     RouteTable *table = (RouteTable *)malloc(sizeof(RouteTable));
@@ -32,19 +41,19 @@ RouteTable *InitRouteTable(enum HttpMethod method, int max)
 */
 
 // EARLY WIP
-char *createRouteRegex(char *raw_path)
+char *createRouteRegex(char *path)
 {
-    const char explode_char[2] = "/";
-    char *token;
+    // const char explode_char[2] = "/";
+    // char *token;
 
-    token = strtok(raw_path, explode_char);
-    while (token != NULL)
-    {
-        printf(" %s\n", token);
-        token = strtok(NULL, explode_char);
-    }
+    // token = strtok(raw_path, explode_char);
+    // while (token != NULL)
+    // {
+    //     printf(" %s\n", token);
+    //     token = strtok(NULL, explode_char);
+    // }
 
-    return NULL;
+    return path;
 }
 
 Route *newRoute(char *path, RouteHandler *router_function)
@@ -56,10 +65,7 @@ Route *newRoute(char *path, RouteHandler *router_function)
     }
     route->next = NULL;
     route->handler = router_function;
-    // route->route_regex = createRouteRegex(path);
-    route->route_regex = path; // only for testing we can pass regex directly in
-
-    route->path = path; // FIXME: deprecate in favor of route_regex
+    route->route_regex = createRouteRegex(path);
 
     return route;
 }
@@ -83,7 +89,7 @@ void PrintRouteTable(RouteTable *table)
     Route *iterator = table->routes;
     while (iterator != NULL)
     {
-        printf("\n[PrintRouteTable]: %s\n", iterator->path);
+        printf("\n[PrintRouteTable]: %s\n", iterator->route_regex); // FIXME
         iterator = iterator->next;
     }
 }
@@ -175,9 +181,10 @@ void freeRoute(Route *route)
         return;
     }
 
-    if (route->path != NULL)
+    if (route->route_regex != NULL)
     {
-        free(route->path);
+        // FIXME
+        free(route->route_regex);
     }
     // Dont need to free
     if (route->handler != NULL)
