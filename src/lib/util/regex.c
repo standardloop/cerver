@@ -10,12 +10,14 @@ bool RegexBoolMatch(char *pattern, char *string)
     regex_t rgT;
     regmatch_t match;
     bool is_match = false;
-    regcomp(&rgT, pattern, REG_EXTENDED);
-    if ((regexec(&rgT, string, 1, &match, 0)) == 0)
+    if (regcomp(&rgT, pattern, REG_EXTENDED) == 0)
     {
-        is_match = true;
+        if ((regexec(&rgT, string, 1, &match, 0)) == 0)
+        {
+            is_match = true;
+        }
     }
-    regfree(&rgT);
+    (void)regfree(&rgT);
     return is_match;
 }
 

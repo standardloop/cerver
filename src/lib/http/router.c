@@ -40,6 +40,12 @@ RouteTable *InitRouteTable(enum HttpMethod method, int max)
     to match: /foo/211111/bar/josh
 */
 
+/*
+    turn:     /foo
+    into:     ^/foo$
+    to match: /foo
+*/
+
 // EARLY WIP
 char *createRouteRegex(char *path)
 {
@@ -103,11 +109,6 @@ Route *GetRouteFromTable(RouteTable *table, char *path)
     Route *iterator = table->routes;
     while (iterator != NULL)
     {
-        // FIXME add logic for /{id=int}
-        // if (strcmp(path, iterator->path) == 0)
-        // {
-        //     return iterator;
-        // }
         if (RegexBoolMatch(iterator->route_regex, path))
         {
             return iterator;
@@ -184,7 +185,7 @@ void freeRoute(Route *route)
     if (route->route_regex != NULL)
     {
         // FIXME
-        free(route->route_regex);
+        // free(route->route_regex);
     }
     // Dont need to free
     if (route->handler != NULL)

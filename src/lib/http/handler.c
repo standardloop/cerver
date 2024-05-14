@@ -100,6 +100,8 @@ void HandleRequest(Router *router, int client_socket)
                     }
                     else
                     {
+                        // We only know about path/route params after we have identified the route
+                        // We cannot parse this CreateParsedHttpRequest because there isn't enough information
                         if (route->params != NULL)
                         {
                             request->path_params = ParsePathParams(route->params);
