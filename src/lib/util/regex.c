@@ -23,7 +23,6 @@ bool RegexBoolMatch(char *pattern, char *string)
 
 char *RegexReturnMatch(char *pattern, char *string, int *begin, int *end)
 {
-    int i, w = 0, len;
     char *word = NULL;
     regex_t rgT;
     regmatch_t match;
@@ -32,9 +31,10 @@ char *RegexReturnMatch(char *pattern, char *string, int *begin, int *end)
     {
         *begin = (int)match.rm_so;
         *end = (int)match.rm_eo;
-        len = *end - *begin;
+        int len = *end - *begin;
         word = (char *)malloc(sizeof(char) * (len + 1));
-        for (i = *begin; i < *end; i++)
+        int w = 0;
+        for (int i = *begin; i < *end; i++)
         {
             word[w] = string[i];
             w++;
