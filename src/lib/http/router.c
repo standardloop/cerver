@@ -6,9 +6,9 @@
 #include "./../logger.h"
 #include "./../util/util.h"
 
-void freeRoute(Route *);
-void freeRouteTable(RouteTable *);
-bool isRouteTableEmpty(RouteTable *);
+static void freeRoute(Route *);
+static bool isRouteTableEmpty(RouteTable *);
+// static bool isRouteTableFull(RouteTable *);
 
 Map *ParsePathParams(RouteParam *params)
 {
@@ -47,7 +47,7 @@ RouteTable *InitRouteTable(enum HttpMethod method, int max)
 */
 
 // EARLY WIP
-char *createRouteRegex(char *path)
+static char *createRouteRegex(char *path)
 {
     // const char explode_char[2] = "/";
     // char *token;
@@ -62,7 +62,7 @@ char *createRouteRegex(char *path)
     return path;
 }
 
-Route *newRoute(char *path, RouteHandler *router_function)
+static Route *newRoute(char *path, RouteHandler *router_function)
 {
     Route *route = (Route *)malloc(sizeof(Route));
     if (route == NULL)
@@ -76,15 +76,15 @@ Route *newRoute(char *path, RouteHandler *router_function)
     return route;
 }
 
-bool isRouteTableEmpty(RouteTable *table)
+static bool isRouteTableEmpty(RouteTable *table)
 {
     return (table->routes == NULL || table->size == 0);
 }
 
-bool isRouteTableFull(RouteTable *table)
-{
-    return (table->max == table->size);
-}
+// static bool isRouteTableFull(RouteTable *table)
+// {
+//     return (table->max == table->size);
+// }
 
 void PrintRouteTable(RouteTable *table)
 {
@@ -175,7 +175,7 @@ int AddRouteToTable(RouteTable *table, char *path, RouteHandler *router_function
     return table->size;
 }
 
-void freeRoute(Route *route)
+static void freeRoute(Route *route)
 {
     if (route == NULL)
     {

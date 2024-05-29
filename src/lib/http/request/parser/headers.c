@@ -6,7 +6,7 @@
 #include "./../../../logger.h"
 #include "./../../../util/util.h"
 
-void addHeaderFromLine(Map *, char *, size_t);
+static void addHeaderFromLine(Map *, char *, size_t);
 
 Map *ParseHeaders(char *buffer, size_t buffer_size)
 {
@@ -49,7 +49,7 @@ Map *ParseHeaders(char *buffer, size_t buffer_size)
     return headers;
 }
 
-void addHeaderFromLine(Map *headers, char *line_start, size_t line_size)
+static void addHeaderFromLine(Map *headers, char *line_start, size_t line_size)
 {
     // FIXME
     // http headers to be case insensitve

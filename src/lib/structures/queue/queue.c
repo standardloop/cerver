@@ -5,7 +5,8 @@
 #include "./queue.h"
 #include "../../logger.h"
 
-bool isQueueFull(Queue *);
+static bool isQueueFull(Queue *);
+static bool isQueueEmpty(Queue *);
 
 Queue *InitQueue(int capacity)
 {
@@ -25,12 +26,12 @@ Queue *InitQueue(int capacity)
     return queue;
 }
 
-bool isQueueFull(Queue *queue)
+static bool isQueueFull(Queue *queue)
 {
     return (queue->size == queue->max_size);
 }
 
-bool isQueueEmpty(Queue *queue)
+static bool isQueueEmpty(Queue *queue)
 {
     return (queue->size == 0);
 }

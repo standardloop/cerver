@@ -9,6 +9,11 @@
 #include "./../structures/queue/queue.h"
 #include "./worker.h"
 
+static void scheduleRequestInQueue(Scheduler *, int);
+static int deQueueRequest(Scheduler *);
+static bool isSchedulerFull(Scheduler *);
+static bool isSchedulerEmpty(Scheduler *);
+
 Scheduler *InitScheduler(enum ThreadPolicy policy, int buffer_size)
 {
     //(void)Log(INFO, "starting InitScheduler!\n");
@@ -35,7 +40,7 @@ Scheduler *InitScheduler(enum ThreadPolicy policy, int buffer_size)
     return scheduler;
 }
 
-void scheduleRequestInQueue(Scheduler *scheduler, int client_socket)
+static void scheduleRequestInQueue(Scheduler *scheduler, int client_socket)
 {
     if (scheduler->policy == FIFO)
     {
@@ -51,7 +56,7 @@ void scheduleRequestInQueue(Scheduler *scheduler, int client_socket)
     }
 }
 
-int deQueueRequest(Scheduler *scheduler)
+static int deQueueRequest(Scheduler *scheduler)
 {
     int client_socket = -1;
     if (scheduler->policy == FIFO)
@@ -61,14 +66,13 @@ int deQueueRequest(Scheduler *scheduler)
     scheduler->curr_size--;
     return client_socket;
 }
-
-bool isSchedulerFull(Scheduler *scheduler)
+static bool isSchedulerFull(Scheduler *scheduler)
 {
     // Maybe get if larger for some reason?
     return scheduler->curr_size == scheduler->buffer_size;
 }
 
-bool isSchedulerEmpty(Scheduler *scheduler)
+static bool isSchedulerEmpty(Scheduler *scheduler)
 {
     return scheduler->curr_size == 0;
 }

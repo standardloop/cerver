@@ -21,9 +21,9 @@
 // {
 // }
 
-char *locateQueryStart(char *, size_t);
+static char *locateQueryStart(char *, size_t);
 
-char *locateQueryStart(char *buffer, size_t size)
+static char *locateQueryStart(char *buffer, size_t size)
 {
     size_t char_count = 0;
     char *buffer_iterator = buffer;

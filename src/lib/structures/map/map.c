@@ -5,13 +5,13 @@
 
 #include "./map.h"
 
-bool isMapFull(Map *);
-bool isMapEmpty(Map *);
+static bool isMapFull(Map *);
+static bool isMapEmpty(Map *);
 
-MapNode *newMapNode(char *, char *);
-void freeMapNodeFields(MapNode *);
-void freeMapNode(MapNode *mapNode);
-void freeAllMapNodes(MapNode *);
+static MapNode *newMapNode(char *, char *);
+static void freeMapNodeFields(MapNode *);
+static void freeMapNode(MapNode *mapNode);
+static void freeAllMapNodes(MapNode *);
 
 Map *InitMap(int max)
 {
@@ -31,7 +31,7 @@ Map *InitMap(int max)
     return map;
 }
 
-MapNode *newMapNode(char *key, char *value)
+static MapNode *newMapNode(char *key, char *value)
 {
     MapNode *mapNode = (MapNode *)malloc(sizeof(MapNode));
     if (mapNode == NULL)
@@ -45,12 +45,12 @@ MapNode *newMapNode(char *key, char *value)
     return mapNode;
 }
 
-bool isMapFull(Map *map)
+static bool isMapFull(Map *map)
 {
     return map->count == map->max;
 }
 
-bool isMapEmpty(Map *map)
+static bool isMapEmpty(Map *map)
 {
     return ((map->count == 0) && (map->head == NULL));
 }
@@ -176,7 +176,7 @@ int MapRemove(Map *map, char *key)
     return MAP_ERROR_404;
 }
 
-void freeMapNodeFields(MapNode *mapNode)
+static void freeMapNodeFields(MapNode *mapNode)
 {
     if (mapNode == NULL)
     {
@@ -192,13 +192,13 @@ void freeMapNodeFields(MapNode *mapNode)
     }
 }
 
-void freeMapNode(MapNode *mapNode)
+static void freeMapNode(MapNode *mapNode)
 {
     freeMapNodeFields(mapNode);
     free(mapNode);
 }
 
-void freeAllMapNodes(MapNode *head)
+static void freeAllMapNodes(MapNode *head)
 {
     MapNode *temp = NULL;
     while (head != NULL)
