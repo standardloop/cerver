@@ -14,6 +14,7 @@ build: main.c
 	src/lib/util/util.c \
 	src/lib/util/regex.c \
 	src/lib/util/env.c \
+	src/lib/util/explode.c \
 	src/lib/thread/pool.c \
 	src/lib/thread/worker.c \
 	src/lib/thread/scheduler.c \

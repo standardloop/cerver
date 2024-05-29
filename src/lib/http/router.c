@@ -6,8 +6,19 @@
 #include "./../logger.h"
 #include "./../util/util.h"
 
+#define DIGIT_REGEX_SIZE 12 // [[:digit:]]+
+#define ALPHA_REGEX_SIZE 12 // [[:alpha:]]+
+
+static char *DIGIT_REGEX = "[[:digit:]]+";
+static char *ALPHA_REGEX = "[[:alpha:]]+";
+
+static char *DIGIT_REGEX_W_SLASH = "[[:digit:]]+/";
+static char *ALPHA_REGEX_W_SLASH = "[[:alpha:]]+/";
+
 static void freeRoute(Route *);
 static bool isRouteTableEmpty(RouteTable *);
+
+static char *createRouteRegex(char *path);
 // static bool isRouteTableFull(RouteTable *);
 
 Map *ParsePathParams(RouteParam *params)
@@ -34,32 +45,140 @@ RouteTable *InitRouteTable(enum HttpMethod method, int max)
     return table;
 }
 
-/*
-    turn:     /foo/{id=int}/bar/{name=string}
-    into:     ^/foo/[[:digit:]]+/bar/[[:alpha:]]+$
-    to match: /foo/211111/bar/josh
-*/
-
-/*
-    turn:     /foo
-    into:     ^/foo$
-    to match: /foo
-*/
-
-// EARLY WIP
 static char *createRouteRegex(char *path)
 {
-    // const char explode_char[2] = "/";
-    // char *token;
+    StringArr *exploded_path = EveryoneExplodeNow(path, SLASH_CHAR);
+    if (exploded_path == NULL || exploded_path->num_strings == 0 || strlen(exploded_path->strings[0]) != 0 || exploded_path->strings[0][0] != NULL_CHAR)
+    {
+        Log(FATAL, "invalid inputs to createRouteRegex");
+        return NULL;
+    }
+    size_t regex_route_size = 4; // '^' , '/' , '$', NULL_CHAR
+    size_t regex_route_curr_index = regex_route_size - 2;
+    char *regex_route = malloc(sizeof(char) * regex_route_size);
+    if (regex_route == NULL)
+    {
+        // log
+        Log(FATAL, "cannot allocate memory :(");
+        return NULL;
+    }
+    regex_route[0] = CARROT_CHAR;
+    regex_route[1] = SLASH_CHAR;
 
-    // token = strtok(raw_path, explode_char);
-    // while (token != NULL)
-    // {
-    //     printf(" %s\n", token);
-    //     token = strtok(NULL, explode_char);
-    // }
+    for (int i = 1; i < exploded_path->num_strings; i++)
+    {
+        size_t curr_string_len = strlen(exploded_path->strings[i]);
+        char *curr_string = exploded_path->strings[i];
+        char *curr_string_start = exploded_path->strings[i];
+        if (curr_string[0] == '{' && curr_string[curr_string_len - 1] == '}')
+        {
+            char *param_type_start = NULL;
+            char *param_type_end = curr_string + curr_string_len - 1;
+            char *param_name_start = curr_string + 1;
+            char *param_name_end = NULL;
+            for (size_t j = 1; j < curr_string_len; j++)
+            {
+                if (*curr_string == '=')
+                {
+                    param_name_end = curr_string;
+                    param_type_start = curr_string + 1;
+                    break;
+                }
+                curr_string++;
+            }
 
-    return path;
+            size_t param_name_size = (param_name_end - param_name_start) + 1;
+            size_t param_type_size = (param_type_end - param_type_start) + 1;
+
+            char *param_type = malloc(sizeof(char) * param_type_size);
+            if (param_type == NULL)
+            {
+                // log
+            }
+            CopyString(curr_string + 1, param_type, param_type_size - 1, 0);
+            *(param_type + param_type_size) = NULL_CHAR;
+
+            curr_string = curr_string_start;
+
+            char *param_name = malloc(sizeof(char) * param_name_size);
+            if (param_name == NULL)
+            {
+                // log
+            }
+            CopyString(curr_string + 1, param_name, param_name_size - 1, 0);
+            *(param_name + param_name_size) = NULL_CHAR;
+            // printf("[param_name]: %s %d\n", param_name, (int)param_name[strlen(param_name)]);
+            // printf("[param_type]: %s %d\n", param_type, (int)param_type[strlen(param_type)]);
+            if (strcmp("string", param_type) == 0)
+            {
+                regex_route_size += ALPHA_REGEX_SIZE;
+                if (i != exploded_path->num_strings - 1)
+                {
+                    regex_route_size++;
+                }
+                regex_route = realloc(regex_route, regex_route_size);
+                if (i != exploded_path->num_strings - 1)
+                {
+                    CopyString(ALPHA_REGEX_W_SLASH, regex_route, ALPHA_REGEX_SIZE + 1, regex_route_curr_index);
+                    regex_route_curr_index += ALPHA_REGEX_SIZE + 1;
+                }
+                else
+                {
+                    CopyString(ALPHA_REGEX, regex_route, ALPHA_REGEX_SIZE, regex_route_curr_index);
+                    regex_route_curr_index += ALPHA_REGEX_SIZE;
+                }
+            }
+            else if (strcmp("int", param_type) == 0)
+            {
+                regex_route_size += DIGIT_REGEX_SIZE;
+                if (i != exploded_path->num_strings - 1)
+                {
+                    regex_route_size++;
+                }
+                regex_route = realloc(regex_route, regex_route_size);
+                if (i != exploded_path->num_strings - 1)
+                {
+                    CopyString(DIGIT_REGEX_W_SLASH, regex_route, DIGIT_REGEX_SIZE + 1, regex_route_curr_index);
+                    regex_route_curr_index += DIGIT_REGEX_SIZE + 1;
+                }
+                else
+                {
+                    CopyString(DIGIT_REGEX, regex_route, DIGIT_REGEX_SIZE, regex_route_curr_index);
+                    regex_route_curr_index += DIGIT_REGEX_SIZE;
+                }
+            }
+            // FIXME, add these to route
+            free(param_name);
+            free(param_type);
+        }
+        else
+        {
+            regex_route_size += curr_string_len;
+            if (i != exploded_path->num_strings - 1)
+            {
+                regex_route_size++;
+            }
+            regex_route = realloc(regex_route, regex_route_size);
+            if (i != exploded_path->num_strings - 1)
+            {
+                curr_string[curr_string_len] = SLASH_CHAR;
+                CopyString(curr_string, regex_route, curr_string_len + 1, regex_route_curr_index);
+                regex_route_curr_index += curr_string_len + 1;
+            }
+            else
+            {
+                CopyString(curr_string, regex_route, curr_string_len, regex_route_curr_index);
+                regex_route_curr_index += curr_string_len;
+            }
+        }
+    }
+
+    regex_route[regex_route_size - 2] = DOLLAR_CHAR;
+    regex_route[regex_route_size - 1] = NULL_CHAR;
+
+    FreeStringArr(exploded_path);
+
+    return regex_route;
 }
 
 static Route *newRoute(char *path, RouteHandler *router_function)

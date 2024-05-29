@@ -73,22 +73,8 @@ int main(void)
 
     Cerver *server = InitCerver(port, num_threads, buffer_size);
 
-    // You should now at compile time how many routes you have
-    // int num_routes = 1;
-
-    // FIXME: TEMP: pass regex router directly
-    (void)AddRouteToTable(server->router->get, "^/foo$", (RouteHandler *)foo);
-    //(void)AddRouteToTable(server->router->get, "/foo", (RouteHandler *)foo);
-
-    /*
-        turn:     /foo/{id=int}/bar/{name=string}
-        into:     ^/foo/[[:digit:]]+/bar/[[:alpha:]]+$
-        to match: /foo/211111/bar/josh
-    */
-    (void)AddRouteToTable(server->router->get, "^/foo/[[:digit:]]+/bar/[[:alpha:]]+$", (RouteHandler *)fooID);
-    //(void)AddRouteToTable(server->router->get, "/foo/{id=int}/bar/{name=string}", (RouteHandler *)fooID);
-
-    //(void)AddRouteToTable(server->router->get, "^/foo/[[:print:]]*$", (RouteHandler *)foo); // catch all
+    (void)AddRouteToTable(server->router->get, "/foo", (RouteHandler *)foo);
+    (void)AddRouteToTable(server->router->get, "/foo/{id=int}/bar/{name=string}", (RouteHandler *)fooID);
 
     (void)StartCerver(server);
 

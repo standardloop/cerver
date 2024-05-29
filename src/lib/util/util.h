@@ -14,6 +14,8 @@
 #define QUESTION_CHAR '?'
 #define EQUAL_CHAR '='
 #define AND_CHAR '&'
+#define DOLLAR_CHAR '$'
+#define CARROT_CHAR '^'
 
 #define ALWAYS 1
 
@@ -30,5 +32,17 @@ const char *GetEnv(char *, char *);
 // regex
 bool RegexBoolMatch(char *, char *);
 char *RegexReturnMatch(char *, char *, int *, int *);
+
+// explode
+typedef struct
+{
+    char **strings;
+    int num_strings;
+} StringArr;
+
+StringArr *EveryoneExplodeNow(char *, char);
+void FreeStringArr(StringArr *);
+void PrintStringArr(StringArr *);
+void PrintStringArrDebug(StringArr *);
 
 #endif
