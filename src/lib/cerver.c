@@ -99,33 +99,3 @@ void StartCerver(Cerver *cerver)
     FreeThreadPool(thread_pool);
     FreeScheduler(scheduler);
 }
-
-// // FIXME
-// void handle_request(int client_socket)
-// {
-//     char buffer[BUFFER_SIZE];
-//     char filename[BUFFER_SIZE];
-//     FILE *file;
-//     int bytes_read;
-
-//     bytes_read = read(client_socket, buffer, BUFFER_SIZE);
-//     if (bytes_read < 0)
-//     {
-//         (void)Log(FATAL, "cannot allocate memory for cerver\n");
-//     }
-
-//     sscanf(buffer, "GET %s HTTP/1.1\r\n", filename);
-//     file = fopen(filename + 1, "r");
-//     if (file == NULL)
-//     {
-//         // 404
-//     }
-//     sprintf(buffer, "HTTP/1.1 200 OK\r\n\r\n");
-//     write(client_socket, buffer, strlen(buffer));
-
-//     while ((bytes_read = fread(buffer, 1, BUFFER_SIZE, file)) > 0)
-//     {
-//         write(client_socket, buffer, bytes_read);
-//     }
-//     fclose(file);
-// }

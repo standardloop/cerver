@@ -7,22 +7,6 @@
 #include "./../../../logger.h"
 #include "./../../../structures/map/map.h"
 
-void copyString(char *, char *, size_t);
-
-// FIXME: move to util and finalize this one
-void copyString(char *src, char *des, size_t len)
-{
-    char *src_it = src;
-    char *dest_it = des;
-    size_t size = 0;
-    while (size < len)
-    {
-        *dest_it = *src_it;
-        dest_it++;
-        src_it++;
-        size++;
-    }
-}
 // id=3&bar=1
 Map *ParseQuery(char *buffer, size_t buffer_size)
 {
@@ -64,7 +48,7 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
                 return query_map;
             }
             *(query_key + key_size) = NULL_CHAR;
-            (void)copyString(key_start, query_key, key_size - 1);
+            CopyString(key_start, query_key, key_size - 1, 0);
         }
         else if (*buffer_iterator == AND_CHAR)
         {
@@ -78,7 +62,7 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
                 return query_map;
             }
             *(query_value + value_size) = NULL_CHAR;
-            (void)copyString(value_start, query_value, value_size - 1); // -1 because nullchar is accounted for
+            CopyString(value_start, query_value, value_size - 1, 0); // -1 because nullchar is accounted for
         }
         // FIXME: allowed characters in query string?
         else if (*buffer_iterator == NULL_CHAR || *buffer_iterator == CARRIAGE_RETURN_CHAR || *buffer_iterator == SPACE_CHAR || *buffer_iterator == CARRIAGE_RETURN_CHAR)
@@ -92,7 +76,7 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
                 return query_map;
             }
             *(query_value + value_size) = NULL_CHAR;
-            (void)copyString(value_start, query_value, value_size - 1);
+            CopyString(value_start, query_value, value_size - 1, 0);
         }
 
         if (query_key != NULL && query_value != NULL && query_key != query_value)

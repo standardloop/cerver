@@ -56,7 +56,7 @@ main
 .vscode
 .DS_Store
 .notes.txt
-testing/
+lab/
 src/lib/pkg
 src/lib/http/middleware.c
 src/lib/http/middleware.h

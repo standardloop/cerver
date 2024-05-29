@@ -37,6 +37,7 @@ char *StrToLower(char *s)
     }
     return s;
 }
+
 char *StrToUpper(char *s)
 {
     if (s == NULL)
@@ -49,4 +50,23 @@ char *StrToUpper(char *s)
     }
 
     return s;
+}
+
+void CopyString(char *src, char *des, size_t len, size_t des_offset)
+{
+    if (src == NULL || des == NULL || len <= 0)
+    {
+        return;
+    }
+
+    char *src_it = src;
+    char *dest_it = des + des_offset;
+    size_t size = 0;
+    while (size < len)
+    {
+        *dest_it = *src_it;
+        dest_it++;
+        src_it++;
+        size++;
+    }
 }

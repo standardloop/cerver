@@ -18,8 +18,13 @@
 #define ALWAYS 1
 
 void PrintBuffer(char *, size_t, bool);
+
+// string
 char *StrToUpper(char *);
 char *StrToLower(char *);
+void CopyString(char *, char *, size_t, size_t);
+
+// env
 const char *GetEnv(char *, char *);
 
 // regex
