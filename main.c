@@ -63,13 +63,11 @@ void fooStatic(HttpRequest *request, HttpResponse *response)
 // int main(int argc, char const *argv[])
 int main(void)
 {
-    int port = 8080;
-    int num_threads = 10;
-    int buffer_size = 100;
+    int port = atoi(GetEnv("PORT", "8080"));
+    int num_threads = atoi(GetEnv("NUM_THREADS", "10"));
+    int buffer_size = atoi(GetEnv("BUFFER_SIZE", "100"));
 
-    const char *log_level_str = GetEnv("LOG_LEVEL", "TRACE");
-    enum LogLevel log_level_enum = StringToLogLevel(log_level_str);
-    (void)SetLogLevel(log_level_enum);
+    (void)SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "TRACE")));
 
     Cerver *server = InitCerver(port, num_threads, buffer_size);
 
