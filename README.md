@@ -1,5 +1,5 @@
 # cerver
-HTTP Server written completely from scratch in C!
+HTTP Server written in C!
 
 ## Build & Run
 
