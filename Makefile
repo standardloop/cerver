@@ -1,12 +1,11 @@
 include Makefile.properties
 
-
 all: build run
 
 clean:
 	rm main
 
-build: main.c
+build: main
 	$(CC) $(CC_FLAGS) \
 	main.c \
 	src/lib/cerver.c \

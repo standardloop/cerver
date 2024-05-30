@@ -9,11 +9,29 @@
 #include "./src/lib/util/util.h"
 
 void foo(HttpRequest *, HttpResponse *);
+void bar(HttpRequest *, HttpResponse *);
 void fooID(HttpRequest *, HttpResponse *);
 void fooStatic(HttpRequest *, HttpResponse *);
 
 void foo(HttpRequest *request, HttpResponse *response)
 {
+    // Log(TRACE, "[JOSH]: entering special test function\n");
+    // char *accepted_types = MapGet(request->headers, "Accept");
+    // if (accepted_types == NULL)
+    // {
+    // }
+    if (request == NULL || response == NULL)
+    {
+        return;
+    }
+    const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
+    (void)write(request->client_socket, hello, strlen(hello));
+}
+
+void bar(HttpRequest *request, HttpResponse *response)
+
+{
+    Log(TRACE, "[BAR]\n");
     // Log(TRACE, "[JOSH]: entering special test function\n");
     // char *accepted_types = MapGet(request->headers, "Accept");
     // if (accepted_types == NULL)
@@ -73,6 +91,9 @@ int main(void)
 
     (void)AddRouteToTable(server->router->get, "/foo", foo);
     (void)AddRouteToTable(server->router->get, "/foo/{id=int}/bar/{name=string}", fooID);
+
+    // WIP support *
+    //(void)AddRouteToTable(server->router->get, "/bar/.*", bar);
 
     StartCerver(server);
 
