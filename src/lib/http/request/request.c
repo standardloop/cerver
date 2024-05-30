@@ -45,19 +45,20 @@ static char *locateQueryStart(char *buffer, size_t size)
 HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
 {
     // PrintBuffer(buffer, buffer_size, false);
-    //(void)Log(FATAL, "");
+    // Log(FATAL, "");
     if (buffer == NULL || buffer_size == 0)
     {
-        (void)Log(ERROR, "[4XX]: buffer is NULL for CreateParsedHttpRequest or buffer_size is 0\n");
+        Log(ERROR, "[4XX]: buffer is NULL for CreateParsedHttpRequest or buffer_size is 0\n");
         return NULL;
     }
     HttpRequest *request = (HttpRequest *)malloc(sizeof(HttpRequest));
     if (request == NULL)
     {
-        (void)Log(ERROR, "[5XX]: buffer is NULL for malloc in CreateParsedHttpRequest\n");
+        Log(ERROR, "[5XX]: buffer is NULL for malloc in CreateParsedHttpRequest\n");
         return NULL;
     }
     request->early_resp_code = 0;
+
     /*
     *********************************************************************************
         METHOD
@@ -91,7 +92,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     char *second_space_pointer = strchr((space_pointer + 1), SPACE_CHAR); // +1 because pointer is on space
     if ((*second_space_pointer != SPACE_CHAR) || (*space_pointer != SPACE_CHAR))
     {
-        (void)Log(WARN, "error finding appropriate amount of spaces for path+query");
+        Log(WARN, "error finding appropriate amount of spaces for path+query");
         request->early_resp_code = HttpBadRequest;
         return request;
     }
@@ -109,13 +110,13 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     size_t path_length = strlen(request->path);
     if (path_length + 1 < suspected_path_length)
     {
-        (void)Log(TRACE, "the request contains a query\n");
+        Log(TRACE, "the request contains a query\n");
 
         char *question_mark_char = locateQueryStart((space_pointer + 1 + path_length), suspected_path_length - path_length);
         if (question_mark_char == NULL || *question_mark_char != QUESTION_CHAR)
         {
             request->query_params = NULL;
-            (void)Log(FATAL, "");
+            Log(FATAL, "");
         }
         else
         {
@@ -130,11 +131,11 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     }
     else
     {
-        //(void)Log(TRACE, "the request does not contain a query\n");
+        // Log(TRACE, "the request does not contain a query\n");
     }
 
     // printf("\n%s\n", question_mark_char);
-    //(void)Log(FATAL, "");
+    // Log(FATAL, "");
     /*
     *********************************************************************************
         VERSION
@@ -145,13 +146,13 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     char *carriage_return_ptr = strchr(second_space_pointer, CARRIAGE_RETURN_CHAR);
     if (*carriage_return_ptr != CARRIAGE_RETURN_CHAR)
     {
-        (void)Log(WARN, "[4XX]: cannot find carriage return\n");
+        Log(WARN, "[4XX]: cannot find carriage return\n");
         request->early_resp_code = HttpBadRequest;
         return request;
     }
     if (*second_space_pointer != SPACE_CHAR)
     {
-        (void)Log(WARN, "[4XX]: found carriage return but second space error\n");
+        Log(WARN, "[4XX]: found carriage return but second space error\n");
         request->early_resp_code = HttpBadRequest;
         return request;
     }
@@ -160,7 +161,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     request->version = ParseHttpVersion((second_space_pointer + 1), expected_verion_length);
     if (request->version == NULL)
     {
-        (void)Log(WARN, "[4XX]: couldn't parser http version\n");
+        Log(WARN, "[4XX]: couldn't parser http version\n");
         request->early_resp_code = HttpBadRequest;
         return request;
     }
@@ -175,19 +176,19 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     char *newline_ptr = strchr(second_space_pointer, NEWLINE_CHAR);
     if (*newline_ptr != NEWLINE_CHAR)
     {
-        (void)Log(ERROR, "[4XX]: cannot find newline\n");
+        Log(ERROR, "[4XX]: cannot find newline\n");
         request->early_resp_code = HttpBadRequest;
         return request;
     }
     if (*(newline_ptr + 1) != 'H')
     {
-        (void)Log(ERROR, "[4XX]: H not present after newline\n");
+        Log(ERROR, "[4XX]: H not present after newline\n");
         request->early_resp_code = HttpBadRequest;
         return request;
     }
     if (*(newline_ptr + 6) != SPACE_CHAR)
     {
-        (void)Log(ERROR, "[4XX]: cannot find space after Host:\n");
+        Log(ERROR, "[4XX]: cannot find space after Host:\n");
         request->early_resp_code = HttpBadRequest;
         return request;
     }
@@ -195,7 +196,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     char *colon_ptr = strchr(suspected_host_start, COLON_CHAR);
     if (*colon_ptr != COLON_CHAR)
     {
-        (void)Log(WARN, "[4XX]: cannot find colon so port wasn't included?\n");
+        Log(WARN, "[4XX]: cannot find colon so port wasn't included?\n");
         request->early_resp_code = HttpBadRequest;
         return request;
     }
@@ -203,7 +204,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     request->host = ParseHost(suspected_host_start, expected_host_length);
     if (request->host == NULL)
     {
-        (void)Log(ERROR, "[4XX]: cannot parse host from request\n");
+        Log(ERROR, "[4XX]: cannot parse host from request\n");
         request->early_resp_code = HttpBadRequest;
         return request;
     }
@@ -217,7 +218,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     buffer = buffer_start;
     if (*newline_ptr != NEWLINE_CHAR || *colon_ptr != COLON_CHAR)
     {
-        (void)Log(ERROR, "[4XX]: cannot parse host from request\n");
+        Log(ERROR, "[4XX]: cannot parse host from request\n");
         request->early_resp_code = HttpBadRequest;
         return request;
     }
@@ -225,7 +226,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     char *second_carriage_return_ptr = strchr(colon_ptr, CARRIAGE_RETURN_CHAR);
     if (*second_carriage_return_ptr != CARRIAGE_RETURN_CHAR)
     {
-        (void)Log(ERROR, "[4XX]: couldn't find 2nd carriage return\n");
+        Log(ERROR, "[4XX]: couldn't find 2nd carriage return\n");
         request->early_resp_code = HttpBadRequest;
         return request;
     }
@@ -233,7 +234,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     request->port = ParsePort(colon_ptr, expected_port_length);
     if (request->port == ERROR_PORT)
     {
-        (void)Log(ERROR, "[4XX]: couldn't parse port");
+        Log(ERROR, "[4XX]: couldn't parse port");
         request->early_resp_code = HttpBadRequest;
         return request;
     }
@@ -252,7 +253,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
 
     if (request->headers == NULL)
     {
-        (void)Log(ERROR, "[4XX]: couldn't parse headers\n");
+        Log(ERROR, "[4XX]: couldn't parse headers\n");
         request->early_resp_code = HttpBadRequest;
         return request;
     }
@@ -264,7 +265,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     // printf("\n\n[JOSH]: %s\n\n", foo);
     // printf("\n\n[JOSH]: %d\n\n", (int)request->headers->count);
     // PrintBuffer(foo, strlen(foo), true);
-    // (void)Log(FATAL, "");
+    // Log(FATAL, "");
 
     // printf("\n[JOSH]: %s\n", request->path);
     request->path_params = NULL; // can't parse this yet

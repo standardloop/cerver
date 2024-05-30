@@ -12,15 +12,15 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
 {
     if (buffer == NULL || buffer_size <= 0)
     {
-        (void)Log(WARN, "invalid inputs to ParserQuery\n");
+        Log(WARN, "invalid inputs to ParserQuery\n");
         return NULL;
     }
-    // (void)PrintBuffer(buffer, buffer_size, false);
-    // (void)Log(FATAL, "");
+    // PrintBuffer(buffer, buffer_size, false);
+    // Log(FATAL, "");
     Map *query_map = InitMap(MAX_QUERY_ENTRIES);
     if (query_map == NULL)
     {
-        (void)Log(WARN, "[5XX] unable to allocate memory to create query map\n");
+        Log(WARN, "[5XX] unable to allocate memory to create query map\n");
         return NULL;
     }
 
@@ -43,7 +43,7 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
             query_key = malloc(sizeof(char) * key_size);
             if (query_key == NULL)
             {
-                (void)Log(WARN, "cannot allocate memory to parse a query key\n");
+                Log(WARN, "cannot allocate memory to parse a query key\n");
                 // FIXME memory leak
                 return query_map;
             }
@@ -57,7 +57,7 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
             query_value = malloc(sizeof(char) * value_size);
             if (query_value == NULL)
             {
-                (void)Log(WARN, "& char cannot allocate memory to parse a query value\n");
+                Log(WARN, "& char cannot allocate memory to parse a query value\n");
                 // FIXME memory leak
                 return query_map;
             }
@@ -71,7 +71,7 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
             query_value = malloc(sizeof(char) * value_size);
             if (query_value == NULL)
             {
-                (void)Log(WARN, "end of line cannot allocate memory to parse a query value\n");
+                Log(WARN, "end of line cannot allocate memory to parse a query value\n");
                 // FIXME memory leak
                 return query_map;
             }
@@ -81,7 +81,7 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
 
         if (query_key != NULL && query_value != NULL && query_key != query_value)
         {
-            //(void)Log(TRACE, "adding a query entry to the map!\n");
+            // Log(TRACE, "adding a query entry to the map!\n");
             (void)MapAdd(query_map, query_key, query_value); // FIXME error checking
             query_entry_count++;
             query_key = NULL;
@@ -93,9 +93,9 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
     if (query_entry_count != query_map->count)
     {
         // FIXME
-        (void)Log(WARN, "Query Map Size is not equal to our expected count\n");
+        Log(WARN, "Query Map Size is not equal to our expected count\n");
     }
 
-    //(void)PrintMap(query_map);
+    //PrintMap(query_map);
     return query_map;
 }

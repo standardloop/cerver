@@ -32,7 +32,7 @@ enum LogLevel StringToLogLevel(const char *input_str)
     {
         return FATAL;
     }
-    (void)Log(ERROR, "cannot parse log level, will default to TRACE");
+    Log(ERROR, "cannot parse log level, will default to TRACE");
     return TRACE;
 }
 

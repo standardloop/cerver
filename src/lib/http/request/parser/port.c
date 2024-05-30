@@ -8,7 +8,7 @@ int ParsePort(char *buffer, size_t buffer_size)
 {
     if (buffer == NULL || buffer_size == 0 || buffer_size > MAX_PORT_LENGTH)
     {
-        (void)Log(ERROR, "[ERROR][4XX]: invalid buffer for parsing port");
+        Log(ERROR, "[ERROR][4XX]: invalid buffer for parsing port");
         return ERROR_PORT;
     }
 
@@ -30,7 +30,7 @@ int ParsePort(char *buffer, size_t buffer_size)
     }
     if (port_str[port_size] != '\0')
     {
-        (void)Log(ERROR, "placed a null term wasn't there any more for port\n");
+        Log(ERROR, "placed a null term wasn't there any more for port\n");
         return ERROR_PORT;
     }
     int port = atoi(port_str);

@@ -31,7 +31,7 @@ void HandleRequest(Router *router, int client_socket)
     valread = read(client_socket, buffer, sizeof(char) * BUFFER_SIZE);
     if (valread == 0)
     {
-        (void)Log(WARN, "[4XX]: Didn't read more than 0\n");
+        Log(WARN, "[4XX]: Didn't read more than 0\n");
         HandleGenericError(client_socket, HttpBadRequest);
     }
     else
@@ -40,19 +40,19 @@ void HandleRequest(Router *router, int client_socket)
         // can we parse path params here?
         if (request == NULL || request->early_resp_code != 0)
         {
-            (void)HandleGenericError(client_socket, request->early_resp_code);
+            HandleGenericError(client_socket, request->early_resp_code);
         }
         else
         {
             request->client_socket = client_socket;
             if (router != NULL)
             {
-                //(void)Log(TRACE, "Router is not NULL\n");
+                // Log(TRACE, "Router is not NULL\n");
                 response = (HttpResponse *)malloc(sizeof(HttpResponse));
                 if (response == NULL)
                 {
-                    (void)Log(ERROR, "cannot allocate memory for HttpResponse\n");
-                    (void)HandleGenericError(client_socket, HttpBadGateway);
+                    Log(ERROR, "cannot allocate memory for HttpResponse\n");
+                    HandleGenericError(client_socket, HttpBadGateway);
                 }
                 else
                 {
@@ -85,18 +85,18 @@ void HandleRequest(Router *router, int client_socket)
                         break;
                     case HttpFAKE:
                     default:
-                        (void)Log(INFO, "HttpFAKE\n");
+                        Log(INFO, "HttpFAKE\n");
                         break;
                     }
                     if (!router_found)
                     {
-                        (void)Log(WARN, "405\n");
-                        (void)HandleGenericError(client_socket, HttpMethodNotAllowed);
+                        Log(WARN, "405\n");
+                        HandleGenericError(client_socket, HttpMethodNotAllowed);
                     }
                     else if (route == NULL)
                     {
-                        (void)Log(WARN, "404\n");
-                        (void)HandleGenericError(client_socket, HttpNotFound);
+                        Log(WARN, "404\n");
+                        HandleGenericError(client_socket, HttpNotFound);
                     }
                     else
                     {
@@ -112,8 +112,8 @@ void HandleRequest(Router *router, int client_socket)
             }
         }
     }
-    (void)FreeHttpResponse(response);
-    (void)FreeHttpRequest(request);
+    FreeHttpResponse(response);
+    FreeHttpRequest(request);
     close(client_socket);
 }
 
@@ -146,7 +146,7 @@ void HandleStaticPath(int client_socket, char *path)
     file = fopen(path + 1, "r");
     if (file == NULL)
     {
-        (void)HandleGenericError(client_socket, HttpNotFound);
+        HandleGenericError(client_socket, HttpNotFound);
         return;
     }
     size_t bytes_read;

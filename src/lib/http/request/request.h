@@ -49,8 +49,7 @@ typedef struct
     Map *path_params;
 } HttpRequest;
 
-HttpRequest *
-CreateParsedHttpRequest(char *, size_t);
+HttpRequest *CreateParsedHttpRequest(char *, size_t);
 
 void FreeHttpRequest(HttpRequest *);
 void PrintHttpRequest(HttpRequest *);

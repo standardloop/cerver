@@ -80,7 +80,7 @@ enum HttpMethod ParseRequestMethod(char *buffer, size_t buffer_size)
 
     if (buffer_size == 0 || buffer_size > MAX_METHOD_LENGTH)
     {
-        (void)Log(WARN, "[4XX]: cannot parse HTTP Method\n");
+        Log(WARN, "[4XX]: cannot parse HTTP Method\n");
         return HttpFAKE;
     }
 
@@ -98,7 +98,7 @@ enum HttpMethod ParseRequestMethod(char *buffer, size_t buffer_size)
 
     if (suspected_http_method_str[http_method_size] != '\0')
     {
-        (void)Log(ERROR, "placed a null term wasn't there any more for suspected_http_method_str");
+        Log(ERROR, "placed a null term wasn't there any more for suspected_http_method_str");
         return HttpFAKE;
     }
 

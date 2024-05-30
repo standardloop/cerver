@@ -17,7 +17,7 @@ bool RegexBoolMatch(char *pattern, char *string)
             is_match = true;
         }
     }
-    (void)regfree(&rgT);
+    regfree(&rgT);
     return is_match;
 }
 

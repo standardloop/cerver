@@ -10,7 +10,7 @@ char *ParseRequestPath(char *buffer, size_t buffer_size)
 {
     if (buffer_size == 0 || buffer_size > MAX_PATH_SIZE)
     {
-        (void)Log(WARN, "[4XX]: cannot parse HTTP path\n");
+        Log(WARN, "[4XX]: cannot parse HTTP path\n");
         return NULL;
     }
 
@@ -20,7 +20,7 @@ char *ParseRequestPath(char *buffer, size_t buffer_size)
     char *suspected_http_path_str = (char *)malloc(sizeof(char) * http_path_size);
     if (suspected_http_path_str == NULL)
     {
-        (void)Log(WARN, "[5XX]: cannot parse HTTP path memory error\n");
+        Log(WARN, "[5XX]: cannot parse HTTP path memory error\n");
         return NULL;
     }
     char *suspected_http_path_str_start = suspected_http_path_str;
@@ -39,7 +39,7 @@ char *ParseRequestPath(char *buffer, size_t buffer_size)
 
     if (*(suspected_http_path_str + http_path_size) != '\0')
     {
-        (void)Log(ERROR, "http path string was not null terminated\n");
+        Log(ERROR, "http path string was not null terminated\n");
         free(suspected_http_path_str);
         return NULL;
     }

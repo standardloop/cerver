@@ -40,7 +40,7 @@ int EnQueue(Queue *queue, int client_socket)
 {
     if (isQueueFull(queue))
     {
-        (void)Log(WARN, "queue is full\n");
+        Log(WARN, "queue is full\n");
         return QUEUE_SIZE_ERROR;
     }
 
@@ -48,7 +48,7 @@ int EnQueue(Queue *queue, int client_socket)
 
     if (node == NULL)
     {
-        (void)Log(WARN, "[5XX]: could not allocate space for a new node\n");
+        Log(WARN, "[5XX]: could not allocate space for a new node\n");
         return QUEUE_SIZE_ERROR;
     }
 

@@ -9,16 +9,6 @@
 
 typedef void(RouteHandler)(HttpRequest *, HttpResponse *);
 
-#define MAX_PATH_PARAMS 10
-
-// enum PathParamType
-// {
-//     PARAM_BOOL,
-//     PARAM_INT,
-//     PARAM_FLOAT,
-//     PARAM_STRING
-// };
-
 typedef struct
 {
     char *param_name;

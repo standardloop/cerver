@@ -8,7 +8,7 @@ char *ParseHost(char *buffer, size_t buffer_size)
 {
     if (buffer == NULL || buffer_size == 0)
     {
-        (void)Log(WARN, "\n[4XX]: buffer input for ParseHost is NULL \n");
+        Log(WARN, "\n[4XX]: buffer input for ParseHost is NULL \n");
         return NULL;
     }
 
@@ -16,7 +16,7 @@ char *ParseHost(char *buffer, size_t buffer_size)
     char *host_str = (char *)malloc(sizeof(char) * host_size);
     if (host_str == NULL)
     {
-        (void)Log(WARN, "[5XX]: cannot allocate memory to parse host\n");
+        Log(WARN, "[5XX]: cannot allocate memory to parse host\n");
         return NULL;
     }
     char *host_str_start = host_str;
@@ -35,7 +35,7 @@ char *ParseHost(char *buffer, size_t buffer_size)
 
     if (*(host_str + host_size) != '\0')
     {
-        (void)Log(ERROR, "placed a null term wasn't there any more for http host\n");
+        Log(ERROR, "placed a null term wasn't there any more for http host\n");
         free(host_str);
         return NULL;
     }

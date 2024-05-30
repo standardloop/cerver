@@ -14,7 +14,7 @@ void fooStatic(HttpRequest *, HttpResponse *);
 
 void foo(HttpRequest *request, HttpResponse *response)
 {
-    // (void)Log(TRACE, "[JOSH]: entering special test function\n");
+    // Log(TRACE, "[JOSH]: entering special test function\n");
     // char *accepted_types = MapGet(request->headers, "Accept");
     // if (accepted_types == NULL)
     // {
@@ -36,7 +36,7 @@ void fooID(HttpRequest *request, HttpResponse *response)
         printf("\npath_param_id: %s\n", path_param_id);
     }
 
-    (void)Log(TRACE, "[JOSH]: entering special test ID function\n");
+    Log(TRACE, "[JOSH]: entering special test ID function\n");
     if (request == NULL || response == NULL)
     {
         return;
@@ -47,7 +47,7 @@ void fooID(HttpRequest *request, HttpResponse *response)
 
 void fooStatic(HttpRequest *request, HttpResponse *response)
 {
-    // (void)Log(TRACE, "[JOSH]: entering special test function\n");
+    // Log(TRACE, "[JOSH]: entering special test function\n");
     char *accepted_types = MapGet(request->headers, "Accept");
     if (accepted_types == NULL)
     {
@@ -67,14 +67,14 @@ int main(void)
     int num_threads = atoi(GetEnv("NUM_THREADS", "10"));
     int buffer_size = atoi(GetEnv("BUFFER_SIZE", "100"));
 
-    (void)SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "TRACE")));
+    SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "TRACE")));
 
     Cerver *server = InitCerver(port, num_threads, buffer_size);
 
-    (void)AddRouteToTable(server->router->get, "/foo", (RouteHandler *)foo);
-    (void)AddRouteToTable(server->router->get, "/foo/{id=int}/bar/{name=string}", (RouteHandler *)fooID);
+    (void)AddRouteToTable(server->router->get, "/foo", foo);
+    (void)AddRouteToTable(server->router->get, "/foo/{id=int}/bar/{name=string}", fooID);
 
-    (void)StartCerver(server);
+    StartCerver(server);
 
     return EXIT_SUCCESS;
 }

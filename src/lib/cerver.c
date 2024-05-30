@@ -21,11 +21,11 @@ Cerver *InitCerver(int port, int num_threads, int queue_buffer_size)
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
-        (void)Log(FATAL, "cannot create socker file descriptor\n");
+        Log(FATAL, "cannot create socker file descriptor\n");
     }
     if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0)
     {
-        (void)Log(FATAL, "couldn't set socket options\n");
+        Log(FATAL, "couldn't set socket options\n");
     }
 
     address.sin_family = AF_INET;
@@ -36,17 +36,17 @@ Cerver *InitCerver(int port, int num_threads, int queue_buffer_size)
 
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
     {
-        (void)Log(FATAL, "Couldnt bind socket");
+        Log(FATAL, "Couldnt bind socket");
     }
     if (listen(server_fd, 10) < 0)
     {
-        (void)Log(FATAL, "couldn't listen on socket\n");
+        Log(FATAL, "couldn't listen on socket\n");
     }
 
     Cerver *cerver = (Cerver *)malloc(sizeof(Cerver));
     if (cerver == NULL)
     {
-        (void)Log(FATAL, "cannot allocate memory for cerver\n");
+        Log(FATAL, "cannot allocate memory for cerver\n");
     }
     cerver->server_fd = server_fd;
     cerver->address = address;
@@ -58,7 +58,7 @@ Cerver *InitCerver(int port, int num_threads, int queue_buffer_size)
     if (cerver->router == NULL)
     {
         free(cerver);
-        (void)Log(FATAL, "cannot allocate memory for cerver\n");
+        Log(FATAL, "cannot allocate memory for cerver\n");
         return NULL;
     }
 
@@ -75,13 +75,13 @@ void StartCerver(Cerver *cerver)
     Scheduler *scheduler = InitScheduler(FIFO, cerver->queue_buffer_size);
     if (scheduler == NULL)
     {
-        (void)Log(FATAL, "[5XX]: Couldn't allocate memory to scheduler\n");
+        Log(FATAL, "[5XX]: Couldn't allocate memory to scheduler\n");
     }
 
     ThreadPool *thread_pool = InitThreadPool(cerver->num_threads);
     if (thread_pool == NULL)
     {
-        (void)Log(FATAL, "[5XX]: Couldn't allocate memory to thread_pool\n");
+        Log(FATAL, "[5XX]: Couldn't allocate memory to thread_pool\n");
     }
     StartThreads(cerver->router, scheduler, thread_pool);
 
@@ -89,7 +89,7 @@ void StartCerver(Cerver *cerver)
     {
         if ((client_socket = accept(cerver->server_fd, (struct sockaddr *)&cerver->address, (socklen_t *)&cerver->addrlen)) < 0)
         {
-            (void)Log(ERROR, "[5XX]: Couldn't accect connections on socket\n");
+            Log(ERROR, "[5XX]: Couldn't accect connections on socket\n");
         }
         else
         {
