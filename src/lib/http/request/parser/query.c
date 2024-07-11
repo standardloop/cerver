@@ -5,10 +5,10 @@
 #include "./parser.h"
 #include <standardloop/util.h>
 #include <standardloop/logger.h>
-#include "./../../../structures/map/map.h"
+#include <standardloop/json.h>
 
 // id=3&bar=1
-Map *ParseQuery(char *buffer, size_t buffer_size)
+HashMap *ParseQuery(char *buffer, size_t buffer_size)
 {
     if (buffer == NULL || buffer_size <= 0)
     {
@@ -17,7 +17,7 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
     }
     // PrintBuffer(buffer, buffer_size, false);
     // Log(FATAL, "");
-    Map *query_map = InitMap(MAX_QUERY_ENTRIES);
+    HashMap *query_map = DefaultHashMapInit();
     if (query_map == NULL)
     {
         Log(WARN, "[5XX] unable to allocate memory to create query map\n");
@@ -33,7 +33,7 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
     char *query_key = NULL;
     char *query_value = NULL;
 
-    int query_entry_count = 0;
+    u_int32_t query_entry_count = 0;
     while (buffer_iterator != NULL && temp_size < buffer_size)
     {
         if (*buffer_iterator == EQUAL_CHAR)
@@ -82,7 +82,7 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
         if (query_key != NULL && query_value != NULL && query_key != query_value)
         {
             // Log(TRACE, "adding a query entry to the map!\n");
-            (void)MapAdd(query_map, query_key, query_value); // FIXME error checking
+            (void)HashMapInsert(query_map, JSONValueInit(STRING_t, query_value, query_key)); // FIXME error checking
             query_entry_count++;
             query_key = NULL;
             query_value = NULL;
@@ -90,7 +90,7 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
         buffer_iterator++;
         temp_size++;
     }
-    if (query_entry_count != query_map->count)
+    if (query_entry_count != query_map->size + query_map->collision_count)
     {
         // FIXME
         Log(WARN, "Query Map Size is not equal to our expected count\n");

@@ -18,7 +18,6 @@ build:
 	src/lib/thread/scheduler.c \
 	src/lib/http/handler.c \
 	src/lib/http/router.c \
-	src/lib/structures/map/map.c \
 	src/lib/structures/queue/queue.c \
 	src/lib/http/response/codes.c \
 	src/lib/http/response/response.c \

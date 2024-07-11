@@ -284,7 +284,7 @@ void FreeHttpRequest(HttpRequest *request)
     }
     if (request->query_params != NULL)
     {
-        FreeMap(request->query_params);
+        FreeHashMap(request->query_params);
     }
     if (request->version != NULL)
     {
@@ -296,11 +296,11 @@ void FreeHttpRequest(HttpRequest *request)
     }
     if (request->headers != NULL)
     {
-        FreeMap(request->headers);
+        FreeHashMap(request->headers);
     }
     if (request->path_params != NULL)
     {
-        FreeMap(request->path_params);
+        FreeHashMap(request->path_params);
     }
     free(request);
 }

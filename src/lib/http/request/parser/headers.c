@@ -6,16 +6,16 @@
 #include <standardloop/logger.h>
 #include <standardloop/util.h>
 
-static void addHeaderFromLine(Map *, char *, size_t);
+static void addHeaderFromLine(HashMap *, char *, size_t);
 
-Map *ParseHeaders(char *buffer, size_t buffer_size)
+HashMap *ParseHeaders(char *buffer, size_t buffer_size)
 {
     if (buffer == NULL || buffer_size == 0)
     {
         Log(ERROR, "[ERROR][4XX]: invalid buffer for parsing headers");
         return NULL;
     }
-    Map *headers = InitMap(MAX_NUM_REQUEST_HEADERS);
+    HashMap *headers = DefaultHashMapInit();
     if (headers == NULL)
     {
         return NULL;
@@ -49,7 +49,7 @@ Map *ParseHeaders(char *buffer, size_t buffer_size)
     return headers;
 }
 
-static void addHeaderFromLine(Map *headers, char *line_start, size_t line_size)
+static void addHeaderFromLine(HashMap *headers, char *line_start, size_t line_size)
 {
     // FIXME
     // http headers to be case insensitve
@@ -108,5 +108,5 @@ static void addHeaderFromLine(Map *headers, char *line_start, size_t line_size)
         value_iterator++;
     }
 
-    (void)MapAdd(headers, header_key, header_value); // fixme check ret val
+    HashMapInsert(headers, JSONValueInit(STRING_t, header_value, header_key)); // fixme check ret val
 }

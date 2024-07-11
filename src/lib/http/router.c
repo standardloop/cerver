@@ -21,7 +21,7 @@ static bool isRouteTableEmpty(RouteTable *);
 static char *createRouteRegex(char *path);
 // static bool isRouteTableFull(RouteTable *);
 
-Map *ParsePathParams(RouteParam *params)
+HashMap *ParsePathParams(RouteParam *params)
 {
     if (params == NULL)
     {

@@ -1,13 +1,14 @@
 #ifndef REQUEST_H
 #define REQUEST_H
 
-#define BUFFER_SIZE 1024
-#define MAX_LINE_LENGTH 50
-#define ERROR_SIZE_T 0
+#include <standardloop/json.h>
 
 #include "./parser/parser.h"
 #include "./../response/codes.h"
-#include "./../../structures/map/map.h"
+
+#define BUFFER_SIZE 1024
+#define MAX_LINE_LENGTH 50
+#define ERROR_SIZE_T 0
 
 /*
     HEAD / HTTP/1.1
@@ -38,15 +39,15 @@ typedef struct
     int client_socket;
     enum HttpMethod method;
     char *path;
-    Map *query_params;
+    HashMap *query_params;
     char *version; // 1.1
     char *host;    // localhost
     int port;      // 8080
     enum HttpCode early_resp_code;
 
-    Map *headers;
+    HashMap *headers;
     char *body; // FIXME:
-    Map *path_params;
+    HashMap *path_params;
 } HttpRequest;
 
 HttpRequest *CreateParsedHttpRequest(char *, size_t);

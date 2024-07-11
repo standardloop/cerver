@@ -50,7 +50,8 @@ void bar(HttpRequest *request, HttpResponse *response)
 void fooID(HttpRequest *request, HttpResponse *response)
 {
     // char *path_param_id = GetPathParam(request->path_params, "id");
-    char *path_param_id = MapGet(request->path_params, "id");
+    JSONValue *path_param_id_obj = HashMapGet(request->path_params, "id");
+    char *path_param_id = path_param_id_obj->value;
     if (path_param_id != NULL)
     {
         printf("\npath_param_id: %s\n", path_param_id);
@@ -68,7 +69,8 @@ void fooID(HttpRequest *request, HttpResponse *response)
 void fooStatic(HttpRequest *request, HttpResponse *response)
 {
     // Log(TRACE, "[JOSH]: entering special test function\n");
-    char *accepted_types = MapGet(request->headers, "Accept");
+    JSONValue *accepted_types_obj = HashMapGet(request->path_params, "Accept");
+    char *accepted_types = accepted_types_obj->value;
     if (accepted_types == NULL)
     {
     }

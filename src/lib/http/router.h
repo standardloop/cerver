@@ -3,7 +3,7 @@
 
 #include "./request/request.h"
 #include "./response/response.h"
-#include "./../structures/map/map.h"
+#include <standardloop/json.h>
 
 #define ROUTER_ERROR -1
 
@@ -44,7 +44,7 @@ typedef struct
     RouteTable *trace;
 } Router;
 
-Map *ParsePathParams(RouteParam *);
+HashMap *ParsePathParams(RouteParam *);
 
 Router *InitRouter();
 

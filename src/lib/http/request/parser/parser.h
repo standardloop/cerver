@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "./../../../structures/map/map.h"
+#include <standardloop/json.h>
 
 // HOST
 char *ParseHost(char *, size_t);
@@ -43,7 +43,7 @@ char *ParseRequestPath(char *, size_t);
 int ParsePort(char *, size_t);
 
 // QUERY
-Map *ParseQuery(char *, size_t);
+HashMap *ParseQuery(char *, size_t);
 
 // VERSION
 #define HTTP_VERSION_PREFIX "HTTP/"
@@ -58,6 +58,6 @@ char *ParseHttpVersion(char *, size_t);
 */
 #define MAX_NUM_REQUEST_HEADERS 10
 
-Map *ParseHeaders(char *, size_t);
+HashMap *ParseHeaders(char *, size_t);
 
 #endif
