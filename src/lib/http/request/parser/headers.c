@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "./parser.h"
-#include "./../../../logger.h"
+#include <standardloop/logger.h>
 #include "./../../../util/util.h"
 
 static void addHeaderFromLine(Map *, char *, size_t);

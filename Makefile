@@ -1,15 +1,14 @@
 include Makefile.properties
 
-all: build run
+all: build
 
 clean:
 	rm main
 
-build: main
+build:
 	$(CC) $(CC_FLAGS) \
 	main.c \
 	src/lib/cerver.c \
-	src/lib/logger.c \
 	src/lib/util/util.c \
 	src/lib/util/regex.c \
 	src/lib/util/env.c \
@@ -31,10 +30,10 @@ build: main
 	src/lib/http/request/parser/method.c \
 	src/lib/http/request/parser/headers.c \
 	src/lib/http/request/parser/version.c \
+	-L/usr/local/lib/standardloop \
+	-lstandardloop-logger \
 	-o main
 
-run:
-	./main
 
 test:
 

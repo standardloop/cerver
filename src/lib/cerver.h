@@ -2,6 +2,7 @@
 #define CERVER_H
 
 #include <netinet/in.h> // sockaddr_in
+
 #define SOCKET_ERROR -1 // WIP
 
 #include "./http/router.h"
@@ -18,9 +19,6 @@ typedef struct
     // FIXME do we need more?
     // RouteTable *_table;
 } Cerver;
-
-/*
- */
 
 Cerver *InitCerver(int, int, int);
 void FreeCerver(Cerver *);

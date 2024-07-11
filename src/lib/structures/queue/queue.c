@@ -3,7 +3,7 @@
 #include <stdbool.h>
 
 #include "./queue.h"
-#include "../../logger.h"
+#include <standardloop/logger.h>
 
 static bool isQueueFull(Queue *);
 static bool isQueueEmpty(Queue *);

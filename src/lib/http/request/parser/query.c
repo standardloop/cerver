@@ -4,7 +4,7 @@
 
 #include "./parser.h"
 #include "./../../../util/util.h"
-#include "./../../../logger.h"
+#include <standardloop/logger.h>
 #include "./../../../structures/map/map.h"
 
 // id=3&bar=1
@@ -96,6 +96,6 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
         Log(WARN, "Query Map Size is not equal to our expected count\n");
     }
 
-    //PrintMap(query_map);
+    // PrintMap(query_map);
     return query_map;
 }

@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include <stdbool.h>
 
-#include "./../logger.h"
+#include <standardloop/logger.h>
 
 #include "./scheduler.h"
 #include "./../structures/queue/queue.h"

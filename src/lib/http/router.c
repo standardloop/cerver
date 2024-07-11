@@ -3,7 +3,7 @@
 #include <strings.h>
 
 #include "./router.h"
-#include "./../logger.h"
+#include <standardloop/logger.h>
 #include "./../util/util.h"
 
 #define DIGIT_REGEX_SIZE 12 // [[:digit:]]+

@@ -14,7 +14,7 @@
 #include "./request/request.h"
 #include "./response/response.h"
 #include "./response/codes.h"
-#include "./../logger.h"
+#include <standardloop/logger.h>
 
 // FIXME — source of truth needs to be in "./response/codes/codes.h"
 const char *BAD_GATEWAY_STRING = "HTTP/1.1 503 Bad Gateway\nContent-Type: text/plain\nContent-Length: 3\n\n503";
