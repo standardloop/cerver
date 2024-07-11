@@ -14,7 +14,7 @@
 
 #include "./parser/parser.h"
 
-#include "../../util/util.h"
+#include <standardloop/util.h>
 #include <standardloop/logger.h>
 
 // char *strchrWithSize(char *buffer, char target_char, size_t buffer_size)
@@ -28,7 +28,7 @@ static char *locateQueryStart(char *buffer, size_t size)
     size_t char_count = 0;
     char *buffer_iterator = buffer;
     while (char_count < size && buffer_iterator != NULL &&
-           *buffer_iterator != CARRIAGE_RETURN_CHAR &&
+           *buffer_iterator != CARRIAGE_CHAR &&
            *buffer_iterator != NEWLINE_CHAR &&
            *buffer_iterator != NULL_CHAR)
     {
@@ -143,8 +143,8 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
     */
     // HTTP/1.1\r\n
     buffer = buffer_start;
-    char *carriage_return_ptr = strchr(second_space_pointer, CARRIAGE_RETURN_CHAR);
-    if (*carriage_return_ptr != CARRIAGE_RETURN_CHAR)
+    char *carriage_return_ptr = strchr(second_space_pointer, CARRIAGE_CHAR);
+    if (*carriage_return_ptr != CARRIAGE_CHAR)
     {
         Log(WARN, "[4XX]: cannot find carriage return\n");
         request->early_resp_code = HttpBadRequest;
@@ -223,8 +223,8 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
         return request;
     }
 
-    char *second_carriage_return_ptr = strchr(colon_ptr, CARRIAGE_RETURN_CHAR);
-    if (*second_carriage_return_ptr != CARRIAGE_RETURN_CHAR)
+    char *second_carriage_return_ptr = strchr(colon_ptr, CARRIAGE_CHAR);
+    if (*second_carriage_return_ptr != CARRIAGE_CHAR)
     {
         Log(ERROR, "[4XX]: couldn't find 2nd carriage return\n");
         request->early_resp_code = HttpBadRequest;

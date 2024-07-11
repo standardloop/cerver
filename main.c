@@ -8,7 +8,7 @@
 #include "./src/lib/cerver.h"
 #include "./src/lib/http/handler.h"
 
-#include "./src/lib/util/util.h"
+#include <standardloop/util.h>
 
 void foo(HttpRequest *, HttpResponse *);
 void bar(HttpRequest *, HttpResponse *);

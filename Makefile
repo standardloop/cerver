@@ -13,10 +13,6 @@ build:
 	@$(CC) $(CC_FLAGS) \
 	main.c \
 	src/lib/cerver.c \
-	src/lib/util/util.c \
-	src/lib/util/regex.c \
-	src/lib/util/env.c \
-	src/lib/util/explode.c \
 	src/lib/thread/pool.c \
 	src/lib/thread/worker.c \
 	src/lib/thread/scheduler.c \
@@ -34,10 +30,9 @@ build:
 	src/lib/http/request/parser/method.c \
 	src/lib/http/request/parser/headers.c \
 	src/lib/http/request/parser/version.c \
-	-L/usr/local/lib/standardloop \
-	-lstandardloop-logger \
+	$(DYN_LIBS_USED_PATH) \
+	$(DYN_LIBS_USED) \
 	-o $(EXECUTABLE_NAME)
-
 
 test:
 

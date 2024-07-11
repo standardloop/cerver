@@ -3,7 +3,7 @@
 #include <strings.h>
 
 #include "parser.h"
-#include "./../../../util/util.h"
+#include <standardloop/util.h>
 #include <standardloop/logger.h>
 
 char *HttpMethodToStr(enum HttpMethod method)

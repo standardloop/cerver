@@ -4,7 +4,7 @@
 
 #include "./router.h"
 #include <standardloop/logger.h>
-#include "./../util/util.h"
+#include <standardloop/util.h>
 
 #define DIGIT_REGEX_SIZE 12 // [[:digit:]]+
 #define ALPHA_REGEX_SIZE 12 // [[:alpha:]]+
@@ -47,7 +47,7 @@ RouteTable *InitRouteTable(enum HttpMethod method, int max)
 
 static char *createRouteRegex(char *path)
 {
-    StringArr *exploded_path = EveryoneExplodeNow(path, SLASH_CHAR);
+    StringArr *exploded_path = EveryoneExplodeNow(path, FORWARDLASH_CHAR);
     if (exploded_path == NULL || exploded_path->num_strings == 0 || strlen(exploded_path->strings[0]) != 0 || exploded_path->strings[0][0] != NULL_CHAR)
     {
         Log(FATAL, "invalid inputs to createRouteRegex");
@@ -63,7 +63,7 @@ static char *createRouteRegex(char *path)
         return NULL;
     }
     regex_route[0] = CARROT_CHAR;
-    regex_route[1] = SLASH_CHAR;
+    regex_route[1] = FORWARDLASH_CHAR;
 
     for (int i = 1; i < exploded_path->num_strings; i++)
     {
@@ -95,7 +95,7 @@ static char *createRouteRegex(char *path)
             {
                 // log
             }
-            CopyString(curr_string + 1, param_type, param_type_size - 1, 0);
+            CopyStringServer(curr_string + 1, param_type, param_type_size - 1, 0);
             *(param_type + param_type_size) = NULL_CHAR;
 
             curr_string = curr_string_start;
@@ -105,7 +105,7 @@ static char *createRouteRegex(char *path)
             {
                 // log
             }
-            CopyString(curr_string + 1, param_name, param_name_size - 1, 0);
+            CopyStringServer(curr_string + 1, param_name, param_name_size - 1, 0);
             *(param_name + param_name_size) = NULL_CHAR;
             // printf("[param_name]: %s %d\n", param_name, (int)param_name[strlen(param_name)]);
             // printf("[param_type]: %s %d\n", param_type, (int)param_type[strlen(param_type)]);
@@ -119,12 +119,12 @@ static char *createRouteRegex(char *path)
                 regex_route = realloc(regex_route, regex_route_size);
                 if (i != exploded_path->num_strings - 1)
                 {
-                    CopyString(ALPHA_REGEX_W_SLASH, regex_route, ALPHA_REGEX_SIZE + 1, regex_route_curr_index);
+                    CopyStringServer(ALPHA_REGEX_W_SLASH, regex_route, ALPHA_REGEX_SIZE + 1, regex_route_curr_index);
                     regex_route_curr_index += ALPHA_REGEX_SIZE + 1;
                 }
                 else
                 {
-                    CopyString(ALPHA_REGEX, regex_route, ALPHA_REGEX_SIZE, regex_route_curr_index);
+                    CopyStringServer(ALPHA_REGEX, regex_route, ALPHA_REGEX_SIZE, regex_route_curr_index);
                     regex_route_curr_index += ALPHA_REGEX_SIZE;
                 }
             }
@@ -138,12 +138,12 @@ static char *createRouteRegex(char *path)
                 regex_route = realloc(regex_route, regex_route_size);
                 if (i != exploded_path->num_strings - 1)
                 {
-                    CopyString(DIGIT_REGEX_W_SLASH, regex_route, DIGIT_REGEX_SIZE + 1, regex_route_curr_index);
+                    CopyStringServer(DIGIT_REGEX_W_SLASH, regex_route, DIGIT_REGEX_SIZE + 1, regex_route_curr_index);
                     regex_route_curr_index += DIGIT_REGEX_SIZE + 1;
                 }
                 else
                 {
-                    CopyString(DIGIT_REGEX, regex_route, DIGIT_REGEX_SIZE, regex_route_curr_index);
+                    CopyStringServer(DIGIT_REGEX, regex_route, DIGIT_REGEX_SIZE, regex_route_curr_index);
                     regex_route_curr_index += DIGIT_REGEX_SIZE;
                 }
             }
@@ -161,13 +161,13 @@ static char *createRouteRegex(char *path)
             regex_route = realloc(regex_route, regex_route_size);
             if (i != exploded_path->num_strings - 1)
             {
-                curr_string[curr_string_len] = SLASH_CHAR;
-                CopyString(curr_string, regex_route, curr_string_len + 1, regex_route_curr_index);
+                curr_string[curr_string_len] = FORWARDLASH_CHAR;
+                CopyStringServer(curr_string, regex_route, curr_string_len + 1, regex_route_curr_index);
                 regex_route_curr_index += curr_string_len + 1;
             }
             else
             {
-                CopyString(curr_string, regex_route, curr_string_len, regex_route_curr_index);
+                CopyStringServer(curr_string, regex_route, curr_string_len, regex_route_curr_index);
                 regex_route_curr_index += curr_string_len;
             }
         }

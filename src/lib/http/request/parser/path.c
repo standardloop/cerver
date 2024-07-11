@@ -3,7 +3,7 @@
 #include <strings.h>
 
 #include "parser.h"
-#include "./../../../util/util.h"
+#include <standardloop/util.h>
 #include <standardloop/logger.h>
 
 char *ParseRequestPath(char *buffer, size_t buffer_size)

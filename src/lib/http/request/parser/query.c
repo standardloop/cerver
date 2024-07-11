@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "./parser.h"
-#include "./../../../util/util.h"
+#include <standardloop/util.h>
 #include <standardloop/logger.h>
 #include "./../../../structures/map/map.h"
 
@@ -48,7 +48,7 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
                 return query_map;
             }
             *(query_key + key_size) = NULL_CHAR;
-            CopyString(key_start, query_key, key_size - 1, 0);
+            CopyStringServer(key_start, query_key, key_size - 1, 0);
         }
         else if (*buffer_iterator == AND_CHAR)
         {
@@ -62,10 +62,10 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
                 return query_map;
             }
             *(query_value + value_size) = NULL_CHAR;
-            CopyString(value_start, query_value, value_size - 1, 0); // -1 because nullchar is accounted for
+            CopyStringServer(value_start, query_value, value_size - 1, 0); // -1 because nullchar is accounted for
         }
         // FIXME: allowed characters in query string?
-        else if (*buffer_iterator == NULL_CHAR || *buffer_iterator == CARRIAGE_RETURN_CHAR || *buffer_iterator == SPACE_CHAR || *buffer_iterator == CARRIAGE_RETURN_CHAR)
+        else if (*buffer_iterator == NULL_CHAR || *buffer_iterator == CARRIAGE_CHAR || *buffer_iterator == SPACE_CHAR || *buffer_iterator == CARRIAGE_CHAR)
         {
             size_t value_size = (buffer_iterator - value_start) + 1;
             query_value = malloc(sizeof(char) * value_size);
@@ -76,7 +76,7 @@ Map *ParseQuery(char *buffer, size_t buffer_size)
                 return query_map;
             }
             *(query_value + value_size) = NULL_CHAR;
-            CopyString(value_start, query_value, value_size - 1, 0);
+            CopyStringServer(value_start, query_value, value_size - 1, 0);
         }
 
         if (query_key != NULL && query_value != NULL && query_key != query_value)

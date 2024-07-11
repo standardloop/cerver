@@ -4,7 +4,7 @@
 
 #include "./parser.h"
 #include <standardloop/logger.h>
-#include "./../../../util/util.h"
+#include <standardloop/util.h>
 
 static void addHeaderFromLine(Map *, char *, size_t);
 
@@ -30,7 +30,7 @@ Map *ParseHeaders(char *buffer, size_t buffer_size)
             line_without_carriage_return--;
 
             // remove carriage return from line
-            while (*line_without_carriage_return == CARRIAGE_RETURN_CHAR)
+            while (*line_without_carriage_return == CARRIAGE_CHAR)
             {
                 line_without_carriage_return--;
             }
@@ -99,7 +99,7 @@ static void addHeaderFromLine(Map *headers, char *line_start, size_t line_size)
     }
 
     while (*value_iterator != NEWLINE_CHAR &&
-           *value_iterator != CARRIAGE_RETURN_CHAR &&
+           *value_iterator != CARRIAGE_CHAR &&
            *value_iterator != '\0' &&
            value_iterator != NULL)
     {

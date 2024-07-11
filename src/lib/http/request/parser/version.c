@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include "./parser.h"
-#include "../../../util/util.h"
+#include <standardloop/util.h>
 #include <standardloop/logger.h>
 
 char *ParseHttpVersion(char *buffer, size_t buffer_size)
@@ -15,9 +15,9 @@ char *ParseHttpVersion(char *buffer, size_t buffer_size)
         return NULL;
     }
 
-    char *slash_point = strchr(buffer, SLASH_CHAR);
+    char *slash_point = strchr(buffer, FORWARDLASH_CHAR);
 
-    if (*slash_point != SLASH_CHAR)
+    if (*slash_point != FORWARDLASH_CHAR)
     {
         Log(WARN, "[4XX]: cannot parse HTTP version slash not found\n");
         return NULL;

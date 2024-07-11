@@ -8,9 +8,10 @@
 #include <pthread.h>
 
 #include <standardloop/logger.h>
+#include <standardloop/util.h>
 
 #include "cerver.h"
-#include "./util/util.h"
+
 #include "./thread/scheduler.h"
 
 Cerver *InitCerver(int port, int num_threads, int queue_buffer_size)
