@@ -3,10 +3,14 @@ include Makefile.properties
 all: build
 
 clean:
-	rm main
+	@rm -f $(EXECUTABLE_NAME)
+	@rm -f $(EXECUTABLE_NAME)-debug
+	@rm -f $(EXECUTABLE_NAME)-optimize
+	@rm -f a.out
+	@rm -f $(DYLIB_NAME)
 
 build:
-	$(CC) $(CC_FLAGS) \
+	@$(CC) $(CC_FLAGS) \
 	main.c \
 	src/lib/cerver.c \
 	src/lib/util/util.c \
@@ -32,7 +36,7 @@ build:
 	src/lib/http/request/parser/version.c \
 	-L/usr/local/lib/standardloop \
 	-lstandardloop-logger \
-	-o main
+	-o $(EXECUTABLE_NAME)
 
 
 test:

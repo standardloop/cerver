@@ -90,12 +90,12 @@ void HandleRequest(Router *router, int client_socket)
                     }
                     if (!router_found)
                     {
-                        Log(WARN, "405\n");
+                        Log(WARN, "405");
                         HandleGenericError(client_socket, HttpMethodNotAllowed);
                     }
                     else if (route == NULL)
                     {
-                        Log(WARN, "404\n");
+                        Log(WARN, "404");
                         HandleGenericError(client_socket, HttpNotFound);
                     }
                     else

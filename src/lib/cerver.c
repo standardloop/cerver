@@ -78,6 +78,7 @@ void StartCerver(Cerver *cerver)
     {
         Log(FATAL, "[5XX]: Couldn't allocate memory to scheduler\n");
     }
+    Log(TRACE, "Starting scheduler");
 
     ThreadPool *thread_pool = InitThreadPool(cerver->num_threads);
     if (thread_pool == NULL)
@@ -85,7 +86,7 @@ void StartCerver(Cerver *cerver)
         Log(FATAL, "[5XX]: Couldn't allocate memory to thread_pool\n");
     }
     StartThreads(cerver->router, scheduler, thread_pool);
-
+    Log(TRACE, "Starting threads");
     while (ALWAYS)
     {
         if ((client_socket = accept(cerver->server_fd, (struct sockaddr *)&cerver->address, (socklen_t *)&cerver->addrlen)) < 0)
