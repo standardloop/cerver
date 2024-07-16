@@ -51,6 +51,12 @@ void fooID(HttpRequest *request, HttpResponse *response)
 {
     // char *path_param_id = GetPathParam(request->path_params, "id");
     JSONValue *path_param_id_obj = HashMapGet(request->path_params, "id");
+    if (path_param_id_obj == NULL)
+    {
+        const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
+        (void)write(request->client_socket, hello, strlen(hello));
+        return;
+    }
     char *path_param_id = path_param_id_obj->value;
     if (path_param_id != NULL)
     {
@@ -86,7 +92,7 @@ void fooStatic(HttpRequest *request, HttpResponse *response)
 int main(void)
 {
     int port = atoi(GetEnv("PORT", "8080"));
-    int num_threads = atoi(GetEnv("NUM_THREADS", "10"));
+    int num_threads = atoi(GetEnv("NUM_THREADS", "4"));
     int buffer_size = atoi(GetEnv("BUFFER_SIZE", "100"));
 
     SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "TRACE")));

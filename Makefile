@@ -22,6 +22,7 @@ build:
 	src/lib/http/response/codes.c \
 	src/lib/http/response/response.c \
 	src/lib/http/request/request.c \
+	src/lib/http/request/parser/body.c \
 	src/lib/http/request/parser/host.c \
 	src/lib/http/request/parser/path.c \
 	src/lib/http/request/parser/port.c \

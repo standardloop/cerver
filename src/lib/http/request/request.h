@@ -29,7 +29,7 @@
 
 // typedef struct
 // {
-//     enum HttpCode early_resp_code;
+//     enum HttpCode bail_resp_code;
 //     char *error_message;
 //     size_t message_length;
 // } Error;
@@ -43,11 +43,12 @@ typedef struct
     char *version; // 1.1
     char *host;    // localhost
     int port;      // 8080
-    enum HttpCode early_resp_code;
+    enum HttpCode bail_resp_code;
 
     HashMap *headers;
-    char *body; // FIXME:
+    HashMap *body;
     HashMap *path_params;
+
 } HttpRequest;
 
 HttpRequest *CreateParsedHttpRequest(char *, size_t);

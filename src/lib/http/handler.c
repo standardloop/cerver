@@ -38,9 +38,9 @@ void HandleRequest(Router *router, int client_socket)
     {
         request = CreateParsedHttpRequest(buffer, valread); // pass valread here?
         // can we parse path params here?
-        if (request == NULL || request->early_resp_code != 0)
+        if (request == NULL || request->bail_resp_code != 0)
         {
-            HandleGenericError(client_socket, request->early_resp_code);
+            HandleGenericError(client_socket, request->bail_resp_code);
         }
         else
         {

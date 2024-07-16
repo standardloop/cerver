@@ -60,4 +60,8 @@ char *ParseHttpVersion(char *, size_t);
 
 HashMap *ParseHeaders(char *, size_t);
 
+// BODY
+
+HashMap *ParseBody(char *);
+
 #endif

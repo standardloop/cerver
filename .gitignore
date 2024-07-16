@@ -62,3 +62,4 @@ src/lib/http/middleware.c
 src/lib/http/middleware.h
 Dockerfile.alpine
 src/lib/structures/list/
+cerver

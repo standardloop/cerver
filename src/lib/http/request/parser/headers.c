@@ -51,8 +51,8 @@ HashMap *ParseHeaders(char *buffer, size_t buffer_size)
 
 static void addHeaderFromLine(HashMap *headers, char *line_start, size_t line_size)
 {
-    // FIXME
-    // http headers to be case insensitve
+    //  FIXME
+    //  http headers to be case insensitve
     if (headers == NULL || line_start == NULL)
     {
         return;
@@ -80,7 +80,7 @@ static void addHeaderFromLine(HashMap *headers, char *line_start, size_t line_si
         line_start_iterator++;
     }
     // char *header_value = colon_ptr + 1;
-    // FIXME: not prooerly accounting for length (space char, carriage return, newline, etc)
+    // FIXME: not properly accounting for length (space char, carriage return, newline, etc)
     size_t header_value_size = line_size - header_key_size;
     char *header_value = malloc(sizeof(char) * header_value_size);
     if (header_value == NULL)
@@ -108,5 +108,5 @@ static void addHeaderFromLine(HashMap *headers, char *line_start, size_t line_si
         value_iterator++;
     }
 
-    HashMapInsert(headers, JSONValueInit(STRING_t, header_value, header_key)); // fixme check ret val
+    HashMapInsert(headers, JSONValueInit(STRING_t, header_value, header_key));
 }
