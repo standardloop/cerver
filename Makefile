@@ -36,6 +36,9 @@ build:
 
 test:
 
+test.no_headers:
+	curl localhost:8080/ -H 'User-Agent:' -H 'Accept:' -H 'Host:'
+
 test.simple:
 	curl localhost:8080/ -I
 

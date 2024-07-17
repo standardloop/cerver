@@ -40,9 +40,9 @@ typedef struct
     enum HttpMethod method;
     char *path;
     HashMap *query_params;
-    char *version; // 1.1
-    char *host;    // localhost
-    int port;      // 8080
+    char *version;  // 1.1
+    char *host;     // localhost
+    u_int16_t port; // 8080
     enum HttpCode bail_resp_code;
 
     HashMap *headers;

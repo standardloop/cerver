@@ -37,7 +37,7 @@ enum HttpMethod ParseRequestMethod(char *, size_t);
 char *ParseRequestPath(char *, size_t);
 
 // PORT
-#define ERROR_PORT -1
+#define ERROR_PORT 0
 #define MAX_PORT_LENGTH 5
 
 int ParsePort(char *, size_t);
@@ -51,17 +51,14 @@ HashMap *ParseQuery(char *, size_t);
 char *ParseHttpVersion(char *, size_t);
 
 // HEADERS
-
 /*
     individually header size can matter more though
     413 Entity Too Large
 */
 #define MAX_NUM_REQUEST_HEADERS 10
-
-HashMap *ParseHeaders(char *, size_t);
+JSONValue *ParseHeader(char *);
 
 // BODY
-
-HashMap *ParseBody(char *);
+HashMap *ParseBody(char *, char *, size_t);
 
 #endif
