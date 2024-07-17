@@ -40,8 +40,8 @@ static char *locateQueryStart(char *buffer, size_t size)
 
 HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
 {
-    PrintBuffer(buffer, buffer_size, false);
-    PrintBuffer(buffer, buffer_size, true);
+    // PrintBuffer(buffer, buffer_size, false);
+    // PrintBuffer(buffer, buffer_size, true);
     if (buffer == NULL || buffer_size == 0)
     {
         Log(ERROR, "[4XX]: buffer is NULL for CreateParsedHttpRequest or buffer_size is 0\n");
@@ -259,7 +259,8 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
                 }
                 else if (found_last_line && parse_body)
                 {
-                    (void)ParseBody(NULL, NULL, 0);
+                    // FIXME
+                    //(void)ParseBody(NULL, NULL, 0);
                 }
             }
         }
@@ -276,8 +277,8 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
         }
     }
 
-    PrintHttpRequest(request);
-    Log(FATAL, NULL);
+    // PrintHttpRequest(request);
+    // Log(FATAL, NULL);
 
     request->path_params = NULL; // can't parse this yet
 

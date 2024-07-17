@@ -88,14 +88,13 @@ void fooStatic(HttpRequest *request, HttpResponse *response)
     return;
 }
 
-// int main(int argc, char const *argv[])
 int main(void)
 {
     int port = atoi(GetEnv("PORT", "8080"));
     int num_threads = atoi(GetEnv("NUM_THREADS", "4"));
     int buffer_size = atoi(GetEnv("BUFFER_SIZE", "100"));
 
-    SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "TRACE")));
+    SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "ERROR")));
 
     Cerver *server = InitCerver(port, num_threads, buffer_size);
 

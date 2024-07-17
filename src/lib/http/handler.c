@@ -36,8 +36,8 @@ void HandleRequest(Router *router, int client_socket)
     }
     else
     {
-        request = CreateParsedHttpRequest(buffer, valread); // pass valread here?
-        // can we parse path params here?
+        request = CreateParsedHttpRequest(buffer, valread);
+
         if (request == NULL || request->bail_resp_code != 0)
         {
             HandleGenericError(client_socket, request->bail_resp_code);
@@ -47,7 +47,7 @@ void HandleRequest(Router *router, int client_socket)
             request->client_socket = client_socket;
             if (router != NULL)
             {
-                // Log(TRACE, "Router is not NULL\n");
+                Log(TRACE, "Router is not NULL\n");
                 response = (HttpResponse *)malloc(sizeof(HttpResponse));
                 if (response == NULL)
                 {
