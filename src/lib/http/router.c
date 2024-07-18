@@ -95,7 +95,7 @@ static char *createRouteRegex(char *path)
             {
                 // log
             }
-            CopyStringServer(curr_string + 1, param_type, param_type_size - 1, 0);
+            CopyStringServer(curr_string + 1, param_type, param_type_size - 1, 0, false);
             *(param_type + param_type_size) = NULL_CHAR;
 
             curr_string = curr_string_start;
@@ -105,7 +105,7 @@ static char *createRouteRegex(char *path)
             {
                 // log
             }
-            CopyStringServer(curr_string + 1, param_name, param_name_size - 1, 0);
+            CopyStringServer(curr_string + 1, param_name, param_name_size - 1, 0, false);
             *(param_name + param_name_size) = NULL_CHAR;
             // printf("[param_name]: %s %d\n", param_name, (int)param_name[strlen(param_name)]);
             // printf("[param_type]: %s %d\n", param_type, (int)param_type[strlen(param_type)]);
@@ -119,12 +119,12 @@ static char *createRouteRegex(char *path)
                 regex_route = realloc(regex_route, regex_route_size);
                 if (i != exploded_path->num_strings - 1)
                 {
-                    CopyStringServer(ALPHA_REGEX_W_SLASH, regex_route, ALPHA_REGEX_SIZE + 1, regex_route_curr_index);
+                    CopyStringServer(ALPHA_REGEX_W_SLASH, regex_route, ALPHA_REGEX_SIZE + 1, regex_route_curr_index, false);
                     regex_route_curr_index += ALPHA_REGEX_SIZE + 1;
                 }
                 else
                 {
-                    CopyStringServer(ALPHA_REGEX, regex_route, ALPHA_REGEX_SIZE, regex_route_curr_index);
+                    CopyStringServer(ALPHA_REGEX, regex_route, ALPHA_REGEX_SIZE, regex_route_curr_index, false);
                     regex_route_curr_index += ALPHA_REGEX_SIZE;
                 }
             }
@@ -138,12 +138,12 @@ static char *createRouteRegex(char *path)
                 regex_route = realloc(regex_route, regex_route_size);
                 if (i != exploded_path->num_strings - 1)
                 {
-                    CopyStringServer(DIGIT_REGEX_W_SLASH, regex_route, DIGIT_REGEX_SIZE + 1, regex_route_curr_index);
+                    CopyStringServer(DIGIT_REGEX_W_SLASH, regex_route, DIGIT_REGEX_SIZE + 1, regex_route_curr_index, false);
                     regex_route_curr_index += DIGIT_REGEX_SIZE + 1;
                 }
                 else
                 {
-                    CopyStringServer(DIGIT_REGEX, regex_route, DIGIT_REGEX_SIZE, regex_route_curr_index);
+                    CopyStringServer(DIGIT_REGEX, regex_route, DIGIT_REGEX_SIZE, regex_route_curr_index, false);
                     regex_route_curr_index += DIGIT_REGEX_SIZE;
                 }
             }
@@ -162,12 +162,12 @@ static char *createRouteRegex(char *path)
             if (i != exploded_path->num_strings - 1)
             {
                 curr_string[curr_string_len] = FORWARDLASH_CHAR;
-                CopyStringServer(curr_string, regex_route, curr_string_len + 1, regex_route_curr_index);
+                CopyStringServer(curr_string, regex_route, curr_string_len + 1, regex_route_curr_index, false);
                 regex_route_curr_index += curr_string_len + 1;
             }
             else
             {
-                CopyStringServer(curr_string, regex_route, curr_string_len, regex_route_curr_index);
+                CopyStringServer(curr_string, regex_route, curr_string_len, regex_route_curr_index, false);
                 regex_route_curr_index += curr_string_len;
             }
         }

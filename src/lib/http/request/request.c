@@ -259,7 +259,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
                 }
                 else if (found_last_line && parse_body)
                 {
-                    char *content_length_str = HashMapGetValueDirect(request->headers, "Content-Length");
+                    char *content_length_str = HashMapGetValueDirect(request->headers, "content-length");
                     if (content_length_str == NULL)
                     {
                         Log(ERROR, "[4XX]: couldn't find Content-Length header");
@@ -271,7 +271,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
                     {
                         Log(WARN, "content_length is zero");
                     }
-                    request->body = ParseBody(HashMapGetValueDirect(request->headers, "Content-type"), current_line_in_http_request, content_length);
+                    request->body = ParseBody(HashMapGetValueDirect(request->headers, "content-type"), current_line_in_http_request, content_length);
                     break;
                 }
             }
@@ -289,7 +289,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
         }
     }
 
-    // PrintHttpRequest(request);
+    PrintHttpRequest(request);
     // Log(FATAL, NULL);
 
     request->path_params = NULL; // can't parse this yet

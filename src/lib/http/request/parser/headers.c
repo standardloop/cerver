@@ -26,7 +26,7 @@ JSONValue *ParseHeader(char *line_start)
         return NULL;
     }
 
-    CopyStringServer(line_start, header_key, header_key_size, 0);
+    CopyStringServer(line_start, header_key, header_key_size, 0, true);
     header_key[header_key_size - 1] = NULL_CHAR;
 
     char *header_value_start_after_colon = colon_ptr + 2;
@@ -46,7 +46,7 @@ JSONValue *ParseHeader(char *line_start)
         free(header_key);
         return NULL;
     }
-    CopyStringServer(header_value_start_after_colon, header_value, header_value_size, 0);
+    CopyStringServer(header_value_start_after_colon, header_value, header_value_size, 0, false);
     header_value[header_value_size - 1] = NULL_CHAR;
 
     return JSONValueInit(STRING_t, (char *)header_value, header_key);

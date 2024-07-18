@@ -48,7 +48,7 @@ HashMap *ParseQuery(char *buffer, size_t buffer_size)
                 return query_map;
             }
             *(query_key + key_size) = NULL_CHAR;
-            CopyStringServer(key_start, query_key, key_size - 1, 0);
+            CopyStringServer(key_start, query_key, key_size - 1, 0, false);
         }
         else if (*buffer_iterator == AND_CHAR)
         {
@@ -62,7 +62,7 @@ HashMap *ParseQuery(char *buffer, size_t buffer_size)
                 return query_map;
             }
             *(query_value + value_size) = NULL_CHAR;
-            CopyStringServer(value_start, query_value, value_size - 1, 0); // -1 because nullchar is accounted for
+            CopyStringServer(value_start, query_value, value_size - 1, 0, false); // -1 because nullchar is accounted for
         }
         // FIXME: allowed characters in query string?
         else if (*buffer_iterator == NULL_CHAR || *buffer_iterator == CARRIAGE_CHAR || *buffer_iterator == SPACE_CHAR || *buffer_iterator == CARRIAGE_CHAR)
@@ -76,7 +76,7 @@ HashMap *ParseQuery(char *buffer, size_t buffer_size)
                 return query_map;
             }
             *(query_value + value_size) = NULL_CHAR;
-            CopyStringServer(value_start, query_value, value_size - 1, 0);
+            CopyStringServer(value_start, query_value, value_size - 1, 0, false);
         }
 
         if (query_key != NULL && query_value != NULL && query_key != query_value)
