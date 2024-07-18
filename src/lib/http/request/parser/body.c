@@ -9,20 +9,24 @@
 #define CONTENT_TYPE_APPLICATION_JSON "application/json"
 #define CONTENT_TYPE_X_WWW_FORM_URLENCODED "application/x-www-form-urlencoded"
 
-HashMap *ParseBody(char *content_type, char *buffer, size_t temp)
+JSON *ParseBody(char *content_type, char *buffer, u_int64_t content_length)
 {
-    if (content_type == NULL || buffer == NULL || temp == 0)
+    if (content_type == NULL || buffer == NULL || content_length == 0)
     {
+        Log(WARN, "invalid inputs to ParseBody");
         return NULL;
     }
-    return NULL;
     if (strcmp(content_type, CONTENT_TYPE_APPLICATION_JSON) == 0)
     {
-        JSON *content = StringToJSON(NULL);
-        if (content == NULL)
+        JSON *body = StringToJSON(buffer);
+        if (body == NULL)
         {
+            Log(WARN, "failed to parse body");
+            return NULL;
         }
+        return body;
     }
+    // TODO: support more than just JSON body
     // else if (strcmp(content_type, CONTENT_TYPE_X_WWW_FORM_URLENCODED) == 0)
     // {
     // }

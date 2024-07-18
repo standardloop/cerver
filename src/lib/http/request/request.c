@@ -271,9 +271,8 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
                     {
                         Log(WARN, "content_length is zero");
                     }
-                    //(void)ParseBody(NULL, NULL, content_length);
-                    // break;
-                    // FIXME
+                    request->body = ParseBody(HashMapGetValueDirect(request->headers, "Content-type"), current_line_in_http_request, content_length);
+                    break;
                 }
             }
         }
@@ -328,6 +327,10 @@ void FreeHttpRequest(HttpRequest *request)
     {
         FreeHashMap(request->path_params);
     }
+    if (request->body != NULL)
+    {
+        FreeJSON(request->body);
+    }
     free(request);
 }
 
@@ -360,6 +363,12 @@ void PrintHttpRequest(HttpRequest *request)
     {
         printf("[DEBUG][HEADERS]: ");
         PrintHashMap(request->headers);
+        printf("\n");
+    }
+    if (request->body != NULL)
+    {
+        printf("[DEBUG][BODY]: ");
+        PrintJSON(request->body);
         printf("\n");
     }
 }

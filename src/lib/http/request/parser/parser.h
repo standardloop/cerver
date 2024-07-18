@@ -59,6 +59,6 @@ char *ParseHttpVersion(char *, size_t);
 JSONValue *ParseHeader(char *);
 
 // BODY
-HashMap *ParseBody(char *, char *, size_t);
+JSON *ParseBody(char *, char *, u_int64_t);
 
 #endif

@@ -46,7 +46,7 @@ typedef struct
     enum HttpCode bail_resp_code;
 
     HashMap *headers;
-    HashMap *body;
+    JSON *body; // for now only support JSON body
     HashMap *path_params;
 
 } HttpRequest;
