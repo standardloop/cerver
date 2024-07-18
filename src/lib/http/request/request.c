@@ -41,7 +41,7 @@ static char *locateQueryStart(char *buffer, size_t size)
 HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
 {
     // PrintBuffer(buffer, buffer_size, false);
-    // PrintBuffer(buffer, buffer_size, true);
+    //  PrintBuffer(buffer, buffer_size, true);
     if (buffer == NULL || buffer_size == 0)
     {
         Log(ERROR, "[4XX]: buffer is NULL for CreateParsedHttpRequest or buffer_size is 0\n");
@@ -243,7 +243,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
             }
             else
             {
-                if (!found_last_line && !parse_body)
+                if (!found_last_line && headers_map_created)
                 {
                     Log(TRACE, "headers found!");
                     JSONValue *single_header_obj = ParseHeader(current_line_in_http_request);
@@ -259,8 +259,21 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
                 }
                 else if (found_last_line && parse_body)
                 {
+                    char *content_length_str = HashMapGetValueDirect(request->headers, "Content-Length");
+                    if (content_length_str == NULL)
+                    {
+                        Log(ERROR, "[4XX]: couldn't find Content-Length header");
+                        request->bail_resp_code = HttpBadRequest;
+                        return request;
+                    }
+                    u_int64_t content_length = strtoll(content_length_str, NULL, 10);
+                    if (content_length == 0)
+                    {
+                        Log(WARN, "content_length is zero");
+                    }
+                    //(void)ParseBody(NULL, NULL, content_length);
+                    // break;
                     // FIXME
-                    //(void)ParseBody(NULL, NULL, 0);
                 }
             }
         }

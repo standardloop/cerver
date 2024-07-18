@@ -14,7 +14,7 @@ JSONValue *ParseHeader(char *line_start)
     {
         return NULL;
     }
-    //PrintBuffer(line_start, 2, true);
+    // PrintBuffer(line_start, 2, true);
 
     char *colon_ptr = strchr(line_start, COLON_CHAR);
     // FIXME error checking
@@ -49,5 +49,5 @@ JSONValue *ParseHeader(char *line_start)
     CopyStringServer(header_value_start_after_colon, header_value, header_value_size, 0);
     header_value[header_value_size - 1] = NULL_CHAR;
 
-    return JSONValueInit(STRING_t, header_value, header_key);
+    return JSONValueInit(STRING_t, (char *)header_value, header_key);
 }

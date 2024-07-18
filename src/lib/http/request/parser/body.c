@@ -9,9 +9,9 @@
 #define CONTENT_TYPE_APPLICATION_JSON "application/json"
 #define CONTENT_TYPE_X_WWW_FORM_URLENCODED "application/x-www-form-urlencoded"
 
-HashMap *ParseBody(char *content_type, char *buffer, size_t buffer_size)
+HashMap *ParseBody(char *content_type, char *buffer, size_t temp)
 {
-    if (content_type == NULL || buffer == NULL || buffer_size == 0)
+    if (content_type == NULL || buffer == NULL || temp == 0)
     {
         return NULL;
     }
@@ -23,8 +23,12 @@ HashMap *ParseBody(char *content_type, char *buffer, size_t buffer_size)
         {
         }
     }
-    else if (strcmp(content_type, CONTENT_TYPE_X_WWW_FORM_URLENCODED) == 0)
+    // else if (strcmp(content_type, CONTENT_TYPE_X_WWW_FORM_URLENCODED) == 0)
+    // {
+    // }
+    else
     {
+        Log(ERROR, "this server can only handle JSON data");
     }
 
     return NULL;

@@ -47,7 +47,7 @@ void HandleRequest(Router *router, int client_socket)
             request->client_socket = client_socket;
             if (router != NULL)
             {
-                Log(TRACE, "Router is not NULL\n");
+                Log(TRACE, "Router is not NULL");
                 response = (HttpResponse *)malloc(sizeof(HttpResponse));
                 if (response == NULL)
                 {
