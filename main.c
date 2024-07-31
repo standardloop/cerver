@@ -10,12 +10,12 @@
 
 #include <standardloop/util.h>
 
-void foo(HttpRequest *, HttpResponse *);
-void bar(HttpRequest *, HttpResponse *);
-void fooID(HttpRequest *, HttpResponse *);
-void fooStatic(HttpRequest *, HttpResponse *);
+void foo(const HttpRequest *, HttpResponse *);
+void bar(const HttpRequest *, HttpResponse *);
+void fooID(const HttpRequest *, HttpResponse *);
+void fooStatic(const HttpRequest *, HttpResponse *);
 
-void foo(HttpRequest *request, HttpResponse *response)
+void foo(const HttpRequest *request, HttpResponse *response)
 {
     // Log(TRACE, "[JOSH]: entering special test function\n");
     // char *accepted_types = MapGet(request->headers, "Accept");
@@ -26,11 +26,9 @@ void foo(HttpRequest *request, HttpResponse *response)
     {
         return;
     }
-    const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
-    (void)write(request->client_socket, hello, strlen(hello));
 }
 
-void bar(HttpRequest *request, HttpResponse *response)
+void bar(const HttpRequest *request, HttpResponse *response)
 
 {
     Log(TRACE, "[BAR]\n");
@@ -47,7 +45,7 @@ void bar(HttpRequest *request, HttpResponse *response)
     (void)write(request->client_socket, hello, strlen(hello));
 }
 
-void fooID(HttpRequest *request, HttpResponse *response)
+void fooID(const HttpRequest *request, HttpResponse *response)
 {
     // char *path_param_id = GetPathParam(request->path_params, "id");
     JSONValue *path_param_id_obj = HashMapGet(request->path_params, "id");
@@ -72,7 +70,7 @@ void fooID(HttpRequest *request, HttpResponse *response)
     (void)write(request->client_socket, hello, strlen(hello));
 }
 
-void fooStatic(HttpRequest *request, HttpResponse *response)
+void fooStatic(const HttpRequest *request, HttpResponse *response)
 {
     // Log(TRACE, "[JOSH]: entering special test function\n");
     JSONValue *accepted_types_obj = HashMapGet(request->path_params, "Accept");

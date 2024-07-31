@@ -37,14 +37,13 @@ void HandleRequest(Router *router, int client_socket)
     else
     {
         request = CreateParsedHttpRequest(buffer, valread);
-
         if (request == NULL || request->bail_resp_code != 0)
         {
             HandleGenericError(client_socket, request->bail_resp_code);
         }
         else
         {
-            request->client_socket = client_socket;
+            request->client_socket = client_socket; // does req obj need this information?
             if (router != NULL)
             {
                 Log(TRACE, "Router is not NULL");
@@ -106,8 +105,11 @@ void HandleRequest(Router *router, int client_socket)
                         {
                             request->path_params = ParsePathParams(route->params);
                         }
-                        route->handler(request, response);
+                        route->handler(request, response); // all handler functions should read the request object and modify the respone obj
                     }
+                    // temp
+                    const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
+                    (void)write(client_socket, hello, strlen(hello));
                 }
             }
         }

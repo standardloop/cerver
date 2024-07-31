@@ -6,11 +6,13 @@
 typedef struct
 {
     enum HttpCode response_code;
+    int client_socket;
     char **headers;
     char *body;
 } HttpResponse;
 
 void FreeHttpResponse(HttpResponse *);
-HttpResponse* CreateHttpResponse();
+HttpResponse *CreateHttpResponse();
+char *HttpResponseToString(HttpResponse *);
 
 #endif

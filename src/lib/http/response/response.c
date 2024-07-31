@@ -23,3 +23,12 @@ HttpResponse *CreateHttpResponse()
     response->headers = NULL;
     return response;
 }
+
+char *HttpResponseToString(HttpResponse *resp)
+{
+    if (resp == NULL)
+    {
+        return NULL;
+    }
+    return NULL;
+}
