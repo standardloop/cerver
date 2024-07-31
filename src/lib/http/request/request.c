@@ -289,8 +289,9 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
         }
     }
 
-    PrintHttpRequest(request);
-    // Log(FATAL, NULL);
+    // PrintHttpRequest(request);
+    // FreeHttpRequest(request);
+    // exit(0);
 
     request->path_params = NULL; // can't parse this yet
 

@@ -48,7 +48,7 @@ void HandleRequest(Router *router, int client_socket)
             if (router != NULL)
             {
                 Log(TRACE, "Router is not NULL");
-                response = (HttpResponse *)malloc(sizeof(HttpResponse));
+                response = CreateHttpResponse();
                 if (response == NULL)
                 {
                     Log(ERROR, "cannot allocate memory for HttpResponse\n");

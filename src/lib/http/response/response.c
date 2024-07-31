@@ -10,3 +10,16 @@ void FreeHttpResponse(HttpResponse *response)
         free(response);
     }
 }
+
+HttpResponse *CreateHttpResponse()
+{
+    HttpResponse *response = malloc(sizeof(HttpResponse));
+    if (response == NULL)
+    {
+        return NULL;
+    }
+    response->response_code = 0;
+    response->body = NULL;
+    response->headers = NULL;
+    return response;
+}

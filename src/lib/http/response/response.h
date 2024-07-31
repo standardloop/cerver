@@ -11,5 +11,6 @@ typedef struct
 } HttpResponse;
 
 void FreeHttpResponse(HttpResponse *);
+HttpResponse* CreateHttpResponse();
 
 #endif
