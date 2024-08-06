@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <unistd.h> // write() close()
 
 #include "./response.h"
 
@@ -32,3 +34,4 @@ char *HttpResponseToString(HttpResponse *resp)
     }
     return NULL;
 }
+

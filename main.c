@@ -26,6 +26,7 @@ void foo(const HttpRequest *request, HttpResponse *response)
     {
         return;
     }
+    SendResponse(response);
 }
 
 void bar(const HttpRequest *request, HttpResponse *response)

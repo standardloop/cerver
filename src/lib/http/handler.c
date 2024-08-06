@@ -22,6 +22,18 @@ const char *NOT_FOUND_STRING = "HTTP/1.1 404 Not Found\nContent-Type: text/plain
 const char *BAD_REQUEST_STRING = "HTTP/1.1 400 Bad Request\nContent-Type: text/plain\nContent-Length: 3\n\n400";
 const char *METHOD_NOT_SUPP_STRING = "HTTP/1.1 405 Method Not Allowed \nContent-Type: text/plain\nContent-Length: 3\n\n405";
 
+void SendResponse(HttpResponse *resp)
+{
+    if (resp == NULL)
+    {
+        // FIXME: handle generic error
+        HandleGenericError(resp->client_socket, HttpBadGateway);
+        return;
+    }
+    const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
+    (void)write(resp->client_socket, hello, strlen(hello));
+}
+
 void HandleRequest(Router *router, int client_socket)
 {
     HttpRequest *request = NULL;
@@ -55,6 +67,7 @@ void HandleRequest(Router *router, int client_socket)
                 }
                 else
                 {
+                    response->client_socket = client_socket;
                     Route *route = NULL;
                     bool router_found = false;
                     switch (request->method)
@@ -106,10 +119,8 @@ void HandleRequest(Router *router, int client_socket)
                             request->path_params = ParsePathParams(route->params);
                         }
                         route->handler(request, response); // all handler functions should read the request object and modify the respone obj
+                        // handler should use HttpResponseSend();
                     }
-                    // temp
-                    const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
-                    (void)write(client_socket, hello, strlen(hello));
                 }
             }
         }
