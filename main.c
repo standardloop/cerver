@@ -26,6 +26,7 @@ void foo(const HttpRequest *request, HttpResponse *response)
     {
         return;
     }
+    response->response_code = HttpOK;
     SendResponse(response);
 }
 

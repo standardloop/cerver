@@ -30,6 +30,7 @@ void SendResponse(HttpResponse *resp)
         HandleGenericError(resp->client_socket, HttpBadGateway);
         return;
     }
+    // <VERSION> <STATUS_CODE> <STATUS_STRING>\n
     const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
     (void)write(resp->client_socket, hello, strlen(hello));
 }

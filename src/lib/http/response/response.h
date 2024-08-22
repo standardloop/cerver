@@ -5,10 +5,10 @@
 
 typedef struct
 {
-    enum HttpCode response_code;
     int client_socket;
-    char **headers;
-    char *body;
+    enum HttpCode response_code;
+    HashMap *headers;
+    char *body; // FIXME
 } HttpResponse;
 
 void FreeHttpResponse(HttpResponse *);
