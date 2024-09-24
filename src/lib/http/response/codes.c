@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "codes.h"
 
-char *HttpStatusClass(int code)
+char *HttpStatusClass(enum HttpCode code)
 {
     if (code >= 100 && code < 200)
     {
@@ -26,144 +26,140 @@ char *HttpStatusClass(int code)
     return NULL;
 }
 
-char *HttpStatusPhrase(int code)
+char *HttpStatusCodeToString(enum HttpCode code)
 {
     switch (code)
     {
-
-    // FIXME: enum here?
     // 1XX
-    case 100:
+    case HttpContinue:
         return "Continue";
-    case 101:
+    case HttpSwitchingProtocols:
         return "Switching Protocols";
-    case 102:
+    case HttpProcessing:
         return "Processing";
-    case 103:
+    case HttpEarlyHints:
         return "Early Hints";
 
     // 2XX
-    case 200:
+    case HttpOK:
         return "OK";
-    case 201:
+    case HttpCreated:
         return "Created";
-    case 202:
+    case HttpAccepted:
         return "Accepted";
-    case 203:
+    case HttpNonAuthoritativeInformation:
         return "Non-Authoritative Information";
-    case 204:
+    case HttpNoContent:
         return "No Content";
-    case 205:
+    case HttpResetContent:
         return "Reset Content";
-    case 206:
+    case HttpPartialContent:
         return "Partial Content";
-    case 207:
+    case HttpMultiStatus:
         return "Multi-Status";
-    case 208:
+    case HttpAlreadyReported:
         return "Already Reported";
-    case 226:
+    case HttpIMUsed:
         return "IM Used";
 
     // 3XX
-    case 300:
+    case HttpMultipleChoices:
         return "Multiple Choices";
-    case 301:
+    case HttpMovedPermanently:
         return "Moved Permanently";
-    case 302:
+    case HttpFound:
         return "Found";
-    case 303:
+    case HttpSeeOther:
         return "See Other";
-    case 304:
+    case HttpNotModified:
         return "Not Modified";
-    case 305:
-        return "Use Proxy";
-    case 307:
+    case HttpTemporaryRedirect:
         return "Temporary Redirect";
-    case 308:
+    case HttpPermanentRedirect:
         return "Permanent Redirect";
 
     // 4XX
-    case 400:
+    case HttpBadRequest:
         return "Bad Request";
-    case 401:
+    case HttpUnauthorized:
         return "Unauthorized";
-    case 402:
+    case HttpPaymentRequired:
         return "Payment Required";
-    case 403:
+    case HttpForbidden:
         return "Forbidden";
-    case 404:
+    case HttpNotFound:
         return "Not Found";
-    case 405:
+    case HttpMethodNotAllowed:
         return "Method Not Allowed";
-    case 406:
+    case HttpNotAcceptable:
         return "Not Acceptable";
-    case 407:
+    case HttpProxyAuthenticationRequired:
         return "Proxy Authentication Required";
-    case 408:
+    case HttpRequestTimeout:
         return "Request Timeout";
-    case 409:
+    case HttpConflict:
         return "Conflict";
-    case 410:
+    case HttpGone:
         return "Gone";
-    case 411:
+    case HttpLengthRequired:
         return "Length Required";
-    case 412:
+    case HttpPreconditionFailed:
         return "Precondition Failed";
-    case 413:
+    case HttpContentTooLarge:
         return "Content Too Large";
-    case 414:
+    case HttpURITooLong:
         return "URI Too Long";
-    case 415:
+    case HttpUnsupportedMediaType:
         return "Unsupported Media Type";
-    case 416:
+    case HttpRangeNotSatisfiable:
         return "Range Not Satisfiable";
-    case 417:
+    case HttpExpectationFailed:
         return "Expectation Failed";
-    case 418:
+    case HttpImATeapot:
         return "I'm a teapot";
-    case 421:
+    case HttpMisdirectedRequest:
         return "Misdirected Request";
-    case 422:
+    case HttpUnprocessableContent:
         return "Unprocessable Content";
-    case 423:
+    case HttpLocked:
         return "Locked";
-    case 424:
+    case HttpFailedDependency:
         return "Failed Dependency";
-    case 425:
+    case HttpTooEarly:
         return "Too Early";
-    case 426:
+    case HttpUpgradeRequired:
         return "Upgrade Required";
-    case 428:
+    case HttpPreconditionRequired:
         return "Precondition Required";
-    case 429:
+    case HttpTooManyRequests:
         return "Too Many Requests";
-    case 431:
+    case HttpRequestHeaderFieldsTooLarge:
         return "Request Header Fields Too Large";
-    case 451:
+    case HttpUnavailableForLegalReasons:
         return "Unavailable For Legal Reasons";
 
     // 5XX
-    case 500:
+    case HttpInternalServerError:
         return "Internal Server Error";
-    case 501:
+    case HttpNotImplemented:
         return "Not Implemented";
-    case 502:
+    case HttpBadGateway:
         return "Bad Gateway";
-    case 503:
+    case HttpServiceUnavailable:
         return "Service Unavailable";
-    case 504:
+    case HttpGatewayTimeout:
         return "Gateway Timeout";
-    case 505:
+    case HttpHTTPVersionNotSupported:
         return "HTTP Version Not Supported";
-    case 506:
+    case HttpVariantAlsoNegotiates:
         return "Variant Also Negotiates";
-    case 507:
+    case HttpInsufficientStorage:
         return "Insufficient Storage";
-    case 508:
+    case HttpLoopDetected:
         return "Loop Detected";
-    case 510:
+    case HttpNotExtended:
         return "Not Extended";
-    case 511:
+    case HttpNetworkAuthenticationRequired:
         return "Network Authentication Required";
 
     default:

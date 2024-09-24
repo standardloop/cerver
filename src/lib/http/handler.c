@@ -70,6 +70,7 @@ void HandleRequest(Router *router, int client_socket)
                 else
                 {
                     response->client_socket = client_socket;
+                    response->version = request->version;
                     Route *route = NULL;
                     bool router_found = false;
                     switch (request->method)
@@ -127,8 +128,8 @@ void HandleRequest(Router *router, int client_socket)
             }
         }
     }
-    FreeHttpResponse(response);
     FreeHttpRequest(request);
+    FreeHttpResponse(response);
     close(client_socket);
 }
 

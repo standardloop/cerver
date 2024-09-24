@@ -65,6 +65,7 @@ HttpResponse *CreateHttpResponse()
         return NULL;
     }
     response->response_code = 0;
+    response->version = NULL;
     response->body = NULL;
     response->headers = generateDefaultResponseHeaders();
     if (response->headers == NULL)

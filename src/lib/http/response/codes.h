@@ -1,13 +1,13 @@
 #ifndef CODES_H
 #define CODES_H
-char *HttpClass(int code);
-char *HttpPhrase(int code);
+
 enum HttpCode
 {
     // 1XX
     HttpContinue = 100,
     // FIXME: 102?
     HttpSwitchingProtocols = 101,
+    HttpProcessing = 102,
     HttpEarlyHints = 103,
 
     // 2XX
@@ -28,7 +28,8 @@ enum HttpCode
     HttpFound = 302,
     HttpSeeOther = 303,
     HttpNotModified = 304,
-    HttpUseProxy = 305,
+    HttpUseProxy = 305, // DEPRECATED
+    Httpunused = 306,   // DEPRECATED
     HttpTemporaryRedirect = 307,
     HttpPermanentRedirect = 308,
 
@@ -78,4 +79,8 @@ enum HttpCode
     HttpNotExtended = 510,
     HttpNetworkAuthenticationRequired = 511,
 };
+
+char *HttpClass(enum HttpCode);
+char *HttpStatusCodeToString(enum HttpCode);
+
 #endif

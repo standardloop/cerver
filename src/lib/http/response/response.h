@@ -6,6 +6,7 @@
 typedef struct
 {
     int client_socket;
+    char *version; // 1.1
     enum HttpCode response_code;
     HashMap *headers;
     char *body; // FIXME
