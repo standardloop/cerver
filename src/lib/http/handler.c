@@ -22,6 +22,7 @@ const char *NOT_FOUND_STRING = "HTTP/1.1 404 Not Found\nContent-Type: text/plain
 const char *BAD_REQUEST_STRING = "HTTP/1.1 400 Bad Request\nContent-Type: text/plain\nContent-Length: 3\n\n400";
 const char *METHOD_NOT_SUPP_STRING = "HTTP/1.1 405 Method Not Allowed \nContent-Type: text/plain\nContent-Length: 3\n\n405";
 
+// Looks of work needed here
 void SendResponse(HttpResponse *resp)
 {
     if (resp == NULL)
