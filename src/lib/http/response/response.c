@@ -34,11 +34,12 @@ HashMap *generateDefaultResponseHeaders()
 
     // Date: <day-name>, <day> <month> <year> <hour>:<minute>:<second> GMT
     char *date_for_header = generateResponseDate();
-    JSONValue *date_for_header_obj = JSONValueInit(STRING_t, date_for_header, "Date");
+    JSONValue *date_for_header_obj = JSONValueInit(STRING_t, date_for_header, QuickAllocatedString("Date"));
     HashMapInsert(response_headers, date_for_header_obj);
 
     char *server_header = QuickAllocatedString("cerver");
-    JSONValue *server_header_obj = JSONValueInit(STRING_t, server_header, "Server");
+    JSONValue *server_header_obj = JSONValueInit(STRING_t, server_header, QuickAllocatedString("Server"));
+    HashMapInsert(response_headers, server_header_obj);
 
     return response_headers;
 }
@@ -65,7 +66,7 @@ HttpResponse *CreateHttpResponse()
     }
     response->response_code = 0;
     response->body = NULL;
-    response->headers = generateDefaultResponseHeaders(response->headers);
+    response->headers = generateDefaultResponseHeaders();
     if (response->headers == NULL)
     {
         // FIXME
