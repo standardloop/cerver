@@ -83,5 +83,18 @@ char *HttpResponseToString(HttpResponse *resp)
     {
         return NULL;
     }
-    return NULL;
+    size_t resp_as_string_size = 1;
+    char *resp_as_string = malloc(sizeof(char) * resp_as_string_size);
+    if (resp_as_string == NULL)
+    {
+        return NULL;
+    }
+    resp_as_string[0] = NULL_CHAR;
+
+    //size_t chars_written = 0;
+    // <VERSION> <STATUS_CODE> <STATUS_STRING>\n<HEADERS>\n\n<BODY>
+    // "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
+    // add HTTP/<VERSION> 
+
+    return resp_as_string;
 }

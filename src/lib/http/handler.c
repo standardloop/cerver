@@ -31,9 +31,16 @@ void SendResponse(HttpResponse *resp)
         HandleGenericError(resp->client_socket, HttpBadGateway);
         return;
     }
-    // <VERSION> <STATUS_CODE> <STATUS_STRING>\n
-    const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
-    (void)write(resp->client_socket, hello, strlen(hello));
+    // <VERSION> <STATUS_CODE> <STATUS_STRING>\n<HEADERS>\n\n<BODY>
+    char *response_as_string = HttpResponseToString(resp); // maybe send length back so don't have to compute
+    if (response_as_string == NULL)
+    {
+        HandleGenericError(resp->client_socket, HttpBadGateway);
+        return;
+    }
+    (void)write(resp->client_socket, response_as_string, strlen(response_as_string));
+    // const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
+    // (void)write(resp->client_socket, hello, strlen(hello));
 }
 
 void HandleRequest(Router *router, int client_socket)
@@ -157,7 +164,8 @@ void HandleGenericError(int client_socket, enum HttpCode response_code)
 
 void HandleStaticPath(int client_socket, char *path)
 {
-    printf("\n[handleStaticPath]: %s\n", path);
+    Log(TRACE, "[handleStaticPath]");
+
     FILE *file;
     file = fopen(path + 1, "r");
     if (file == NULL)
