@@ -13,6 +13,17 @@
 
 char *generateResponseDate();
 HashMap *generateDefaultResponseHeaders();
+static void copyStringCanary(char *, char *, u_int64_t);
+
+static void copyStringCanary(char *des, char *src, u_int64_t des_offset)
+{
+    char *des_iterator = des + des_offset;
+
+    while (src != NULL && *src != NULL_CHAR)
+    {
+        *des_iterator++ = *src++;
+    }
+}
 
 char *generateResponseDate()
 {
@@ -83,18 +94,63 @@ char *HttpResponseToString(HttpResponse *resp)
     {
         return NULL;
     }
-    size_t resp_as_string_size = 1;
+    size_t resp_as_string_size = 4 + 1 + 3 + 1 + 3 + 1 + 1; // HTTP/1.1 XXX \0
     char *resp_as_string = malloc(sizeof(char) * resp_as_string_size);
     if (resp_as_string == NULL)
     {
         return NULL;
     }
-    resp_as_string[0] = NULL_CHAR;
+    size_t chars_written = 0;
+    resp_as_string[chars_written] = 'H';
+    chars_written++;
+    resp_as_string[chars_written] = 'T';
+    chars_written++;
+    resp_as_string[chars_written] = 'T';
+    chars_written++;
+    resp_as_string[chars_written] = 'P';
+    chars_written++;
+    resp_as_string[chars_written] = FORWARDLASH_CHAR;
+    chars_written++;
+    resp_as_string[chars_written] = resp->version[0];
+    chars_written++;
+    resp_as_string[chars_written] = resp->version[1];
+    chars_written++;
+    resp_as_string[chars_written] = resp->version[2];
+    chars_written++;
+    resp_as_string[chars_written] = SPACE_CHAR;
+    chars_written++;
 
-    //size_t chars_written = 0;
+    char *status_code_as_str = HttpStatusCodeToString(resp->response_code, false);
+    if (status_code_as_str == NULL)
+    {
+        free(resp_as_string);
+        return NULL;
+    }
+    for (size_t i = 0; i < 3; i++)
+    {
+        resp_as_string[chars_written] = status_code_as_str[i];
+        chars_written++;
+    }
+    resp_as_string[chars_written] = SPACE_CHAR;
+    chars_written++;
+
+    char *status_code_phrase = HttpStatusCodeToString(resp->response_code, true);
+    if (status_code_phrase == NULL)
+    {
+        free(resp_as_string);
+        return NULL;
+    }
+
+    resp_as_string_size += strlen(status_code_phrase);
+    resp_as_string = realloc(resp_as_string, resp_as_string_size);
+
+    copyStringCanary(resp_as_string, status_code_phrase, chars_written);
+
+    printf("[JOSH]: %s\n", resp_as_string);
+
     // <VERSION> <STATUS_CODE> <STATUS_STRING>\n<HEADERS>\n\n<BODY>
     // "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
-    // add HTTP/<VERSION> 
+    // add HTTP/<VERSION>
 
     return resp_as_string;
 }

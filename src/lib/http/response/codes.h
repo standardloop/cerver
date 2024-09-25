@@ -1,6 +1,8 @@
 #ifndef CODES_H
 #define CODES_H
 
+#include <stdbool.h>
+
 enum HttpCode
 {
     // 1XX
@@ -81,6 +83,6 @@ enum HttpCode
 };
 
 char *HttpClass(enum HttpCode);
-char *HttpStatusCodeToString(enum HttpCode);
+char *HttpStatusCodeToString(enum HttpCode, bool);
 
 #endif
