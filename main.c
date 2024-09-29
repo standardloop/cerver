@@ -27,6 +27,7 @@ void foo(const HttpRequest *request, HttpResponse *response)
         return;
     }
     response->response_code = HttpOK;
+    response->body = QuickAllocatedString("Hello!");
     SendResponse(response);
 }
 
@@ -94,7 +95,8 @@ int main(void)
     int num_threads = atoi(GetEnv("NUM_THREADS", "4"));
     int buffer_size = atoi(GetEnv("BUFFER_SIZE", "100"));
 
-    SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "TRACE")));
+    // SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "TRACE")));
+    SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "ERROR")));
 
     Cerver *server = InitCerver(port, num_threads, buffer_size);
 

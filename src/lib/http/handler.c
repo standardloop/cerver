@@ -31,7 +31,11 @@ void SendResponse(HttpResponse *resp)
         HandleGenericError(resp->client_socket, HttpBadGateway);
         return;
     }
+    // add Content-Length header
+    HashMapInsert(resp->headers, JSONValueInit(STRING_t, Int64ToString(strlen(resp->body)), QuickAllocatedString("Content-Length")));
+
     // <VERSION> <STATUS_CODE> <STATUS_STRING>\n<HEADERS>\n\n<BODY>
+
     char *response_as_string = HttpResponseToString(resp); // maybe send length back so don't have to compute
     if (response_as_string == NULL)
     {
