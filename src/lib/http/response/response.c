@@ -36,11 +36,12 @@ HashMap *generateDefaultResponseHeaders()
     JSONValue *date_for_header_obj = JSONValueInit(STRING_t, generateResponseDate(), QuickAllocatedString("Date"));
     HashMapInsert(response_headers, date_for_header_obj);
 
-    JSONValue *server_header_obj = JSONValueInit(STRING_t, QuickAllocatedString("cerver"), QuickAllocatedString("Server"));
+    // Server header TODO: add flag to disable this
+    JSONValue *server_header_obj = JSONValueInit(STRING_t, QuickAllocatedString("cerver/1.0.0 (macOS)"), QuickAllocatedString("Server"));
     HashMapInsert(response_headers, server_header_obj);
 
     // Content-Type: text/plain FIXME: HARDCODED
-    JSONValue *content_header_obj = JSONValueInit(STRING_t, QuickAllocatedString("text/plain"), QuickAllocatedString("Server"));
+    JSONValue *content_header_obj = JSONValueInit(STRING_t, QuickAllocatedString("text/plain"), QuickAllocatedString("Content-Type"));
     HashMapInsert(response_headers, content_header_obj);
 
     return response_headers;
@@ -54,7 +55,7 @@ char *headersToString(HashMap *headers)
     }
     size_t headers_as_string_size = 1; // \0
     char *headers_as_string = malloc(sizeof(char) * headers_as_string_size);
-    headers_as_string[0] = NULL_CHAR;
+    // headers_as_string[0] = NULL_CHAR;
 
     size_t chars_written = 0;
 
@@ -136,11 +137,14 @@ HttpResponse *CreateHttpResponse()
 
 char *HttpResponseToString(HttpResponse *resp)
 {
+
+    // "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
+
     if (resp == NULL)
     {
         return NULL;
     }
-    size_t resp_as_string_size = 4 + 1 + 3 + 1 + 3 + 1 + 1; // HTTP/1.1 XXX \0
+    size_t resp_as_string_size = 4 + 1 + 3 + 1 + 3 + 1 + 1; // 14 // HTTP/1.1 XXX \0
     char *resp_as_string = malloc(sizeof(char) * resp_as_string_size);
     if (resp_as_string == NULL)
     {
@@ -191,31 +195,34 @@ char *HttpResponseToString(HttpResponse *resp)
     resp_as_string_size += status_code_phrase_size;
     resp_as_string = realloc(resp_as_string, resp_as_string_size);
     CopyStringCanary(resp_as_string, status_code_phrase, chars_written);
-    resp_as_string[resp_as_string_size] = NEWLINE_CHAR;
-    chars_written += resp_as_string_size;
-
-    printf("[JOSH1]:\n");
-    printf("%s", resp_as_string);
-    printf("%d\n", (int)resp_as_string_size);
-    fflush(stdout);
+    chars_written += status_code_phrase_size - 1;
+    resp_as_string[chars_written] = NEWLINE_CHAR;
+    chars_written++;
 
     // Headers
     char *headers_as_string = headersToString(resp->headers);
-    size_t headers_as_string_size = strlen(headers_as_string) + 1; //  +1 for \n
+    if (headers_as_string == NULL)
+    {
+        free(resp_as_string);
+        return NULL;
+    }
+
+    size_t headers_as_string_size = strlen(headers_as_string) + 1; // +1 for \n
     resp_as_string_size += headers_as_string_size;
     resp_as_string = realloc(resp_as_string, resp_as_string_size);
     CopyStringCanary(resp_as_string, headers_as_string, chars_written);
-    chars_written += headers_as_string_size;
-    resp_as_string[resp_as_string_size] = NEWLINE_CHAR;
+    chars_written += headers_as_string_size - 1;
+    resp_as_string[chars_written] = NEWLINE_CHAR;
+    chars_written++;
 
-    printf("[JOSH]:\n");
-    printf("%s", resp_as_string);
-    fflush(stdout);
+    // BODY
+    size_t body_size = strlen(resp->body) + 1; // +1 for \0
+    CopyStringCanary(resp_as_string, resp->body, chars_written);
+    chars_written += body_size - 1;
+    resp_as_string[chars_written] = NULL_CHAR;
+    chars_written++;
 
-    exit(23);
-
-    // <VERSION> <STATUS_CODE> <STATUS_STRING>\n<HEADERS>\n\n<BODY>
-    // "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
+    // printf("%s", resp_as_string);
 
     return resp_as_string;
 }
