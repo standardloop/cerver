@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h> // write() close()
 #include <time.h>
+
 #include <standardloop/logger.h>
 #include <standardloop/json.h>
 #include <standardloop/util.h>
@@ -221,8 +222,5 @@ char *HttpResponseToString(HttpResponse *resp)
     chars_written += body_size - 1;
     resp_as_string[chars_written] = NULL_CHAR;
     chars_written++;
-
-    // printf("%s", resp_as_string);
-
     return resp_as_string;
 }

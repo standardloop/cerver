@@ -12,27 +12,31 @@ clean:
 build:
 	@$(CC) $(CC_FLAGS) \
 	main.c \
-	src/lib/cerver.c \
-	src/lib/thread/pool.c \
-	src/lib/thread/worker.c \
-	src/lib/thread/scheduler.c \
-	src/lib/http/handler.c \
-	src/lib/http/router.c \
-	src/lib/structures/queue/queue.c \
-	src/lib/http/response/codes.c \
-	src/lib/http/response/response.c \
-	src/lib/http/request/request.c \
-	src/lib/http/request/parser/body.c \
-	src/lib/http/request/parser/host.c \
-	src/lib/http/request/parser/path.c \
-	src/lib/http/request/parser/port.c \
-	src/lib/http/request/parser/query.c \
-	src/lib/http/request/parser/method.c \
-	src/lib/http/request/parser/headers.c \
-	src/lib/http/request/parser/version.c \
+	cerver.c \
+	thread/pool.c \
+	thread/worker.c \
+	thread/scheduler.c \
+	http/handler.c \
+	http/router.c \
+	structures/queue/queue.c \
+	http/response/codes.c \
+	http/response/response.c \
+	http/request/request.c \
+	http/request/parser/body.c \
+	http/request/parser/host.c \
+	http/request/parser/path.c \
+	http/request/parser/port.c \
+	http/request/parser/query.c \
+	http/request/parser/method.c \
+	http/request/parser/headers.c \
+	http/request/parser/version.c \
 	$(DYN_LIBS_USED_PATH) \
 	$(DYN_LIBS_USED) \
 	-o $(EXECUTABLE_NAME)
+
+
+# 	-fsanitize=address
+#	-fno-omit-frame-pointer
 
 test:
 

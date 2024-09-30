@@ -5,8 +5,8 @@
 
 #include <standardloop/logger.h>
 
-#include "./src/lib/cerver.h"
-#include "./src/lib/http/handler.h"
+#include "./cerver.h"
+#include "./http/handler.h"
 
 #include <standardloop/util.h>
 
