@@ -7,5 +7,6 @@ FIXME: instructions on linking
 
 ### Raw
 ```sh
-$ make  # will build and automatically run the binary
+$ make
+$ ./cerver
 ```
