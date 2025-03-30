@@ -32,6 +32,7 @@ char *ParseHttpVersion(char *buffer, size_t buffer_size)
 
     char *buffer_start = slash_point + 1;
     size_t http_version_size = buffer_size - ((slash_point + 1) - buffer);
+    http_version_size++; // NULL_CHAR
 
     char *http_version_str = (char *)malloc(sizeof(char) * http_version_size);
     if (http_version_str == NULL)
@@ -41,11 +42,11 @@ char *ParseHttpVersion(char *buffer, size_t buffer_size)
     }
 
     char *http_version_str_start = http_version_str;
-    *(http_version_str + http_version_size) = '\0';
+    *(http_version_str + http_version_size - 1) = NULL_CHAR;
 
     size_t char_count = 0;
     buffer = buffer_start;
-    while (char_count < http_version_size && *buffer != '\0')
+    while (char_count < http_version_size && *buffer != NULL_CHAR)
     {
         *http_version_str = *buffer;
 
@@ -56,7 +57,7 @@ char *ParseHttpVersion(char *buffer, size_t buffer_size)
 
     buffer = buffer_start;
     http_version_str = http_version_str_start;
-    if (*(http_version_str + http_version_size) != '\0')
+    if (*(http_version_str + http_version_size - 1) != NULL_CHAR)
     {
         Log(ERROR, "http path string was not null terminated\n");
         free(http_version_str);

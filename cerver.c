@@ -40,11 +40,12 @@ Cerver *InitCerver(int port, int num_threads, int queue_buffer_size)
     {
         Log(FATAL, "Couldnt bind socket");
     }
+
     if (listen(server_fd, 10) < 0)
     {
         Log(FATAL, "couldn't listen on socket\n");
     }
-
+    Log(INFO, "Starting Cerver on Port");
     Cerver *cerver = (Cerver *)malloc(sizeof(Cerver));
     if (cerver == NULL)
     {

@@ -24,7 +24,7 @@ char *ParseRequestPath(char *buffer, size_t buffer_size)
         return NULL;
     }
     char *suspected_http_path_str_start = suspected_http_path_str;
-    *(suspected_http_path_str + http_path_size) = '\0';
+    *(suspected_http_path_str + http_path_size - 1) = NULL_CHAR;
     size_t char_count = 0;
     while (char_count < buffer_size && *buffer != SPACE_CHAR && *buffer != NULL_CHAR && *buffer != QUESTION_CHAR)
     {
@@ -37,7 +37,7 @@ char *ParseRequestPath(char *buffer, size_t buffer_size)
     buffer = buffer_start;
     suspected_http_path_str = suspected_http_path_str_start;
 
-    if (*(suspected_http_path_str + http_path_size) != '\0')
+    if (*(suspected_http_path_str + http_path_size - 1) != NULL_CHAR)
     {
         Log(ERROR, "http path string was not null terminated\n");
         free(suspected_http_path_str);

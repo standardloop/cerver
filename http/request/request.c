@@ -16,6 +16,7 @@
 
 #include <standardloop/util.h>
 #include <standardloop/logger.h>
+#include <standardloop/json.h>
 
 static char *locateQueryStart(char *, size_t);
 
@@ -40,8 +41,6 @@ static char *locateQueryStart(char *buffer, size_t size)
 
 HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
 {
-    // PrintBuffer(buffer, buffer_size, false);
-    //  PrintBuffer(buffer, buffer_size, true);
     if (buffer == NULL || buffer_size == 0)
     {
         Log(ERROR, "[4XX]: buffer is NULL for CreateParsedHttpRequest or buffer_size is 0\n");
@@ -75,14 +74,15 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
         if (line_count == 1 && current_line_in_http_request != NULL)
         {
             // Method
-            char *space_pointer = strchr(current_line_in_http_request, SPACE_CHAR);
-            if (*space_pointer != SPACE_CHAR)
+            char *first_space_pointer = strchr(current_line_in_http_request, SPACE_CHAR);
+            if (*first_space_pointer != SPACE_CHAR)
             {
                 Log(WARN, "[4XX]: space_point is not a space!\n");
                 request->bail_resp_code = HttpBadRequest;
                 return request;
             }
-            size_t suspected_http_method_length = (space_pointer - current_line_in_http_request);
+            size_t suspected_http_method_length = (first_space_pointer - current_line_in_http_request);
+            suspected_http_method_length++; // NULL_CHAR
 
             request->method = ParseRequestMethod(current_line_in_http_request, suspected_http_method_length);
             if (request->method == HttpFAKE)
@@ -96,27 +96,27 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
                 parse_body = true;
             }
             // Path and Query
-            char *second_space_pointer = strchr((space_pointer + 1), SPACE_CHAR); // +1 because pointer is on space
-            if ((*second_space_pointer != SPACE_CHAR) || (*space_pointer != SPACE_CHAR))
+            char *second_space_pointer = strchr((first_space_pointer + 1), SPACE_CHAR); // +1 because pointer is on space
+            if ((*second_space_pointer != SPACE_CHAR) || (*first_space_pointer != SPACE_CHAR))
             {
                 Log(WARN, "error finding appropriate amount of spaces for path+query");
                 request->bail_resp_code = HttpBadRequest;
                 return request;
             }
-            size_t suspected_path_length = second_space_pointer - space_pointer;
-            request->path = ParseRequestPath(space_pointer + 1, suspected_path_length);
+            size_t suspected_path_length = second_space_pointer - (first_space_pointer + 1);
+            suspected_path_length++; // NULL_CHAR
+            request->path = ParseRequestPath(first_space_pointer + 1, suspected_path_length);
             if (request->path == NULL)
             {
                 Log(WARN, "[4XX]: Couldn't parse HTTP Request path/query\n");
                 request->bail_resp_code = HttpBadGateway;
                 return request;
             }
-
             size_t path_length = strlen(request->path);
             if (path_length + 1 < suspected_path_length)
             {
                 Log(TRACE, "the request contains a query\n");
-                char *question_mark_char = locateQueryStart((space_pointer + 1 + path_length), suspected_path_length - path_length);
+                char *question_mark_char = locateQueryStart((first_space_pointer + 1 + path_length), suspected_path_length - path_length);
                 if (question_mark_char == NULL || *question_mark_char != QUESTION_CHAR)
                 {
                     request->query_params = NULL;
@@ -154,6 +154,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
             }
 
             size_t expected_verion_length = carriage_return_ptr - (second_space_pointer + 1);
+            expected_verion_length++; // NULL_CHAR
             request->version = ParseHttpVersion((second_space_pointer + 1), expected_verion_length);
             if (request->version == NULL)
             {
@@ -300,39 +301,38 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
 
 void FreeHttpRequest(HttpRequest *request)
 {
-    if (request == NULL)
+    if (request != NULL)
     {
-        return;
+        if (request->path != NULL)
+        {
+            free(request->path);
+        }
+        if (request->query_params != NULL)
+        {
+            FreeHashMap(request->query_params);
+        }
+        if (request->version != NULL)
+        {
+            free(request->version);
+        }
+        if (request->host != NULL)
+        {
+            free(request->host);
+        }
+        if (request->headers != NULL)
+        {
+            FreeHashMap(request->headers);
+        }
+        if (request->path_params != NULL)
+        {
+            FreeHashMap(request->path_params);
+        }
+        if (request->body != NULL)
+        {
+            FreeJSON(request->body);
+        }
+        free(request);
     }
-    if (request->path != NULL)
-    {
-        free(request->path);
-    }
-    if (request->query_params != NULL)
-    {
-        FreeHashMap(request->query_params);
-    }
-    if (request->version != NULL)
-    {
-        free(request->version);
-    }
-    if (request->host != NULL)
-    {
-        free(request->host);
-    }
-    if (request->headers != NULL)
-    {
-        FreeHashMap(request->headers);
-    }
-    if (request->path_params != NULL)
-    {
-        FreeHashMap(request->path_params);
-    }
-    if (request->body != NULL)
-    {
-        FreeJSON(request->body);
-    }
-    free(request);
 }
 
 // FIXME user logger here

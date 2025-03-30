@@ -86,17 +86,17 @@ enum HttpMethod ParseRequestMethod(char *buffer, size_t buffer_size)
 
     size_t http_method_size = buffer_size;
     char suspected_http_method_str[http_method_size];
-    suspected_http_method_str[http_method_size] = '\0';
+    suspected_http_method_str[http_method_size - 1] = NULL_CHAR;
 
     size_t char_count = 0;
-    while (char_count < buffer_size && *buffer != '\n' && *buffer != SPACE_CHAR && *buffer != '\0')
+    while (char_count < buffer_size - 1 && *buffer != NEWLINE_CHAR && *buffer != SPACE_CHAR && *buffer != NULL_CHAR)
     {
         suspected_http_method_str[char_count] = *buffer;
         buffer++;
         char_count++;
     }
 
-    if (suspected_http_method_str[http_method_size] != '\0')
+    if (suspected_http_method_str[http_method_size - 1] != NULL_CHAR)
     {
         Log(ERROR, "placed a null term wasn't there any more for suspected_http_method_str");
         return HttpFAKE;

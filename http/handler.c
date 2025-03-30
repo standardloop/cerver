@@ -179,7 +179,7 @@ void HandleStaticPath(int client_socket, char *path)
     }
     size_t bytes_read;
     char buffer[BUFFER_SIZE];
-    sprintf(buffer, "HTTP/1.1 200 OK\r\n\r\n");
+    snprintf(buffer, strlen("HTTP/1.1 200 OK\r\n\r\n"), "HTTP/1.1 200 OK\r\n\r\n"); // FIXME, clean thi sup
     write(client_socket, buffer, strlen(buffer));
 
     while ((bytes_read = fread(buffer, 1, BUFFER_SIZE, file)) > 0)
