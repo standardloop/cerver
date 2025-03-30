@@ -167,6 +167,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
         // Host is currently required as of HTTP/1.1
         else if (line_count == 2 && current_line_in_http_request != NULL)
         {
+            // FIXME maybe fully check for HOST: instead of just checking for H and SPACE_CHAR
             if (*(current_line_in_http_request) != 'H')
             {
                 Log(ERROR, "[4XX]: H not present after newline");
@@ -188,6 +189,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
                 return request;
             }
             size_t expected_host_length = (colon_ptr - suspected_host_start);
+            expected_host_length++; // NULL_CHAR
             request->host = ParseHost(suspected_host_start, expected_host_length);
             if (request->host == NULL)
             {

@@ -20,10 +20,10 @@ char *ParseHost(char *buffer, size_t buffer_size)
         return NULL;
     }
     char *host_str_start = host_str;
-    *(host_str + host_size) = '\0';
+    *(host_str + host_size - 1) = NULL_CHAR;
 
     size_t char_count = 0;
-    while (char_count < buffer_size && *buffer != '\0')
+    while (char_count < buffer_size - 1 && *buffer != NULL_CHAR)
     {
         *host_str = *buffer;
 
@@ -33,7 +33,7 @@ char *ParseHost(char *buffer, size_t buffer_size)
     }
     host_str = host_str_start;
 
-    if (*(host_str + host_size) != '\0')
+    if (*(host_str + host_size - 1) != NULL_CHAR)
     {
         Log(ERROR, "placed a null term wasn't there any more for http host\n");
         free(host_str);
