@@ -113,7 +113,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
                 return request;
             }
             size_t path_length = strlen(request->path);
-            if (path_length + 1 < suspected_path_length)
+            if (path_length < suspected_path_length)
             {
                 Log(TRACE, "the request contains a query\n");
                 char *question_mark_char = locateQueryStart((first_space_pointer + 1 + path_length), suspected_path_length - path_length);
@@ -213,8 +213,9 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
                 request->bail_resp_code = HttpBadRequest;
                 return request;
             }
-            size_t expected_port_length = second_carriage_return_ptr - (++colon_ptr);
-            request->port = ParsePort(colon_ptr, expected_port_length);
+            size_t expected_port_length = second_carriage_return_ptr - (colon_ptr + 1);
+            expected_port_length++; // NULL_CHAR
+            request->port = ParsePort(colon_ptr + 1, expected_port_length);
             if (request->port == ERROR_PORT)
             {
                 Log(ERROR, "[4XX]: couldn't parse port");

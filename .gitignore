@@ -64,3 +64,6 @@ Dockerfile.alpine
 src/lib/structures/list/
 cerver
 cerver-sanitize
+temp/
+.task
+dependencies/

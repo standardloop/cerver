@@ -18,17 +18,17 @@ int ParsePort(char *buffer, size_t buffer_size)
     size_t port_size = buffer_size;
     char port_str[port_size];
 
-    port_str[port_size] = '\0';
+    port_str[port_size - 1] = NULL_CHAR;
 
     size_t char_count = 0;
-    while (char_count < buffer_size && *buffer != '\0')
+    while (char_count < buffer_size - 1 && *buffer != NULL_CHAR)
     {
         port_str[char_count] = *buffer;
 
         buffer++;
         char_count++;
     }
-    if (port_str[port_size] != '\0')
+    if (port_str[port_size - 1] != NULL_CHAR)
     {
         Log(ERROR, "placed a null term wasn't there any more for port\n");
         return ERROR_PORT;

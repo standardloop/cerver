@@ -1,0 +1,135 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  CC: gcc
+  CC_FLAGS: "-Werror -Wextra -Wall -Wfree-nonheap-object -std=c17"
+  EXECUTABLE_NAME: cerver
+  DYN_LIBS_USED_PATH: "-L/usr/local/lib/standardloop"
+  DYN_LIBS_USED: "-lstandardloop-logger -lstandardloop-util -lstandardloop-json"
+  SOURCE_FILES:
+    - cerver.c
+    - thread/pool.c
+    - thread/worker.c
+    - thread/scheduler.c
+    - http/handler.c
+    - http/router.c
+    - structures/queue/queue.c
+    - http/response/codes.c
+    - http/response/response.c
+    - http/request/request.c
+    - http/request/parser/body.c
+    - http/request/parser/host.c
+    - http/request/parser/path.c
+    - http/request/parser/port.c
+    - http/request/parser/query.c
+    - http/request/parser/method.c
+    - http/request/parser/headers.c 
+    - http/request/parser/version.c
+
+
+# Inputs
+# - REPO_NAME
+# - DYLIB_VERSION
+# - DYLIB_NAME
+download-dependency: &download-dependency |
+  mkdir -p dependencies/tmp-{{.DYLIB_NAME}}
+  cd dependencies/tmp-{{.DYLIB_NAME}}
+  curl -O -J -L https://github.com/standardloop/{{.REPO_NAME}}/releases/download/v{{.DYLIB_VERSION}}/libstandardloop-{{.DYLIB_NAME}}.zip
+  unzip libstandardloop-{{.DYLIB_NAME}}.zip
+  sudo mkdir -p /usr/local/lib/standardloop/
+  sudo mkdir -p /usr/local/include/standardloop/
+  sudo mv libstandardloop-{{.DYLIB_NAME}}.dylib /usr/local/lib/standardloop/
+  sudo mv {{.DYLIB_NAME}}.h /usr/local/include/standardloop/ && rm libstandardloop-{{.DYLIB_NAME}}.zip
+
+tasks:
+  default:
+    silent: true
+    deps:
+      - build
+
+  dependencies:
+    deps:
+      - dependencies:logger
+      - dependencies:util
+      - dependencies:json
+
+  dependencies:logger:
+    vars:
+      REPO_NAME: c-logger
+      DYLIB_VERSION: 0.0.1
+      DYLIB_NAME: logger
+    cmds:
+      - sudo -v
+      - *download-dependency
+    status:
+      - otool -L /usr/local/lib/standardloop/libstandardloop-{{.DYLIB_NAME}}.dylib | head -n 2 | tail -n 1 | grep "current version {{.DYLIB_VERSION}}"
+      - cat /usr/local/include/standardloop/{{.DYLIB_NAME}}.h | grep "STANDARDLOOP_{{.DYLIB_NAME | upper}}_H_VERSION \"{{.DYLIB_VERSION}}\""
+
+  dependencies:util:
+    vars:
+      REPO_NAME: c-util
+      DYLIB_VERSION: 0.0.1
+      DYLIB_NAME: util
+    cmds:
+      - sudo -v
+      - *download-dependency
+    status:
+      - otool -L /usr/local/lib/standardloop/libstandardloop-{{.DYLIB_NAME}}.dylib | head -n 2 | tail -n 1 | grep "current version {{.DYLIB_VERSION}}"
+      - cat /usr/local/include/standardloop/{{.DYLIB_NAME}}.h | grep "STANDARDLOOP_{{.DYLIB_NAME | upper}}_H_VERSION \"{{.DYLIB_VERSION}}\""
+
+  dependencies:json:
+    vars:
+      REPO_NAME: c-json
+      DYLIB_VERSION: 0.0.1
+      DYLIB_NAME: json
+    cmds:
+      - sudo -v
+      - *download-dependency
+    status:
+      - otool -L /usr/local/lib/standardloop/libstandardloop-{{.DYLIB_NAME}}.dylib | head -n 2 | tail -n 1 | grep "current version {{.DYLIB_VERSION}}"
+      - cat /usr/local/include/standardloop/{{.DYLIB_NAME}}.h | grep "STANDARDLOOP_{{.DYLIB_NAME | upper}}_H_VERSION \"{{.DYLIB_VERSION}}\""
+
+  build:
+    deps:
+      - dependencies
+    cmds:
+      - |
+        {{.CC}} {{.CFLAGS}} \
+        main.c \
+        {{range .SOURCE_FILES}} {{.}} {{end}} \
+        {{.DYN_LIBS_USED_PATH}} \
+        {{.DYN_LIBS_USED}} \
+        -o {{.EXECUTABLE_NAME}}
+    sources:
+      - ./**/*.c
+    generates:
+      - "{{.EXECUTABLE_NAME}}"
+  
+  build:sanitize:
+    deps:
+      - dependencies
+    cmds:
+      - |
+        {{.CC}} {{.CFLAGS}} \
+        main.c \
+        -fsanitize=address \
+        -fno-omit-frame-pointer \
+        {{range .SOURCE_FILES}} {{.}} {{end}} \
+        {{.DYN_LIBS_USED_PATH}} \
+        {{.DYN_LIBS_USED}} \
+        -o {{.EXECUTABLE_NAME}}
+    sources:
+      - ./**/*.c
+    generates:
+      - "{{.EXECUTABLE_NAME}}-sanitize"
+
+  clean:
+    allow_failures: true
+    cmds:
+      - rm -f {{.EXECUTABLE_NAME}}
+      - rm -f {{.EXECUTABLE_NAME}}-debug
+      - rm -f {{.EXECUTABLE_NAME}}-sanitize
+      - rm -f {{.EXECUTABLE_NAME}} optimize
+      - rm -f a.out
