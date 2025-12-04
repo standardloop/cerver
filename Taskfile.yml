@@ -1,3 +1,4 @@
+---
 version: '3'
 
 vars:
@@ -5,7 +6,7 @@ vars:
   CC_FLAGS: "-Werror -Wextra -Wall -Wfree-nonheap-object -std=c17"
   EXECUTABLE_NAME: cerver
   DYN_LIBS_USED_PATH: "-L/usr/local/lib/standardloop"
-  DYN_LIBS_USED: "-lstandardloop-logger -lstandardloop-util -lstandardloop-json"
+  DYN_LIBS_USED: "-pthread -lstandardloop-logger -lstandardloop-util -lstandardloop-json"
   SOURCE_FILES:
     - cerver.c
     - thread/pool.c
@@ -56,7 +57,7 @@ tasks:
   dependencies:logger:
     vars:
       REPO_NAME: c-logger
-      DYLIB_VERSION: 0.0.1
+      DYLIB_VERSION: 0.0.4
       DYLIB_NAME: logger
     cmds:
       - sudo -v
@@ -88,6 +89,10 @@ tasks:
     status:
       - otool -L /usr/local/lib/standardloop/libstandardloop-{{.DYLIB_NAME}}.dylib | head -n 2 | tail -n 1 | grep "current version {{.DYLIB_VERSION}}"
       - cat /usr/local/include/standardloop/{{.DYLIB_NAME}}.h | grep "STANDARDLOOP_{{.DYLIB_NAME | upper}}_H_VERSION \"{{.DYLIB_VERSION}}\""
+
+  # dependencies:clean:
+  #   cmds:
+
 
   build:
     deps:

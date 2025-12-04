@@ -45,7 +45,7 @@ Cerver *InitCerver(int port, int num_threads, int queue_buffer_size)
     {
         Log(FATAL, "couldn't listen on socket\n");
     }
-    Log(INFO, "Starting Cerver on Port");
+    Log(INFO, "Starting Cerver on Port %d", port);
     Cerver *cerver = (Cerver *)malloc(sizeof(Cerver));
     if (cerver == NULL)
     {
@@ -68,7 +68,6 @@ Cerver *InitCerver(int port, int num_threads, int queue_buffer_size)
     // if (router != NULL)
     // {
     // }
-
     return cerver;
 }
 
@@ -89,6 +88,7 @@ void StartCerver(Cerver *cerver)
     }
     StartThreads(cerver->router, scheduler, thread_pool);
     Log(TRACE, "Starting threads");
+    Log(INFO, "vist http://localhost:%d", ntohs(cerver->address.sin_port));
     while (ALWAYS)
     {
         if ((client_socket = accept(cerver->server_fd, (struct sockaddr *)&cerver->address, (socklen_t *)&cerver->addrlen)) < 0)
