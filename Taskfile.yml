@@ -47,6 +47,7 @@ tasks:
     silent: true
     deps:
       - build
+      - build:sanitize
 
   dependencies:
     deps:
@@ -57,7 +58,7 @@ tasks:
   dependencies:logger:
     vars:
       REPO_NAME: c-logger
-      DYLIB_VERSION: 0.0.4
+      DYLIB_VERSION: 0.0.5
       DYLIB_NAME: logger
     cmds:
       - sudo -v
@@ -122,7 +123,7 @@ tasks:
         {{range .SOURCE_FILES}} {{.}} {{end}} \
         {{.DYN_LIBS_USED_PATH}} \
         {{.DYN_LIBS_USED}} \
-        -o {{.EXECUTABLE_NAME}}
+        -o {{.EXECUTABLE_NAME}}-sanitize
     sources:
       - ./**/*.c
     generates:

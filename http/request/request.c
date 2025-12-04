@@ -120,7 +120,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
                 if (question_mark_char == NULL || *question_mark_char != QUESTION_CHAR)
                 {
                     request->query_params = NULL;
-                    Log(FATAL, "");
+                    // Log(FATAL, "query");
                 }
                 else
                 {
