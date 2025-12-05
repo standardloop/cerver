@@ -13,7 +13,6 @@ ThreadPool *InitThreadPool(int num_threads)
     ThreadPool *workers = (ThreadPool *)malloc(sizeof(ThreadPool));
     if (workers == NULL)
     {
-        printf("\n");
         return NULL;
     }
     workers->num_threads = num_threads;
@@ -23,17 +22,17 @@ ThreadPool *InitThreadPool(int num_threads)
     int mutex_init = pthread_mutex_init(&workers->LOCK, NULL);
     if (mutex_init != 0)
     {
-        printf("\n mutex_init \n");
+        Log(FATAL, "pthread_mutex_init failed!");
     }
     int fill_init = pthread_cond_init(&workers->FILL, NULL);
     if (fill_init != 0)
     {
-        printf("\n fill_init \n");
+        Log(FATAL, "fill_init pthread_cond_init failed!");
     }
     int empty_init = pthread_cond_init(&workers->EMPTY, NULL);
     if (empty_init != 0)
     {
-        printf("\n empty_init \n");
+        Log(FATAL, "empty_init pthread_cond_init failed!");
     }
 
     return workers;
@@ -46,8 +45,7 @@ void StartThreads(Router *router, Scheduler *scheduler, ThreadPool *workers)
         ThreadArg *arg = (ThreadArg *)malloc(sizeof(ThreadArg));
         if (arg == NULL)
         {
-            printf("\n[ERROR][5XX]: Thread number %d: Creation failed", i);
-            continue;
+            Log(ERROR, "[ERROR][5XX]: Thread number %d: Creation failed", i);
         }
         else
         {
@@ -58,7 +56,7 @@ void StartThreads(Router *router, Scheduler *scheduler, ThreadPool *workers)
             int check_thread = pthread_create(&workers->pool[i], NULL, ThreadWorker, arg);
             if (check_thread != 0)
             {
-                printf("\n[ERROR][5XX]: Thread number %d: Creation failed", i);
+                Log(ERROR, "[ERROR][5XX]: Thread number %d: Creation failed", i);
             }
         }
     }

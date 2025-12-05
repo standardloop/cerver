@@ -42,6 +42,7 @@ typedef struct
     RouteTable *connect;
     RouteTable *patch;
     RouteTable *trace;
+    // bool add_cerver_header;
 } Router;
 
 HashMap *ParsePathParams(RouteParam *);
