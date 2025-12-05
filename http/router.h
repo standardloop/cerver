@@ -47,6 +47,7 @@ typedef struct
 HashMap *ParsePathParams(RouteParam *);
 
 Router *InitRouter();
+void FreeRouter(Router *);
 
 RouteTable *InitRouteTable(enum HttpMethod, int);
 void PrintRouteTable(RouteTable *tabe);

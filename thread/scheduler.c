@@ -139,6 +139,7 @@ int AcceptRequest(Scheduler *scheduler, ThreadPool *workers)
 
 void FreeScheduler(Scheduler *scheduler)
 {
+    Log(ERROR, "FreeScheduler");
     if (scheduler->buffer != NULL)
     {
         FreeQueue(scheduler->buffer);

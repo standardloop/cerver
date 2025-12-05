@@ -4,6 +4,8 @@
 #include <string.h>     // strlen()
 #include <netinet/in.h> // sockaddr_in
 #include <unistd.h>     // write() close()
+#include <signal.h>     // signal polling for graceful shutdown
+#include <errno.h>
 #include <string.h>
 #include <pthread.h>
 
@@ -14,6 +16,27 @@
 
 #include "./thread/scheduler.h"
 
+volatile sig_atomic_t cerver_running = true;
+
+void cerverSigHandler(int);
+
+// NOTE: SIGKILL cannot be trapped
+void cerverSigHandler(int signum)
+{
+    switch (signum)
+    {
+    case SIGINT:
+        Log(ERROR, "SIGINT received!");
+        break;
+    case SIGTERM:
+        Log(ERROR, "SIGTERM received!");
+        break;
+    default:
+        break;
+    }
+    cerver_running = false;
+}
+
 Cerver *InitCerver(int port, int num_threads, int queue_buffer_size)
 {
     int server_fd;
@@ -23,11 +46,13 @@ Cerver *InitCerver(int port, int num_threads, int queue_buffer_size)
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
-        Log(FATAL, "cannot create socker file descriptor\n");
+        Log(FATAL, "cannot create socker file descriptor");
+        return NULL;
     }
     if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0)
     {
-        Log(FATAL, "couldn't set socket options\n");
+        Log(FATAL, "couldn't set socket options");
+        return NULL;
     }
 
     address.sin_family = AF_INET;
@@ -73,11 +98,28 @@ Cerver *InitCerver(int port, int num_threads, int queue_buffer_size)
 
 void StartCerver(Cerver *cerver)
 {
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = cerverSigHandler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    if (sigaction(SIGINT, &sa, NULL) == -1)
+    {
+        Log(FATAL, "sigaction SIGINT fail");
+        return;
+    }
+    if (sigaction(SIGTERM, &sa, NULL) == -1)
+    {
+        Log(FATAL, "sigaction SIGTERM fail");
+        return;
+    }
+
     int client_socket;
     Scheduler *scheduler = InitScheduler(FIFO, cerver->queue_buffer_size);
     if (scheduler == NULL)
     {
-        Log(FATAL, "[5XX]: Couldn't allocate memory to scheduler\n");
+        Log(FATAL, "[5XX]: Couldn't allocate memory to scheduler");
     }
     Log(TRACE, "Starting scheduler");
 
@@ -89,17 +131,49 @@ void StartCerver(Cerver *cerver)
     StartThreads(cerver->router, scheduler, thread_pool);
     Log(TRACE, "Starting threads");
     Log(INFO, "vist http://localhost:%d", ntohs(cerver->address.sin_port));
-    while (ALWAYS)
+
+    while (cerver_running)
     {
-        if ((client_socket = accept(cerver->server_fd, (struct sockaddr *)&cerver->address, (socklen_t *)&cerver->addrlen)) < 0)
+        client_socket = accept(cerver->server_fd, (struct sockaddr *)&cerver->address, (socklen_t *)&cerver->addrlen);
+        if (errno == EINTR)
         {
+            break;
+        }
+        else if (client_socket < 0)
+        {
+            // if (errno == EINTR)
+            // {
+            //     break;
+            // }
             Log(ERROR, "[5XX]: Couldn't accect connections on socket\n");
         }
         else
         {
+            // if (errno == EINTR)
+            // {
+            //     break;
+            // }
             ScheduleRequestToBeHandled(scheduler, thread_pool, client_socket);
         }
     }
+    close(client_socket);
+    Log(ERROR, "Shutting Down...");
     FreeThreadPool(thread_pool);
     FreeScheduler(scheduler);
+    FreeCerver(cerver);
+    Log(ERROR, "bye bye...");
+}
+
+// WIP
+void FreeCerver(Cerver *cerver)
+{
+    Log(ERROR, "FreeCerver");
+    if (cerver != NULL)
+    {
+        if (cerver->router != NULL)
+        {
+            FreeRouter(cerver->router);
+        }
+        free(cerver);
+    }
 }

@@ -144,6 +144,7 @@ void HandleRequest(Router *router, int client_socket)
     close(client_socket);
 }
 
+// FIXME, mising headers
 void HandleGenericError(int client_socket, enum HttpCode response_code)
 {
     switch (response_code)

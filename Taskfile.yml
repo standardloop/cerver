@@ -47,7 +47,8 @@ tasks:
     silent: true
     deps:
       - build
-      - build:sanitize
+      # - build:sanitize
+      # - run
 
   dependencies:
     deps:
@@ -111,6 +112,12 @@ tasks:
     generates:
       - "{{.EXECUTABLE_NAME}}"
   
+  run:
+    deps:
+      - build
+    cmds:
+      - ./{{.EXECUTABLE_NAME}}
+
   sanitize:
     deps:
       - run:sanitize
@@ -148,3 +155,17 @@ tasks:
       - rm -f {{.EXECUTABLE_NAME}}-sanitize
       - rm -f {{.EXECUTABLE_NAME}} optimize
       - rm -f a.out
+
+  leaks:cp:
+    deps:
+      - build
+    cmds:
+      - cp /usr/local/lib/standardloop/libstandardloop-util.dylib ./ # to get around sips we need to move dylibs to local dir :(
+      - cp /usr/local/lib/standardloop/libstandardloop-json.dylib ./ # to get around sips we need to move dylibs to local dir :(
+      - cp /usr/local/lib/standardloop/libstandardloop-logger.dylib ./ # to get around sips we need to move dylibs to local dir :(
+
+  leaks:clean:
+    cmds:
+      - rm -f libstandardloop-logger.dylib
+      - rm -f libstandardloop-json.dylib
+      - rm -f libstandardloop-util.dylib

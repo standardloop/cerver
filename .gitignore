@@ -22,11 +22,12 @@
 *.la
 *.lo
 
-# Shared objects (inc. Windows DLLs)
+# Shared objects (inc. Windows DLLs and macOS dylibs)
 *.dll
 *.so
 *.so.*
 *.dysrc
+*.dylib
 
 # Executables
 *.exe

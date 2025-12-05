@@ -16,6 +16,8 @@ static char *DIGIT_REGEX_W_SLASH = "[[:digit:]]+/";
 static char *ALPHA_REGEX_W_SLASH = "[[:alpha:]]+/";
 
 static void freeRoute(Route *);
+static void freeRouteTable(RouteTable *);
+
 static bool isRouteTableEmpty(RouteTable *);
 
 static char *createRouteRegex(char *path);
@@ -45,6 +47,7 @@ RouteTable *InitRouteTable(enum HttpMethod method, int max)
     return table;
 }
 
+// FIXME remember how this works
 static char *createRouteRegex(char *path)
 {
     StringArr *exploded_path = EveryoneExplodeNow(path, FORWARDLASH_CHAR);
@@ -294,29 +297,72 @@ int AddRouteToTable(RouteTable *table, char *path, RouteHandler *router_function
     return table->size;
 }
 
-static void freeRoute(Route *route)
+void FreeRouter(Router *router)
 {
-    if (route == NULL)
+    if (router != NULL)
     {
-        return;
-    }
-
-    if (route->route_regex != NULL)
-    {
-        // FIXME
-        // free(route->route_regex);
-    }
-    // Dont need to free
-    if (route->handler != NULL)
-    {
+        if (router->get != NULL)
+        {
+            freeRouteTable(router->get);
+        }
+        if (router->connect != NULL)
+        {
+            freeRouteTable(router->connect);
+        }
+        if (router->delete != NULL)
+        {
+            freeRouteTable(router->delete);
+        }
+        if (router->head != NULL)
+        {
+            freeRouteTable(router->head);
+        }
+        if (router->options != NULL)
+        {
+            freeRouteTable(router->options);
+        }
+        if (router->patch != NULL)
+        {
+            freeRouteTable(router->patch);
+        }
+        if (router->post != NULL)
+        {
+            freeRouteTable(router->post);
+        }
+        if (router->put != NULL)
+        {
+            freeRouteTable(router->put);
+        }
+        if (router->trace != NULL)
+        {
+            freeRouteTable(router->trace);
+        }
     }
 }
 
-void FreeRouteTable(RouteTable *table)
+static void freeRouteTable(RouteTable *table)
 {
-    if (table->routes != NULL)
+    if (table != NULL)
     {
-        // FIXME loop
-        freeRoute(table->routes);
+        if (table->routes != NULL)
+        {
+            freeRoute(table->routes);
+        }
+        free(table);
+    }
+}
+
+static void freeRoute(Route *route)
+{
+    if (route != NULL)
+    {
+        Route *route_it = route;
+        Route *route_it_next;
+        while (route_it != NULL)
+        {
+            route_it_next = route_it->next;
+            free(route_it);
+            route_it = route_it_next;
+        }
     }
 }

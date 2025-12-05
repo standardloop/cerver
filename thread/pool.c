@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <pthread.h>
 
+#include <standardloop/logger.h>
+
 #include "./scheduler.h"
 #include "./../structures/queue/queue.h"
 #include "./worker.h"
@@ -65,6 +67,7 @@ void StartThreads(Router *router, Scheduler *scheduler, ThreadPool *workers)
 // FIXME mutex?
 void FreeThreadPool(ThreadPool *thread_pool)
 {
+    Log(ERROR, "FreeThreadPool");
     if (thread_pool->pool != NULL)
     {
         free(thread_pool->pool);
