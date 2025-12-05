@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 #include <standardloop/logger.h>
 
@@ -26,6 +27,7 @@ Scheduler *InitScheduler(enum ThreadPolicy policy, int buffer_size)
     scheduler->policy = policy;
     scheduler->buffer_size = buffer_size;
     scheduler->curr_size = 0;
+    scheduler->cerver_running = true;
 
     if (policy == FIFO)
     {
@@ -107,19 +109,30 @@ void ScheduleRequestToBeHandled(Scheduler *scheduler, ThreadPool *workers, int c
 
 int AcceptRequest(Scheduler *scheduler, ThreadPool *workers)
 {
+    if (!scheduler->cerver_running)
+    {
+        return -1;
+    }
     int mutex_lock = pthread_mutex_lock(&workers->LOCK);
     if (mutex_lock != 0)
     {
-        Log(WARN, "AcceptRequest mutex_lockn");
+        Log(WARN, "AcceptRequest mutex_lock fail");
     }
+    // while (isSchedulerEmpty(scheduler) && scheduler->cerver_running)
     while (isSchedulerEmpty(scheduler))
     {
+        Log(WARN, "AcceptRequest thread_wait");
         int thread_wait = pthread_cond_wait(&workers->EMPTY, &workers->LOCK);
         if (thread_wait != 0)
         {
-            Log(WARN, "AcceptRequest thread_wait\n");
+            Log(WARN, "AcceptRequest thread_wait error");
+        }
+        if (!scheduler->cerver_running)
+        {
+            return -1;
         }
     }
+
     int client_socket = deQueueRequest(scheduler);
 
     // printf("Request Scheduled for FD: %d\n", client_socket);
@@ -135,6 +148,31 @@ int AcceptRequest(Scheduler *scheduler, ThreadPool *workers)
         Log(WARN, "AcceptRequest signal_lock\n");
     }
     return client_socket;
+}
+
+void CompleteAlreadyScheduledRequests(Scheduler *scheduler, ThreadPool *workers)
+{
+    scheduler->cerver_running = false;
+    pthread_mutex_lock(&workers->LOCK);
+    pthread_cond_broadcast(&workers->SIG);
+    pthread_mutex_unlock(&workers->LOCK);
+    if (workers != NULL)
+    {
+        if (workers->pool != NULL && workers->num_threads > 0)
+        {
+            for (int i = 0; i < workers->num_threads; i++)
+            {
+                pthread_kill(workers->pool[i], SIGUSR1);
+            }
+        }
+    }
+    // pthread_mutex_unlock(&workers->LOCK);
+    //  pthread_cond_broadcast(&workers->SIG);
+    //  while (!isSchedulerEmpty(scheduler))
+    //  {
+    //      Log(WARN, "waiting....");
+    //      // sleep(1);
+    //  }
 }
 
 void FreeScheduler(Scheduler *scheduler)

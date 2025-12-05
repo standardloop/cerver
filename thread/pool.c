@@ -62,6 +62,24 @@ void StartThreads(Router *router, Scheduler *scheduler, ThreadPool *workers)
     }
 }
 
+void ShutdownThreadPool(ThreadPool *thread_pool)
+{
+    if (thread_pool != NULL)
+    {
+        if (thread_pool->pool != NULL && thread_pool->num_threads > 0)
+        {
+            for (int i = 0; i < thread_pool->num_threads; i++)
+            {
+                pthread_join(thread_pool->pool[i], NULL);
+            }
+        }
+    }
+    pthread_mutex_destroy(&thread_pool->LOCK);
+    pthread_cond_destroy(&thread_pool->EMPTY);
+    pthread_cond_destroy(&thread_pool->FILL);
+    pthread_cond_destroy(&thread_pool->SIG);
+}
+
 // FIXME mutex?
 void FreeThreadPool(ThreadPool *thread_pool)
 {

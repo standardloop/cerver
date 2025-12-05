@@ -16,7 +16,7 @@
 
 #include "./thread/scheduler.h"
 
-volatile sig_atomic_t cerver_running = true;
+volatile sig_atomic_t global_cerver_running = true;
 
 void cerverSigHandler(int);
 
@@ -34,7 +34,7 @@ void cerverSigHandler(int signum)
     default:
         break;
     }
-    cerver_running = false;
+    global_cerver_running = false;
 }
 
 Cerver *InitCerver(int port, int num_threads, int queue_buffer_size)
@@ -132,7 +132,7 @@ void StartCerver(Cerver *cerver)
     Log(TRACE, "Starting threads");
     Log(INFO, "vist http://localhost:%d", ntohs(cerver->address.sin_port));
 
-    while (cerver_running)
+    while (global_cerver_running)
     {
         client_socket = accept(cerver->server_fd, (struct sockaddr *)&cerver->address, (socklen_t *)&cerver->addrlen);
         if (errno == EINTR)
@@ -156,8 +156,11 @@ void StartCerver(Cerver *cerver)
             ScheduleRequestToBeHandled(scheduler, thread_pool, client_socket);
         }
     }
-    close(client_socket);
+    // Loop above only breaks out from signals
     Log(ERROR, "Shutting Down...");
+    // close(client_socket);
+    CompleteAlreadyScheduledRequests(scheduler, thread_pool);
+    ShutdownThreadPool(thread_pool);
     FreeThreadPool(thread_pool);
     FreeScheduler(scheduler);
     FreeCerver(cerver);

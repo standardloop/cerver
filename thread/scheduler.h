@@ -19,6 +19,7 @@ typedef struct
     int buffer_size;
     int curr_size;
     Queue *buffer;
+    volatile sig_atomic_t cerver_running;
 
 } Scheduler;
 
@@ -30,14 +31,17 @@ typedef struct
     pthread_mutex_t LOCK;
     pthread_cond_t FILL;
     pthread_cond_t EMPTY;
+    pthread_cond_t SIG;
 
 } ThreadPool;
 
 ThreadPool *InitThreadPool(int);
+void ShutdownThreadPool(ThreadPool *thread_pool);
 void FreeThreadPool(ThreadPool *thread_pool);
 void StartThreads(Router *router, Scheduler *, ThreadPool *);
 Scheduler *InitScheduler(enum ThreadPolicy, int);
 void ScheduleRequestToBeHandled(Scheduler *, ThreadPool *, int);
+void CompleteAlreadyScheduledRequests(Scheduler *, ThreadPool *);
 int AcceptRequest(Scheduler *, ThreadPool *);
 void FreeScheduler(Scheduler *);
 
