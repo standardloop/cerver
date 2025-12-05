@@ -38,7 +38,7 @@ HashMap *generateDefaultResponseHeaders()
     HashMapInsert(response_headers, date_for_header_obj);
 
     // Server header TODO: add flag to disable this
-    JSONValue *server_header_obj = JSONValueInit(STRING_t, QuickAllocatedString("cerver/1.0.0 (macOS)"), QuickAllocatedString("Server"));
+    JSONValue *server_header_obj = JSONValueInit(STRING_t, QuickAllocatedString("cerver/0.0.1 (macOS)"), QuickAllocatedString("Server"));
     HashMapInsert(response_headers, server_header_obj);
 
     // Content-Type: text/plain FIXME: HARDCODED
@@ -218,6 +218,8 @@ char *HttpResponseToString(HttpResponse *resp)
 
     // BODY
     size_t body_size = strlen(resp->body) + 1; // +1 for \0
+    resp_as_string_size += body_size;
+    resp_as_string = realloc(resp_as_string, resp_as_string_size);
     CopyStringCanary(resp_as_string, resp->body, chars_written);
     chars_written += body_size - 1;
     resp_as_string[chars_written] = NULL_CHAR;
