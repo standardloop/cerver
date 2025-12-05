@@ -19,6 +19,7 @@
 #include <standardloop/json.h>
 
 static char *locateQueryStart(char *, size_t);
+static HttpRequest *createBlankHttpRequest();
 
 static char *locateQueryStart(char *buffer, size_t size)
 {
@@ -39,6 +40,28 @@ static char *locateQueryStart(char *buffer, size_t size)
     return NULL;
 }
 
+static HttpRequest *createBlankHttpRequest()
+{
+    HttpRequest *request = malloc(sizeof(HttpRequest));
+    if (request == NULL)
+    {
+        return NULL;
+    }
+    request->client_socket = -1;
+    request->method = HttpGET;
+    request->path = NULL;
+    request->query_params = NULL;
+    request->version = NULL;
+    request->host = NULL;
+    request->port = -1;
+    request->bail_resp_code = HttpBadGateway;
+    request->headers = NULL;
+    request->body = NULL;
+    request->path_params = NULL;
+
+    return request;
+}
+
 HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
 {
     if (buffer == NULL || buffer_size == 0)
@@ -46,7 +69,7 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
         Log(ERROR, "[4XX]: buffer is NULL for CreateParsedHttpRequest or buffer_size is 0\n");
         return NULL;
     }
-    HttpRequest *request = malloc(sizeof(HttpRequest));
+    HttpRequest *request = createBlankHttpRequest();
     if (request == NULL)
     {
         Log(ERROR, "[5XX]: no memory for malloc-ing HttpRequest\n");
@@ -332,6 +355,8 @@ void FreeHttpRequest(HttpRequest *request)
         }
         if (request->body != NULL)
         {
+            // FIXME: check body type
+            // free(request->body);
             FreeJSON(request->body);
         }
         free(request);

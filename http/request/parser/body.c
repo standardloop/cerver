@@ -11,6 +11,7 @@
 
 JSON *ParseBody(char *content_type, char *buffer, u_int64_t content_length)
 {
+    Log(TRACE, "ParseBody!");
     if (content_type == NULL || buffer == NULL || content_length == 0)
     {
         Log(WARN, "invalid inputs to ParseBody");

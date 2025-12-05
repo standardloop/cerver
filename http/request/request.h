@@ -44,7 +44,6 @@ typedef struct
     char *host;     // localhost
     u_int16_t port; // 8080
     enum HttpCode bail_resp_code;
-
     HashMap *headers;
     JSON *body; // for now only support JSON body
     HashMap *path_params;

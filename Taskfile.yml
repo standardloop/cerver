@@ -111,7 +111,12 @@ tasks:
     generates:
       - "{{.EXECUTABLE_NAME}}"
   
+  sanitize:
+    deps:
+      - run:sanitize
+
   build:sanitize:
+    run: once
     deps:
       - dependencies
     cmds:
@@ -128,6 +133,12 @@ tasks:
       - ./**/*.c
     generates:
       - "{{.EXECUTABLE_NAME}}-sanitize"
+  
+  run:sanitize:
+    deps:
+      - build:sanitize
+    cmds:
+      - ./{{.EXECUTABLE_NAME}}-sanitize
 
   clean:
     allow_failures: true
