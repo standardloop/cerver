@@ -7,7 +7,7 @@
 
 #define ROUTER_ERROR -1
 
-typedef void(RouteHandler)(const HttpRequest *, HttpResponse *);
+typedef void(RouteHandler)(const HTTPRequest *, HTTPResponse *);
 
 typedef struct
 {

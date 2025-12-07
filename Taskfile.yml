@@ -26,6 +26,8 @@ vars:
     - http/request/parser/method.c
     - http/request/parser/headers.c 
     - http/request/parser/version.c
+    - http/request/parserv2/parser.c
+    - http/request/parserv2/lexer.c
 
 
 # Inputs

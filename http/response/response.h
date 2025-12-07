@@ -7,13 +7,13 @@ typedef struct
 {
     int client_socket;
     char *version; // 1.1
-    enum HttpCode response_code;
+    enum HTTPCode response_code;
     HashMap *headers;
     char *body; // FIXME
-} HttpResponse;
+} HTTPResponse;
 
-void FreeHttpResponse(HttpResponse *);
-HttpResponse *CreateHttpResponse();
-char *HttpResponseToString(HttpResponse *);
+void FreeHTTPResponse(HTTPResponse *);
+HTTPResponse *CreateHTTPResponse();
+char *HTTPResponseToString(HTTPResponse *);
 
 #endif

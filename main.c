@@ -7,15 +7,16 @@
 
 #include "./cerver.h"
 #include "./http/handler.h"
+#include "./http/request/parserv2/parser.h"
 
 #include <standardloop/util.h>
 
-void foo(const HttpRequest *, HttpResponse *);
-void bar(const HttpRequest *, HttpResponse *);
-void fooID(const HttpRequest *, HttpResponse *);
-void fooStatic(const HttpRequest *, HttpResponse *);
+void foo(const HTTPRequest *, HTTPResponse *);
+void bar(const HTTPRequest *, HTTPResponse *);
+void fooID(const HTTPRequest *, HTTPResponse *);
+void fooStatic(const HTTPRequest *, HTTPResponse *);
 
-void foo(const HttpRequest *request, HttpResponse *response)
+void foo(const HTTPRequest *request, HTTPResponse *response)
 {
     // Log(TRACE, "[JOSH]: entering special test function\n");
     // char *accepted_types = MapGet(request->headers, "Accept");
@@ -26,12 +27,12 @@ void foo(const HttpRequest *request, HttpResponse *response)
     {
         return;
     }
-    response->response_code = HttpOK;
+    response->response_code = HTTPOK;
     response->body = QuickAllocatedString("Hello!");
     SendResponse(response);
 }
 
-void fooID(const HttpRequest *request, HttpResponse *response)
+void fooID(const HTTPRequest *request, HTTPResponse *response)
 {
     // char *path_param_id = GetPathParam(request->path_params, "id");
     JSONValue *path_param_id_obj = HashMapGet(request->path_params, "id");
@@ -56,7 +57,7 @@ void fooID(const HttpRequest *request, HttpResponse *response)
     (void)write(request->client_socket, hello, strlen(hello));
 }
 
-void fooStatic(const HttpRequest *request, HttpResponse *response)
+void fooStatic(const HTTPRequest *request, HTTPResponse *response)
 {
     // Log(TRACE, "[JOSH]: entering special test function\n");
     JSONValue *accepted_types_obj = HashMapGet(request->path_params, "Accept");
@@ -74,22 +75,44 @@ void fooStatic(const HttpRequest *request, HttpResponse *response)
 
 int main(void)
 {
-    int port = atoi(GetEnv("PORT", "8080"));
-    int num_threads = atoi(GetEnv("NUM_THREADS", "4"));
-    int buffer_size = atoi(GetEnv("BUFFER_SIZE", "100"));
-
     SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "TRACE")));
-    // SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "ERROR")));
+    // char *http_request = "GET /index.html HTTP/1.1\r\nHost: example.com\r\n\r\n";
+    char *http_request =
+        "POST /api/data HTTP/1.1\r\n"
+        "Host: example.com:8080\r\n"
+        "Content-Type: text/plain\r\n"
+        "Content-Length: 13\r\n"
+        "\r\n"
+        "Hello, World!";
+    //  char *http_request = "GET /index.html HTTP/1.1\r\n";
+    // HTTPLexerDebugTest(http_request, false);
 
-    Cerver *server = InitCerver(port, num_threads, buffer_size);
+    HTTPLexer *lexer = HTTPLexerInit(http_request);
+    HTTPParser *parser = HTTPParserInit(lexer);
+    HTTPRequest *request = ParseHTTP(parser);
 
-    (void)AddRouteToTable(server->router->get, "/foo", foo);
-    // (void)AddRouteToTable(server->router->get, "/foo/{id=int}/bar/{name=string}", fooID);
-
-    // WIP support *
-    //(void)AddRouteToTable(server->router->get, "/bar/.*", bar);
-
-    StartCerver(server);
-
-    return EXIT_SUCCESS;
+    FreeHTTPRequest(request);
+    return 0;
 }
+
+// int main(void)
+// {
+//     int port = atoi(GetEnv("PORT", "8080"));
+//     int num_threads = atoi(GetEnv("NUM_THREADS", "4"));
+//     int buffer_size = atoi(GetEnv("BUFFER_SIZE", "100"));
+
+//     SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "TRACE")));
+//     // SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "ERROR")));
+
+//     Cerver *server = InitCerver(port, num_threads, buffer_size);
+
+//     (void)AddRouteToTable(server->router->get, "/foo", foo);
+//     // (void)AddRouteToTable(server->router->get, "/foo/{id=int}/bar/{name=string}", fooID);
+
+//     // WIP support *
+//     //(void)AddRouteToTable(server->router->get, "/bar/.*", bar);
+
+//     StartCerver(server);
+
+//     return EXIT_SUCCESS;
+// }

@@ -103,7 +103,7 @@ char *headersToString(HashMap *headers)
     return headers_as_string;
 }
 
-void FreeHttpResponse(HttpResponse *response)
+void FreeHTTPResponse(HTTPResponse *response)
 {
     if (response != NULL)
     {
@@ -116,9 +116,9 @@ void FreeHttpResponse(HttpResponse *response)
     }
 }
 
-HttpResponse *CreateHttpResponse()
+HTTPResponse *CreateHTTPResponse()
 {
-    HttpResponse *response = malloc(sizeof(HttpResponse));
+    HTTPResponse *response = malloc(sizeof(HTTPResponse));
     if (response == NULL)
     {
         return NULL;
@@ -136,7 +136,7 @@ HttpResponse *CreateHttpResponse()
     return response;
 }
 
-char *HttpResponseToString(HttpResponse *resp)
+char *HTTPResponseToString(HTTPResponse *resp)
 {
 
     // "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 6\n\nHello!";
@@ -171,7 +171,7 @@ char *HttpResponseToString(HttpResponse *resp)
     resp_as_string[chars_written] = SPACE_CHAR;
     chars_written++;
 
-    char *status_code_as_str = HttpStatusCodeToString(resp->response_code, false);
+    char *status_code_as_str = HTTPStatusCodeToString(resp->response_code, false);
     if (status_code_as_str == NULL)
     {
         free(resp_as_string);
@@ -186,7 +186,7 @@ char *HttpResponseToString(HttpResponse *resp)
     chars_written++;
 
     // Status code phrase
-    char *status_code_phrase = HttpStatusCodeToString(resp->response_code, true);
+    char *status_code_phrase = HTTPStatusCodeToString(resp->response_code, true);
     if (status_code_phrase == NULL)
     {
         free(resp_as_string);

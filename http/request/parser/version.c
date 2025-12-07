@@ -6,12 +6,12 @@
 #include <standardloop/util.h>
 #include <standardloop/logger.h>
 
-char *ParseHttpVersion(char *buffer, size_t buffer_size)
+char *ParseHTTPVersion(char *buffer, size_t buffer_size)
 {
     // HTTP/1.1
     if (buffer == NULL || buffer_size == 0)
     {
-        Log(ERROR, "ParseHttpVersion buffer input error\n");
+        Log(ERROR, "ParseHTTPVersion buffer input error\n");
         return NULL;
     }
 

@@ -4,8 +4,8 @@
 #include "./router.h"
 
 void HandleRequest(Router *, int);
-void HandleGenericError(int, enum HttpCode);
+void HandleGenericError(int, enum HTTPCode);
 void HandleStaticPath(int client_socket, char *path);
-void SendResponse(HttpResponse *);
+void SendResponse(HTTPResponse *);
 
 #endif

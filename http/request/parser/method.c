@@ -34,7 +34,7 @@ char *HTTPMethodToStr(enum HTTPMethod method)
     }
 }
 
-enum HTTPMethod HttpStrToMethod(char *method)
+enum HTTPMethod HTTPStrToMethod(char *method)
 {
     if (strcmp(method, "GET") == 0)
     {
@@ -102,6 +102,6 @@ enum HTTPMethod ParseRequestMethod(char *buffer, size_t buffer_size)
         return HTTPINVALID;
     }
 
-    enum HTTPMethod method = HttpStrToMethod(suspected_http_method_str);
+    enum HTTPMethod method = HTTPStrToMethod(suspected_http_method_str);
     return method;
 }

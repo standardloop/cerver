@@ -3,7 +3,7 @@
 
 #include "codes.h"
 
-char *HttpStatusClass(enum HttpCode code)
+char *HTTPStatusClass(enum HTTPCode code)
 {
     if (code >= 100 && code < 200)
     {
@@ -27,140 +27,140 @@ char *HttpStatusClass(enum HttpCode code)
     }
     return NULL;
 }
-char *HttpStatusCodeToString(enum HttpCode code, bool message)
+char *HTTPStatusCodeToString(enum HTTPCode code, bool message)
 {
     switch (code)
     {
     // 1XX
-    case HttpContinue:
+    case HTTPContinue:
         return message ? "Continue" : "100";
-    case HttpSwitchingProtocols:
+    case HTTPSwitchingProtocols:
         return message ? "Switching Protocols" : "101";
-    case HttpProcessing:
+    case HTTPProcessing:
         return message ? "Processing" : "102";
-    case HttpEarlyHints:
+    case HTTPEarlyHints:
         return message ? "Early Hints" : "103";
 
     // 2XX
-    case HttpOK:
+    case HTTPOK:
         return message ? "OK" : "200";
-    case HttpCreated:
+    case HTTPCreated:
         return message ? "Created" : "201";
-    case HttpAccepted:
+    case HTTPAccepted:
         return message ? "Accepted" : "202";
-    case HttpNonAuthoritativeInformation:
+    case HTTPNonAuthoritativeInformation:
         return message ? "Non-Authoritative Information" : "203";
-    case HttpNoContent:
+    case HTTPNoContent:
         return message ? "No Content" : "204";
-    case HttpResetContent:
+    case HTTPResetContent:
         return message ? "Reset Content" : "205";
-    case HttpPartialContent:
+    case HTTPPartialContent:
         return message ? "Partial Content" : "206";
-    case HttpMultiStatus:
+    case HTTPMultiStatus:
         return message ? "Multi-Status" : "207";
-    case HttpAlreadyReported:
+    case HTTPAlreadyReported:
         return message ? "Already Reported" : "208";
-    case HttpIMUsed:
+    case HTTPIMUsed:
         return message ? "IM Used" : "226";
 
     // 3XX
-    case HttpMultipleChoices:
+    case HTTPMultipleChoices:
         return message ? "Multiple Choices" : "300";
-    case HttpMovedPermanently:
+    case HTTPMovedPermanently:
         return message ? "Moved Permanently" : "301";
-    case HttpFound:
+    case HTTPFound:
         return message ? "Found" : "302";
-    case HttpSeeOther:
+    case HTTPSeeOther:
         return message ? "See Other" : "303";
-    case HttpNotModified:
+    case HTTPNotModified:
         return message ? "Not Modified" : "304";
-    case HttpTemporaryRedirect:
+    case HTTPTemporaryRedirect:
         return message ? "Temporary Redirect" : "307";
-    case HttpPermanentRedirect:
+    case HTTPPermanentRedirect:
         return message ? "Permanent Redirect" : "308";
 
     // 4XX
-    case HttpBadRequest:
+    case HTTPBadRequest:
         return message ? "Bad Request" : "400";
-    case HttpUnauthorized:
+    case HTTPUnauthorized:
         return message ? "Unauthorized" : "401";
-    case HttpPaymentRequired:
+    case HTTPPaymentRequired:
         return message ? "Payment Required" : "402";
-    case HttpForbidden:
+    case HTTPForbidden:
         return message ? "Forbidden" : "403";
-    case HttpNotFound:
+    case HTTPNotFound:
         return message ? "Not Found" : "404";
     case HTTPMethodNotAllowed:
         return message ? "Method Not Allowed" : "405";
-    case HttpNotAcceptable:
+    case HTTPNotAcceptable:
         return message ? "Not Acceptable" : "406";
-    case HttpProxyAuthenticationRequired:
+    case HTTPProxyAuthenticationRequired:
         return message ? "Proxy Authentication Required" : "407";
-    case HttpRequestTimeout:
+    case HTTPRequestTimeout:
         return message ? "Request Timeout" : "408";
-    case HttpConflict:
+    case HTTPConflict:
         return message ? "Conflict" : "409";
-    case HttpGone:
+    case HTTPGone:
         return message ? "Gone" : "410";
-    case HttpLengthRequired:
+    case HTTPLengthRequired:
         return message ? "Length Required" : "411";
-    case HttpPreconditionFailed:
+    case HTTPPreconditionFailed:
         return message ? "Precondition Failed" : "412";
-    case HttpContentTooLarge:
+    case HTTPContentTooLarge:
         return message ? "Content Too Large" : "413";
-    case HttpURITooLong:
+    case HTTPURITooLong:
         return message ? "URI Too Long" : "414";
-    case HttpUnsupportedMediaType:
+    case HTTPUnsupportedMediaType:
         return message ? "Unsupported Media Type" : "415";
-    case HttpRangeNotSatisfiable:
+    case HTTPRangeNotSatisfiable:
         return message ? "Range Not Satisfiable" : "416";
-    case HttpExpectationFailed:
+    case HTTPExpectationFailed:
         return message ? "Expectation Failed" : "417";
-    case HttpImATeapot:
+    case HTTPImATeapot:
         return message ? "I'm a teapot" : "418";
-    case HttpMisdirectedRequest:
+    case HTTPMisdirectedRequest:
         return message ? "Misdirected Request" : "421";
-    case HttpUnprocessableContent:
+    case HTTPUnprocessableContent:
         return message ? "Unprocessable Content" : "422";
-    case HttpLocked:
+    case HTTPLocked:
         return message ? "Locked" : "423";
-    case HttpFailedDependency:
+    case HTTPFailedDependency:
         return message ? "Failed Dependency" : "424";
-    case HttpTooEarly:
+    case HTTPTooEarly:
         return message ? "Too Early" : "425";
-    case HttpUpgradeRequired:
+    case HTTPUpgradeRequired:
         return message ? "Upgrade Required" : "426";
-    case HttpPreconditionRequired:
+    case HTTPPreconditionRequired:
         return message ? "Precondition Required" : "428";
-    case HttpTooManyRequests:
+    case HTTPTooManyRequests:
         return message ? "Too Many Requests" : "429";
-    case HttpRequestHeaderFieldsTooLarge:
+    case HTTPRequestHeaderFieldsTooLarge:
         return message ? "Request Header Fields Too Large" : "431";
-    case HttpUnavailableForLegalReasons:
+    case HTTPUnavailableForLegalReasons:
         return message ? "Unavailable For Legal Reasons" : "451";
 
     // 5XX
-    case HttpInternalServerError:
+    case HTTPInternalServerError:
         return message ? "Internal Server Error" : "500";
-    case HttpNotImplemented:
+    case HTTPNotImplemented:
         return message ? "Not Implemented" : "501";
-    case HttpBadGateway:
+    case HTTPBadGateway:
         return message ? "Bad Gateway" : "502";
-    case HttpServiceUnavailable:
+    case HTTPServiceUnavailable:
         return message ? "Service Unavailable" : "503";
-    case HttpGatewayTimeout:
+    case HTTPGatewayTimeout:
         return message ? "Gateway Timeout" : "504";
-    case HttpHTTPVersionNotSupported:
+    case HTTPHTTPVersionNotSupported:
         return message ? "HTTP Version Not Supported" : "505";
-    case HttpVariantAlsoNegotiates:
+    case HTTPVariantAlsoNegotiates:
         return message ? "Variant Also Negotiates" : "506";
-    case HttpInsufficientStorage:
+    case HTTPInsufficientStorage:
         return message ? "Insufficient Storage" : "507";
-    case HttpLoopDetected:
+    case HTTPLoopDetected:
         return message ? "Loop Detected" : "508";
-    case HttpNotExtended:
+    case HTTPNotExtended:
         return message ? "Not Extended" : "510";
-    case HttpNetworkAuthenticationRequired:
+    case HTTPNetworkAuthenticationRequired:
         return message ? "Network Authentication Required" : "511";
 
     default:

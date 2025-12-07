@@ -23,12 +23,12 @@ const char *BAD_REQUEST_STRING = "HTTP/1.1 400 Bad Request\nContent-Type: text/p
 const char *METHOD_NOT_SUPP_STRING = "HTTP/1.1 405 Method Not Allowed \nContent-Type: text/plain\nContent-Length: 3\n\n405";
 
 // Looks of work needed here
-void SendResponse(HttpResponse *resp)
+void SendResponse(HTTPResponse *resp)
 {
     if (resp == NULL)
     {
         // FIXME: handle generic error
-        HandleGenericError(resp->client_socket, HttpBadGateway);
+        HandleGenericError(resp->client_socket, HTTPBadGateway);
         return;
     }
     // add Content-Length header
@@ -36,10 +36,10 @@ void SendResponse(HttpResponse *resp)
 
     // <VERSION> <STATUS_CODE> <STATUS_STRING>\n<HEADERS>\n\n<BODY>
 
-    char *response_as_string = HttpResponseToString(resp); // maybe send length back so don't have to compute
+    char *response_as_string = HTTPResponseToString(resp); // maybe send length back so don't have to compute
     if (response_as_string == NULL)
     {
-        HandleGenericError(resp->client_socket, HttpBadGateway);
+        HandleGenericError(resp->client_socket, HTTPBadGateway);
         return;
     }
     (void)write(resp->client_socket, response_as_string, strlen(response_as_string));
@@ -49,19 +49,19 @@ void SendResponse(HttpResponse *resp)
 
 void HandleRequest(Router *router, int client_socket)
 {
-    HttpRequest *request = NULL;
-    HttpResponse *response = NULL;
+    HTTPRequest *request = NULL;
+    HTTPResponse *response = NULL;
     ssize_t valread;
     char buffer[BUFFER_SIZE];
     valread = read(client_socket, buffer, sizeof(char) * BUFFER_SIZE);
     if (valread == 0)
     {
         Log(WARN, "[4XX]: Didn't read more than 0\n");
-        HandleGenericError(client_socket, HttpBadRequest);
+        HandleGenericError(client_socket, HTTPBadRequest);
     }
     else
     {
-        request = CreateParsedHttpRequest(buffer, valread);
+        request = CreateParsedHTTPRequest(buffer, valread);
         if (request == NULL || request->bail_resp_code != 0)
         {
             HandleGenericError(client_socket, request->bail_resp_code);
@@ -72,11 +72,11 @@ void HandleRequest(Router *router, int client_socket)
             if (router != NULL)
             {
                 Log(TRACE, "Router is not NULL");
-                response = CreateHttpResponse();
+                response = CreateHTTPResponse();
                 if (response == NULL)
                 {
-                    Log(ERROR, "cannot allocate memory for HttpResponse\n");
-                    HandleGenericError(client_socket, HttpBadGateway);
+                    Log(ERROR, "cannot allocate memory for HTTPResponse\n");
+                    HandleGenericError(client_socket, HTTPBadGateway);
                 }
                 else
                 {
@@ -122,43 +122,43 @@ void HandleRequest(Router *router, int client_socket)
                     else if (route == NULL)
                     {
                         Log(WARN, "404");
-                        HandleGenericError(client_socket, HttpNotFound);
+                        HandleGenericError(client_socket, HTTPNotFound);
                     }
                     else
                     {
                         // We only know about path/route params after we have identified the route
-                        // We cannot parse this CreateParsedHttpRequest because there isn't enough information
+                        // We cannot parse this CreateParsedHTTPRequest because there isn't enough information
                         if (route->params != NULL)
                         {
                             request->path_params = ParsePathParams(route->params);
                         }
                         route->handler(request, response); // all handler functions should read the request object and modify the respone obj
-                        // handler should use HttpResponseSend();
+                        // handler should use HTTPResponseSend();
                     }
                 }
             }
         }
     }
-    FreeHttpRequest(request);
-    FreeHttpResponse(response);
+    FreeHTTPRequest(request);
+    FreeHTTPResponse(response);
     close(client_socket);
 }
 
 // FIXME, mising headers
-void HandleGenericError(int client_socket, enum HttpCode response_code)
+void HandleGenericError(int client_socket, enum HTTPCode response_code)
 {
     switch (response_code)
     {
     case HTTPMethodNotAllowed:
         (void)write(client_socket, METHOD_NOT_SUPP_STRING, strlen(METHOD_NOT_SUPP_STRING));
         break;
-    case HttpNotFound:
+    case HTTPNotFound:
         (void)write(client_socket, NOT_FOUND_STRING, strlen(NOT_FOUND_STRING));
         break;
-    case HttpBadGateway:
+    case HTTPBadGateway:
         (void)write(client_socket, BAD_GATEWAY_STRING, strlen(BAD_GATEWAY_STRING));
         break;
-    case HttpBadRequest:
+    case HTTPBadRequest:
         (void)write(client_socket, BAD_REQUEST_STRING, strlen(BAD_REQUEST_STRING));
         break;
     default:
@@ -175,7 +175,7 @@ void HandleStaticPath(int client_socket, char *path)
     file = fopen(path + 1, "r");
     if (file == NULL)
     {
-        HandleGenericError(client_socket, HttpNotFound);
+        HandleGenericError(client_socket, HTTPNotFound);
         return;
     }
     size_t bytes_read;

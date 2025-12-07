@@ -27,7 +27,7 @@ enum HTTPMethod
     HTTPINVALID,
 };
 char *HTTPMethodToStr(enum HTTPMethod);
-enum HTTPMethod HttpStrToMethod(char *);
+enum HTTPMethod HTTPStrToMethod(char *);
 enum HTTPMethod ParseRequestMethod(char *, size_t);
 
 // PATH
@@ -48,7 +48,7 @@ HashMap *ParseQuery(char *, size_t);
 // VERSION
 #define HTTP_VERSION_PREFIX "HTTP/"
 
-char *ParseHttpVersion(char *, size_t);
+char *ParseHTTPVersion(char *, size_t);
 
 // HEADERS
 /*
