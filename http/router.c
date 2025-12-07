@@ -32,7 +32,7 @@ HashMap *ParsePathParams(RouteParam *params)
     return NULL;
 }
 
-RouteTable *InitRouteTable(enum HttpMethod method, int max)
+RouteTable *InitRouteTable(enum HTTPMethod method, int max)
 {
     RouteTable *table = (RouteTable *)malloc(sizeof(RouteTable));
     if (table == NULL)
@@ -249,7 +249,7 @@ Router *InitRouter()
         return NULL;
     }
     router->head = NULL;
-    router->get = InitRouteTable(HttpGET, 10);
+    router->get = InitRouteTable(HTTPGET, 10);
     router->options = NULL;
     router->post = NULL;
     router->put = NULL;
@@ -265,7 +265,7 @@ int AddRouteToTable(RouteTable *table, char *path, RouteHandler *router_function
 {
     // maybe need to check if path is correct syntax?
     if (table == NULL || path == NULL ||
-        table->method == HttpFAKE)
+        table->method == HTTPINVALID)
     {
         return ROUTER_ERROR;
     }

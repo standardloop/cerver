@@ -90,7 +90,7 @@ char *HttpStatusCodeToString(enum HttpCode code, bool message)
         return message ? "Forbidden" : "403";
     case HttpNotFound:
         return message ? "Not Found" : "404";
-    case HttpMethodNotAllowed:
+    case HTTPMethodNotAllowed:
         return message ? "Method Not Allowed" : "405";
     case HttpNotAcceptable:
         return message ? "Not Acceptable" : "406";

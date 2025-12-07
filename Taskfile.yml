@@ -83,7 +83,7 @@ tasks:
   dependencies:json:
     vars:
       REPO_NAME: c-json
-      DYLIB_VERSION: 0.0.2
+      DYLIB_VERSION: 0.0.3
       DYLIB_NAME: json
     cmds:
       - sudo -v

@@ -28,7 +28,7 @@ typedef struct
     Route *routes;
     int size;
     int max;
-    enum HttpMethod method;
+    enum HTTPMethod method;
 } RouteTable;
 
 typedef struct
@@ -50,7 +50,7 @@ HashMap *ParsePathParams(RouteParam *);
 Router *InitRouter();
 void FreeRouter(Router *);
 
-RouteTable *InitRouteTable(enum HttpMethod, int);
+RouteTable *InitRouteTable(enum HTTPMethod, int);
 void PrintRouteTable(RouteTable *tabe);
 int AddRouteToTable(RouteTable *, char *, RouteHandler *);
 

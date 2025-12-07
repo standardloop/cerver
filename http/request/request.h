@@ -37,7 +37,7 @@
 typedef struct
 {
     int client_socket;
-    enum HttpMethod method;
+    enum HTTPMethod method;
     char *path;
     HashMap *query_params;
     char *version;  // 1.1

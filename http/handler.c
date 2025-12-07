@@ -87,37 +87,37 @@ void HandleRequest(Router *router, int client_socket)
                     switch (request->method)
                     {
                     // FIXME: treating HEAD and GET the same
-                    case HttpHEAD:
-                    case HttpGET:
+                    case HTTPHEAD:
+                    case HTTPGET:
                         if (router->get != NULL)
                         {
                             router_found = true;
                             route = GetRouteFromTable(router->get, request->path);
                         }
                         break;
-                    case HttpOPTIONS:
+                    case HTTPOPTIONS:
                         break;
-                    case HttpPOST:
+                    case HTTPPOST:
                         break;
-                    case HttpPUT:
+                    case HTTPPUT:
                         break;
-                    case HttpPATCH:
+                    case HTTPPATCH:
                         break;
-                    case HttpDELETE:
+                    case HTTPDELETE:
                         break;
-                    case HttpCONNECT:
+                    case HTTPCONNECT:
                         break;
-                    case HttpTRACE:
+                    case HTTPTRACE:
                         break;
-                    case HttpFAKE:
+                    case HTTPINVALID:
                     default:
-                        Log(INFO, "HttpFAKE\n");
+                        Log(INFO, "HTTPINVALID\n");
                         break;
                     }
                     if (!router_found)
                     {
                         Log(WARN, "405");
-                        HandleGenericError(client_socket, HttpMethodNotAllowed);
+                        HandleGenericError(client_socket, HTTPMethodNotAllowed);
                     }
                     else if (route == NULL)
                     {
@@ -149,7 +149,7 @@ void HandleGenericError(int client_socket, enum HttpCode response_code)
 {
     switch (response_code)
     {
-    case HttpMethodNotAllowed:
+    case HTTPMethodNotAllowed:
         (void)write(client_socket, METHOD_NOT_SUPP_STRING, strlen(METHOD_NOT_SUPP_STRING));
         break;
     case HttpNotFound:

@@ -68,3 +68,4 @@ cerver-sanitize
 temp/
 .task
 dependencies/
+lexer

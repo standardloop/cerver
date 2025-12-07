@@ -41,7 +41,7 @@ enum HttpCode
     HttpPaymentRequired = 402,
     HttpForbidden = 403,
     HttpNotFound = 404,
-    HttpMethodNotAllowed = 405,
+    HTTPMethodNotAllowed = 405,
     HttpNotAcceptable = 406,
     HttpProxyAuthenticationRequired = 407,
     HttpRequestTimeout = 408,

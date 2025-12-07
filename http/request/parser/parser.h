@@ -13,22 +13,22 @@ char *ParseHost(char *, size_t);
 #define MAX_METHOD_LENGTH 10
 #define NUMBER_OF_METHODS 10
 
-enum HttpMethod
+enum HTTPMethod
 {
-    HttpGET,
-    HttpHEAD,
-    HttpPOST,
-    HttpPUT,
-    HttpDELETE,
-    HttpCONNECT,
-    HttpOPTIONS,
-    HttpTRACE,
-    HttpPATCH,
-    HttpFAKE,
+    HTTPGET,
+    HTTPHEAD,
+    HTTPPOST,
+    HTTPPUT,
+    HTTPDELETE,
+    HTTPCONNECT,
+    HTTPOPTIONS,
+    HTTPTRACE,
+    HTTPPATCH,
+    HTTPINVALID,
 };
-char *HttpMethodToStr(enum HttpMethod);
-enum HttpMethod HttpStrToMethod(char *);
-enum HttpMethod ParseRequestMethod(char *, size_t);
+char *HTTPMethodToStr(enum HTTPMethod);
+enum HTTPMethod HttpStrToMethod(char *);
+enum HTTPMethod ParseRequestMethod(char *, size_t);
 
 // PATH
 #define MAX_PATH_SIZE 50

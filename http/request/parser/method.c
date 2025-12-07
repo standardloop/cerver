@@ -6,82 +6,82 @@
 #include <standardloop/util.h>
 #include <standardloop/logger.h>
 
-char *HttpMethodToStr(enum HttpMethod method)
+char *HTTPMethodToStr(enum HTTPMethod method)
 {
     switch (method)
     {
-    case HttpGET:
+    case HTTPGET:
         return "GET";
-    case HttpHEAD:
+    case HTTPHEAD:
         return "HEAD";
-    case HttpPOST:
+    case HTTPPOST:
         return "POST";
-    case HttpPUT:
+    case HTTPPUT:
         return "PUT";
-    case HttpDELETE:
+    case HTTPDELETE:
         return "DELETE";
-    case HttpCONNECT:
+    case HTTPCONNECT:
         return "CONNECT";
-    case HttpOPTIONS:
+    case HTTPOPTIONS:
         return "OPTIONS";
-    case HttpTRACE:
+    case HTTPTRACE:
         return "TRACE";
-    case HttpPATCH:
+    case HTTPPATCH:
         return "PATCH";
-    case HttpFAKE:
+    case HTTPINVALID:
     default:
         return NULL;
     }
 }
 
-enum HttpMethod HttpStrToMethod(char *method)
+enum HTTPMethod HttpStrToMethod(char *method)
 {
     if (strcmp(method, "GET") == 0)
     {
-        return HttpGET;
+        return HTTPGET;
     }
     else if (strcmp(method, "HEAD") == 0)
     {
-        return HttpHEAD;
+        return HTTPHEAD;
     }
     else if (strcmp(method, "POST") == 0)
     {
-        return HttpPOST;
+        return HTTPPOST;
     }
     else if (strcmp(method, "PUT") == 0)
     {
-        return HttpPUT;
+        return HTTPPUT;
     }
     else if (strcmp(method, "DELETE") == 0)
     {
-        return HttpDELETE;
+        return HTTPDELETE;
     }
     else if (strcmp(method, "CONNECT") == 0)
     {
-        return HttpCONNECT;
+        return HTTPCONNECT;
     }
     else if (strcmp(method, "OPTIONS") == 0)
     {
-        return HttpOPTIONS;
+        return HTTPOPTIONS;
     }
     else if (strcmp(method, "TRACE") == 0)
     {
-        return HttpTRACE;
+        return HTTPTRACE;
     }
     else if (strcmp(method, "PATCH") == 0)
     {
-        return HttpPATCH;
+        return HTTPPATCH;
     }
-    return HttpFAKE;
+    return HTTPINVALID;
 }
 
-enum HttpMethod ParseRequestMethod(char *buffer, size_t buffer_size)
+enum HTTPMethod ParseRequestMethod(char *buffer, size_t buffer_size)
 {
 
     if (buffer_size == 0 || buffer_size > MAX_METHOD_LENGTH)
     {
         Log(WARN, "[4XX]: cannot parse HTTP Method\n");
-        return HttpFAKE;
+        return HTTPINVALID;
     }
 
     size_t http_method_size = buffer_size;
@@ -99,9 +99,9 @@ enum HttpMethod ParseRequestMethod(char *buffer, size_t buffer_size)
     if (suspected_http_method_str[http_method_size - 1] != NULL_CHAR)
     {
         Log(ERROR, "placed a null term wasn't there any more for suspected_http_method_str");
-        return HttpFAKE;
+        return HTTPINVALID;
     }
 
-    enum HttpMethod method = HttpStrToMethod(suspected_http_method_str);
+    enum HTTPMethod method = HttpStrToMethod(suspected_http_method_str);
     return method;
 }

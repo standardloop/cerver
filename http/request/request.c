@@ -48,7 +48,7 @@ static HttpRequest *createBlankHttpRequest()
         return NULL;
     }
     request->client_socket = -1;
-    request->method = HttpGET;
+    request->method = HTTPGET;
     request->path = NULL;
     request->query_params = NULL;
     request->version = NULL;
@@ -108,13 +108,13 @@ HttpRequest *CreateParsedHttpRequest(char *buffer, size_t buffer_size)
             suspected_http_method_length++; // NULL_CHAR
 
             request->method = ParseRequestMethod(current_line_in_http_request, suspected_http_method_length);
-            if (request->method == HttpFAKE)
+            if (request->method == HTTPINVALID)
             {
-                Log(WARN, "[4XX]: Couldn't parse HTTP Request method (HttpFAKE)\n");
+                Log(WARN, "[4XX]: Couldn't parse HTTP Request method (HTTPINVALID)\n");
                 request->bail_resp_code = HttpBadRequest;
                 return request;
             }
-            if (request->method == HttpPOST || request->method == HttpPUT)
+            if (request->method == HTTPPOST || request->method == HTTPPUT)
             {
                 parse_body = true;
             }
@@ -366,9 +366,9 @@ void FreeHttpRequest(HttpRequest *request)
 // FIXME user logger here
 void PrintHttpRequest(HttpRequest *request)
 {
-    if (request->method != HttpFAKE)
+    if (request->method != HTTPINVALID)
     {
-        printf("[DEBUG][METHOD]: %s\n", HttpMethodToStr(request->method));
+        printf("[DEBUG][METHOD]: %s\n", HTTPMethodToStr(request->method));
     }
     if (request->host != NULL)
     {
