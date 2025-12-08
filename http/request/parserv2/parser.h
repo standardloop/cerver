@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "../request.h"
 
 /*
     GET /index.html HTTP/1.1\r\n
@@ -48,7 +47,7 @@
 
 #define MAX_VERSION_LENGTH 10 // HTTP/1.1 // 8?
 
-#define MAX_HEADER_LENGTH 32 // FIXME arbitrary
+#define MAX_HEADER_LENGTH 128 // FIXME arbitrary
 
 #define MAX_BODY_LENGTH 2147483647 // FIXME arbitrary
 
@@ -62,6 +61,7 @@ enum HTTPTokenType
     HTTPTokenNewline,
     HTTPTokenCarriage,
     HTTPTokenHeaderName, // not used
+    HTTPTokenPort,       // not used
     HTTPTokenColon,
     HTTPTokenHeaderValue, // not used
     HTTPTokenString,      // FIXME, how to diff between headername or headervalue
@@ -111,18 +111,37 @@ extern void PrintHTTPToken(HTTPToken *, bool);
 typedef struct
 {
     HTTPLexer *lexer;
+    HTTPToken *previous_token;
     HTTPToken *current_token;
     HTTPToken *peek_token;
     bool input_error;
     bool memory_error;
     char *error_message;
-    int64_t list_nested;
-    int64_t obj_nested;
 } HTTPParser;
 
 extern HTTPParser *HTTPParserInit(HTTPLexer *);
 extern void PrintHTTPParserError(HTTPParser *);
 extern void FreeHTTPParser(HTTPParser *);
 extern void PrintHTTPParserErrorLine(HTTPParser *);
-extern HTTPRequest *ParseHTTP(HTTPParser *);
+extern void NextHTTPToken(HTTPParser *);
+
+// METHOD
+
+enum V2HTTPMethod
+{
+    V2HTTPGET,
+    V2HTTPHEAD,
+    V2HTTPPOST,
+    V2HTTPPUT,
+    V2HTTPDELETE,
+    V2HTTPCONNECT,
+    V2HTTPOPTIONS,
+    V2HTTPTRACE,
+    V2HTTPPATCH,
+    V2HTTPINVALID,
+};
+
+extern char *HTTPMethodEnumToString(enum V2HTTPMethod);
+enum V2HTTPMethod HTTPStringToMethodEnum(char *);
+
 #endif

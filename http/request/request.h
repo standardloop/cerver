@@ -4,6 +4,9 @@
 #include <standardloop/json.h>
 
 #include "./parser/parser.h"
+
+#include "./parserv2/parser.h"
+
 #include "./../response/codes.h"
 
 #define BUFFER_SIZE 1024
@@ -38,7 +41,9 @@ typedef struct
 {
     int client_socket;
     enum HTTPMethod method;
+    enum V2HTTPMethod method_v2;
     char *path;
+    char *uri;
     HashMap *query_params;
     char *version;  // 1.1
     char *host;     // localhost
@@ -51,6 +56,7 @@ typedef struct
 } HTTPRequest;
 
 HTTPRequest *CreateParsedHTTPRequest(char *, size_t);
+extern HTTPRequest *ParseHTTPRequest(HTTPParser *);
 
 void FreeHTTPRequest(HTTPRequest *);
 void PrintHTTPRequest(HTTPRequest *);

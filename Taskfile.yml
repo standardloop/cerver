@@ -28,6 +28,7 @@ vars:
     - http/request/parser/version.c
     - http/request/parserv2/parser.c
     - http/request/parserv2/lexer.c
+    - http/request/parserv2/method.c
 
 
 # Inputs
@@ -103,7 +104,7 @@ tasks:
       - dependencies
     cmds:
       - |
-        {{.CC}} {{.CFLAGS}} \
+        {{.CC}} {{.CC_FLAGS}} \
         main.c \
         {{range .SOURCE_FILES}} {{.}} {{end}} \
         {{.DYN_LIBS_USED_PATH}} \
@@ -130,7 +131,7 @@ tasks:
       - dependencies
     cmds:
       - |
-        {{.CC}} {{.CFLAGS}} \
+        {{.CC}} {{.CC_FLAGS}} \
         main.c \
         -fsanitize=address \
         -fno-omit-frame-pointer \

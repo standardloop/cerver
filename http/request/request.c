@@ -13,6 +13,7 @@
 #include "./../response/codes.h"
 
 #include "./parser/parser.h"
+#include "./parserv2/parser.h"
 
 #include <standardloop/util.h>
 #include <standardloop/logger.h>
@@ -49,13 +50,22 @@ static HTTPRequest *createBlankHTTPRequest()
     }
     request->client_socket = -1;
     request->method = HTTPGET;
+    request->method_v2 = V2HTTPGET;
     request->path = NULL;
+    request->uri = NULL;
     request->query_params = NULL;
     request->version = NULL;
     request->host = NULL;
-    request->port = -1;
+    request->port = 80;
     request->bail_resp_code = HTTPBadGateway;
-    request->headers = NULL;
+    request->headers = DefaultHashMapInit();
+
+    if (request->headers == NULL)
+    {
+        Log(ERROR, "DefaultHashMapInit() returned NULL in createBlankHTTPRequest()");
+        FreeHTTPRequest(request);
+        return NULL;
+    }
     request->body = NULL;
     request->path_params = NULL;
 
@@ -366,38 +376,180 @@ void FreeHTTPRequest(HTTPRequest *request)
 // FIXME user logger here
 void PrintHTTPRequest(HTTPRequest *request)
 {
-    if (request->method != HTTPINVALID)
+    // print into a buffer so whole thing can work
+    
+    if (request != NULL)
     {
-        printf("[DEBUG][METHOD]: %s\n", HTTPMethodToStr(request->method));
+        if (request->method != HTTPINVALID)
+        {
+            Log(DEBUG, "[METHOD]: %s\n", HTTPMethodToStr(request->method));
+        }
+        if (request->host != NULL)
+        {
+            printf("[DEBUG][HOST]: %s\n", request->host);
+        }
+        if (request->port != 0)
+        {
+            printf("[DEBUG][PORT]: %d\n", request->port);
+        }
+        if (request->path != NULL)
+        {
+            printf("[DEBUG][PATH]: %s\n", request->path);
+        }
+        if (request->query_params != NULL)
+        {
+            printf("[DEBUG][QUERY_PARAMS]: ");
+            PrintHashMap(request->query_params);
+            printf("\n");
+        }
+        if (request->headers != NULL)
+        {
+            PrintHashMap(request->headers);
+        }
+        if (request->body != NULL)
+        {
+            printf("[DEBUG][BODY]: ");
+            PrintJSON(request->body);
+            printf("\n");
+        }
     }
-    if (request->host != NULL)
+}
+
+// V2
+extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
+{
+    if (parser == NULL)
     {
-        printf("[DEBUG][HOST]: %s\n", request->host);
+        return NULL;
     }
-    if (request->port != 0)
+    HTTPRequest *http_request = createBlankHTTPRequest();
+    if (http_request == NULL)
     {
-        printf("[DEBUG][PORT]: %d\n", request->port);
+        // printf("[ERROR]: Not enough memory for http_request\n");
+        FreeHTTPParser(parser);
+        return NULL;
     }
-    if (request->path != NULL)
+    bool found_method = false;
+    bool found_uri = false;
+    bool found_version = false;
+    char *header_key = NULL;
+    NextHTTPToken(parser);
+    while (ALWAYS)
     {
-        printf("[DEBUG][PATH]: %s\n", request->path);
+        PrintHTTPToken(parser->current_token, true);
+        if (parser->current_token->type == HTTPTokenIllegal)
+        {
+            // FreeHTTPParser(parser);
+            // FreeHTTPRequest(http_request);
+            Log(ERROR, "HTTPTokenIllegal deteced");
+            break;
+            // return NULL;
+        }
+        if (parser->current_token->type == HTTPTokenEOF)
+        {
+            break;
+        }
+        else if (parser->current_token == HTTPTokenMethod)
+        {
+            if (found_method)
+            {
+                Log(ERROR, "more than one method found....");
+                break;
+            }
+            else if (parser->peek_token->type != HTTPTokenSpace)
+            {
+                Log(ERROR, "space not found after method....");
+                break;
+            }
+            http_request->method_v2 = HTTPStringToMethodEnum(parser->current_token->literal);
+            found_method = true;
+        }
+        else if (parser->current_token->type == HTTPTokenURI)
+        {
+            if (found_uri)
+            {
+                Log(ERROR, "more than one uri found....");
+                break;
+            }
+            else if (parser->peek_token->type != HTTPTokenSpace)
+            {
+                Log(ERROR, "space not found after uri....");
+                break;
+            }
+            else
+            {
+                http_request->uri = parser->current_token->literal;
+                found_uri = true;
+            }
+        }
+        else if (parser->current_token->type == HTTPTokenVersion)
+        {
+            if (found_version)
+            {
+                Log(ERROR, "more than one version found....");
+                break;
+            }
+            else if (parser->peek_token->type != HTTPTokenCRLF)
+            {
+                Log(ERROR, "no CRLF after version");
+                break;
+            }
+            else
+            {
+                http_request->version = parser->current_token->literal; // ParseHTTPVersion(parser->current_token->literal, strlen(parser->current_token->literal));
+                found_version = true;
+            }
+        }
+        else if (parser->current_token->type == HTTPTokenString)
+        {
+            if (parser->peek_token->type == HTTPTokenColon)
+            {
+                if (parser->previous_token->type != HTTPTokenCRLF)
+                {
+                    // Log(ERROR, "Header key was found, but previous token is not CRLF %d", parser->previous_token->type);
+                    // break;
+                }
+                else
+                {
+                    header_key = parser->current_token->literal;
+                }
+            }
+            else if (parser->peek_token->type == HTTPTokenCRLF)
+            {
+                if (parser->previous_token->type != HTTPTokenSpace)
+                {
+                    Log(ERROR, "Header value was found, but previous token is not SPACE Char");
+                    break;
+                }
+                else
+                {
+                    JSONValue *header_entry = JSONValueInit(STRING_t, parser->current_token->literal, header_key);
+                    if (header_entry == NULL)
+                    {
+                        Log(ERROR, "FIXME");
+                        break;
+                    }
+                    HashMapInsert(http_request->headers, header_entry);
+                }
+            }
+        }
+        else if (parser->current_token->type == HTTPTokenColon)
+        {
+            if (parser->peek_token->type != HTTPTokenSpace)
+            {
+                // Log(ERROR, "No space after colon");
+                // break;
+            }
+            else if (parser->previous_token->type != HTTPTokenString)
+            {
+                Log(ERROR, "No header key string before colon");
+                break;
+            }
+        }
+
+        NextHTTPToken(parser);
     }
-    if (request->query_params != NULL)
-    {
-        printf("[DEBUG][QUERY_PARAMS]: ");
-        PrintHashMap(request->query_params);
-        printf("\n");
-    }
-    if (request->headers != NULL)
-    {
-        printf("[DEBUG][HEADERS]: ");
-        PrintHashMap(request->headers);
-        printf("\n");
-    }
-    if (request->body != NULL)
-    {
-        printf("[DEBUG][BODY]: ");
-        PrintJSON(request->body);
-        printf("\n");
-    }
+
+    FreeHTTPParser(parser);
+    return http_request;
 }

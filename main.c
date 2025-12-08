@@ -76,22 +76,17 @@ void fooStatic(const HTTPRequest *request, HTTPResponse *response)
 int main(void)
 {
     SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "TRACE")));
-    // char *http_request = "GET /index.html HTTP/1.1\r\nHost: example.com\r\n\r\n";
-    char *http_request =
-        "POST /api/data HTTP/1.1\r\n"
-        "Host: example.com:8080\r\n"
-        "Content-Type: text/plain\r\n"
-        "Content-Length: 13\r\n"
-        "\r\n"
-        "Hello, World!";
-    //  char *http_request = "GET /index.html HTTP/1.1\r\n";
+    // char *http_request_string = "GET /index.html HTTP/1.1\r\nHost: example.com\r\n\r\n";
+    char *http_request_string = "GET /path HTTP/1.1\r\nHost: example.com:8080\r\nContent-Type: text/plain\r\nMethod-Type: GET\r\nContent-Length: 13\r\n\r\nHello, World!";
     // HTTPLexerDebugTest(http_request, false);
 
-    HTTPLexer *lexer = HTTPLexerInit(http_request);
-    HTTPParser *parser = HTTPParserInit(lexer);
-    HTTPRequest *request = ParseHTTP(parser);
+    HTTPLexer *http_lexer = HTTPLexerInit(http_request_string);
+    // HTTPLexerDebugTest(http_request_string, true);
+    HTTPParser *http_parser = HTTPParserInit(http_lexer);
+    HTTPRequest *http_request = ParseHTTPRequest(http_parser);
 
-    FreeHTTPRequest(request);
+    PrintHTTPRequest(http_request);
+    FreeHTTPRequest(http_request);
     return 0;
 }
 

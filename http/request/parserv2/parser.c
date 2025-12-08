@@ -1,7 +1,7 @@
 #include "./parser.h"
 #include "../request.h"
 
-static void nextHTTPToken(HTTPParser *);
+// static void nextHTTPToken(HTTPParser *);
 
 extern HTTPParser *HTTPParserInit(HTTPLexer *lexer)
 {
@@ -22,23 +22,23 @@ extern HTTPParser *HTTPParserInit(HTTPLexer *lexer)
     parser->memory_error = false;
     parser->error_message = NULL;
     parser->lexer = lexer;
-    parser->list_nested = 0;
-    parser->obj_nested = 0;
+    parser->previous_token = NULL;
     parser->current_token = NULL;
     parser->peek_token = NULL;
 
-    nextHTTPToken(parser);
+    NextHTTPToken(parser);
 
     return parser;
 }
 
-static void nextHTTPToken(HTTPParser *parser)
+extern void NextHTTPToken(HTTPParser *parser)
 {
     if (parser == NULL)
     {
         return;
     }
-    FreeHTTPToken(parser->current_token);
+    FreeHTTPToken(parser->previous_token);
+    parser->previous_token = parser->current_token;
     parser->current_token = parser->peek_token;
     if (parser->current_token != NULL)
     {
@@ -54,6 +54,10 @@ extern void FreeHTTPParser(HTTPParser *parser)
         {
             FreeHTTPLexer(parser->lexer);
         }
+        if (parser->previous_token != NULL)
+        {
+            FreeHTTPToken(parser->previous_token);
+        }
         if (parser->current_token != NULL)
         {
             FreeHTTPToken(parser->current_token);
@@ -64,37 +68,4 @@ extern void FreeHTTPParser(HTTPParser *parser)
         }
         free(parser);
     }
-}
-
-extern HTTPRequest *ParseHTTP(HTTPParser *parser)
-{
-    if (parser == NULL)
-    {
-        return NULL;
-    }
-    HTTPRequest *http_request = malloc(sizeof(HTTPRequest));
-    if (http_request == NULL)
-    {
-        // printf("[ERROR]: Not enough memory for http_request\n");
-        FreeHTTPParser(parser);
-        return NULL;
-    }
-    nextHTTPToken(parser);
-    while (ALWAYS)
-    {
-        PrintHTTPToken(parser->current_token, false);
-        if (parser->current_token->type == HTTPTokenIllegal)
-        {
-            FreeHTTPParser(parser);
-            return NULL;
-        }
-        else if (parser->current_token->type == HTTPTokenEOF)
-        {
-            break;
-        }
-        nextHTTPToken(parser);
-    }
-
-    FreeHTTPParser(parser);
-    return http_request;
 }
