@@ -37,6 +37,14 @@
 //     size_t message_length;
 // } Error;
 
+enum HTTPRequestBodyTypes
+{
+    HTTPRequestBodyJSON,
+    HTTPRequestBodyPlain,
+    // HTTPRequestBodyOctet,
+    // HTTPRequestBodyXML,
+};
+
 typedef struct
 {
     int client_socket;
@@ -48,9 +56,19 @@ typedef struct
     char *version;  // 1.1
     char *host;     // localhost
     u_int16_t port; // 8080
+    struct host_v2
+    {
+        char *hostname;
+        u_int8_t port_number;
+    } host_v2;
     enum HTTPCode bail_resp_code;
     HashMap *headers;
     JSON *body; // for now only support JSON body
+    struct body_v2
+    {
+        void *literal;
+        enum HTTPRequestBodyTypes type;
+    } body_v2;
     HashMap *path_params;
 
 } HTTPRequest;

@@ -76,8 +76,9 @@ void fooStatic(const HTTPRequest *request, HTTPResponse *response)
 int main(void)
 {
     SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "TRACE")));
-    // char *http_request_string = "GET /index.html HTTP/1.1\r\nHost: example.com\r\n\r\n";
-    char *http_request_string = "GET /path HTTP/1.1\r\nHost: example.com:8080\r\nContent-Type: text/plain\r\nMethod-Type: GET\r\nContent-Length: 13\r\n\r\nHello, World!";
+    // char *http_request_string = "GET /index.html HTTP/1.1\r\nHost: example.com\r\n";
+    char *http_request_string = "POST /path HTTP/1.1\r\nHost: example.com:8080\r\nContent-Type: text/plain\r\nMethod-Type: POST\r\nContent-Length: 13\r\n\r\nHello, World!";
+
     // HTTPLexerDebugTest(http_request, false);
 
     HTTPLexer *http_lexer = HTTPLexerInit(http_request_string);

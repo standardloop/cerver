@@ -143,5 +143,6 @@ enum V2HTTPMethod
 
 extern char *HTTPMethodEnumToString(enum V2HTTPMethod);
 enum V2HTTPMethod HTTPStringToMethodEnum(char *);
+bool DoesMethodRequireBody(enum V2HTTPMethod);
 
 #endif

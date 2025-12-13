@@ -50,15 +50,21 @@ static HTTPRequest *createBlankHTTPRequest()
     }
     request->client_socket = -1;
     request->method = HTTPGET;
-    request->method_v2 = V2HTTPGET;
     request->path = NULL;
     request->uri = NULL;
     request->query_params = NULL;
     request->version = NULL;
     request->host = NULL;
     request->port = 80;
-    request->bail_resp_code = HTTPBadGateway;
+    request->bail_resp_code = HTTPCerverDefault;
     request->headers = DefaultHashMapInit();
+
+    // v2
+    request->host_v2.hostname = NULL;
+    request->host_v2.port_number = 80;
+    request->method_v2 = V2HTTPGET;
+    request->body_v2.literal = NULL;
+    request->body_v2.type = HTTPRequestBodyPlain;
 
     if (request->headers == NULL)
     {
@@ -377,40 +383,44 @@ void FreeHTTPRequest(HTTPRequest *request)
 void PrintHTTPRequest(HTTPRequest *request)
 {
     // print into a buffer so whole thing can work
-    
+
+    // THIS IS ONLY v2 now
     if (request != NULL)
     {
         if (request->method != HTTPINVALID)
         {
-            Log(DEBUG, "[METHOD]: %s\n", HTTPMethodToStr(request->method));
+            Log(DEBUG, "[METHOD]: %s", HTTPMethodEnumToString(request->method_v2));
         }
         if (request->host != NULL)
         {
-            printf("[DEBUG][HOST]: %s\n", request->host);
+            // printf("[DEBUG][HOST]: %s\n", request->host);
+            Log(DEBUG, "[HOST]: %s", request->host_v2.hostname);
         }
-        if (request->port != 0)
+        if (request->port >= 0)
         {
-            printf("[DEBUG][PORT]: %d\n", request->port);
+            Log(DEBUG, "[PORT]: %d", request->host_v2.port_number);
         }
         if (request->path != NULL)
         {
-            printf("[DEBUG][PATH]: %s\n", request->path);
+            // printf("[DEBUG][PATH]: %s\n", request->path);
         }
         if (request->query_params != NULL)
         {
-            printf("[DEBUG][QUERY_PARAMS]: ");
-            PrintHashMap(request->query_params);
-            printf("\n");
+            // printf("[DEBUG][QUERY_PARAMS]: ");
+            // PrintHashMap(request->query_params);
+            // printf("\n");
         }
         if (request->headers != NULL)
         {
-            PrintHashMap(request->headers);
+            Log(DEBUG, "[HEADERS]: %s", ObjToString(request->headers));
         }
-        if (request->body != NULL)
+        if (request->body_v2.literal != NULL)
         {
-            printf("[DEBUG][BODY]: ");
-            PrintJSON(request->body);
-            printf("\n");
+            Log(DEBUG, "[BODY]: ");
+            if (request->body_v2.type == HTTPRequestBodyJSON)
+            {
+                PrintJSON(request->body);
+            }
         }
     }
 }
@@ -420,12 +430,13 @@ extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
 {
     if (parser == NULL)
     {
+        Log(ERROR, "HTTPParser *parser is NULL!");
         return NULL;
     }
     HTTPRequest *http_request = createBlankHTTPRequest();
     if (http_request == NULL)
     {
-        // printf("[ERROR]: Not enough memory for http_request\n");
+        Log(ERROR, "HTTPRequest *http_request = createBlankHTTPRequest() is NULL!");
         FreeHTTPParser(parser);
         return NULL;
     }
@@ -433,10 +444,21 @@ extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
     bool found_uri = false;
     bool found_version = false;
     char *header_key = NULL;
+    bool requires_body = false;
+    bool crlf_found = false;
+    bool double_crlf_found = false;
     NextHTTPToken(parser);
+
     while (ALWAYS)
     {
-        PrintHTTPToken(parser->current_token, true);
+
+        if (!double_crlf_found)
+        {
+            double_crlf_found = crlf_found && parser->current_token->type == HTTPTokenCRLF;
+        }
+        crlf_found = parser->current_token->type == HTTPTokenCRLF;
+
+        // PrintHTTPToken(parser->current_token, true);
         if (parser->current_token->type == HTTPTokenIllegal)
         {
             // FreeHTTPParser(parser);
@@ -445,11 +467,15 @@ extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
             break;
             // return NULL;
         }
-        if (parser->current_token->type == HTTPTokenEOF)
+        else if (parser->current_token->type == HTTPTokenCRLF)
         {
+        }
+        else if (parser->current_token->type == HTTPTokenEOF)
+        {
+            Log(TRACE, "HTTPTokenEOF deteced");
             break;
         }
-        else if (parser->current_token == HTTPTokenMethod)
+        else if (parser->current_token->type == HTTPTokenMethod)
         {
             if (found_method)
             {
@@ -462,6 +488,7 @@ extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
                 break;
             }
             http_request->method_v2 = HTTPStringToMethodEnum(parser->current_token->literal);
+            requires_body = DoesMethodRequireBody(http_request->method_v2);
             found_method = true;
         }
         else if (parser->current_token->type == HTTPTokenURI)
@@ -502,7 +529,12 @@ extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
         }
         else if (parser->current_token->type == HTTPTokenString)
         {
-            if (parser->peek_token->type == HTTPTokenColon)
+            printf("%d\n", double_crlf_found);
+            if (double_crlf_found && requires_body)
+            {
+                http_request->body_v2.literal = parser->current_token->literal;
+            }
+            else if (parser->peek_token->type == HTTPTokenColon)
             {
                 if (parser->previous_token->type != HTTPTokenCRLF)
                 {
@@ -527,9 +559,13 @@ extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
                     if (header_entry == NULL)
                     {
                         Log(ERROR, "FIXME");
+                        // free stuff here
                         break;
                     }
-                    HashMapInsert(http_request->headers, header_entry);
+                    else
+                    {
+                        HashMapInsert(http_request->headers, header_entry);
+                    }
                 }
             }
         }
@@ -546,9 +582,25 @@ extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
                 break;
             }
         }
-
         NextHTTPToken(parser);
     }
+
+    if (!double_crlf_found)
+    {
+        http_request->bail_resp_code = HTTPBadRequest;
+    }
+    else if (requires_body && http_request->body == NULL)
+    {
+        // FreeHTTPRequest(http_request);
+        //  bail response
+        http_request->bail_resp_code = HTTPMethodNotAllowed;
+    }
+
+    // figure out body type from headers
+    http_request->body_v2.type = HTTPRequestBodyJSON;
+
+    // printf("Requires Body: %d\n", requires_body);
+    // printf("DOUBLE CRLF: %d\n", double_crlf_found);
 
     FreeHTTPParser(parser);
     return http_request;

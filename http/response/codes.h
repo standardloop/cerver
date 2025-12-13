@@ -5,6 +5,9 @@
 
 enum HTTPCode
 {
+    // Init
+    HTTPCerverDefault = -1,
+
     // 1XX
     HTTPContinue = 100,
     // FIXME: 102?

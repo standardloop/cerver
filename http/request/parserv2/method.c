@@ -1,4 +1,5 @@
 #include "./parser.h"
+#include <stdio.h>
 
 extern char *HTTPMethodEnumToString(enum V2HTTPMethod method)
 {
@@ -68,4 +69,24 @@ enum V2HTTPMethod HTTPStringToMethodEnum(char *method)
         return V2HTTPPATCH;
     }
     return V2HTTPINVALID;
+}
+
+bool DoesMethodRequireBody(enum V2HTTPMethod method)
+{
+    switch (method)
+    {
+    case V2HTTPPATCH:
+    case V2HTTPPOST:
+    case V2HTTPPUT:
+        return true;
+    case V2HTTPGET:
+    case V2HTTPHEAD:
+    case V2HTTPDELETE:
+    case V2HTTPCONNECT:
+    case V2HTTPOPTIONS:
+    case V2HTTPTRACE:
+    case V2HTTPINVALID:
+    default:
+        return false;
+    }
 }
