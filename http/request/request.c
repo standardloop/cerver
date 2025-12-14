@@ -412,14 +412,27 @@ void PrintHTTPRequest(HTTPRequest *request)
         }
         if (request->headers != NULL)
         {
-            Log(DEBUG, "[HEADERS]: %s", ObjToString(request->headers));
+            char *headers_as_string = ObjToString(request->headers);
+            if (headers_as_string != NULL)
+            {
+                Log(DEBUG, "[HEADERS]: %s", headers_as_string);
+                free(headers_as_string);
+            }
         }
         if (request->body_v2.literal != NULL)
         {
-            Log(DEBUG, "[BODY]: ");
             if (request->body_v2.type == HTTPRequestBodyJSON)
             {
-                PrintJSON(request->body);
+                char *request_body_json_as_string = JSONToString(request->body_v2.literal, false);
+                if (request_body_json_as_string != NULL)
+                {
+                    Log(DEBUG, "[BODY]: %s", request_body_json_as_string);
+                    free(request_body_json_as_string);
+                }
+            }
+            else if (request->body_v2.type == HTTPRequestBodyPlain)
+            {
+                Log(DEBUG, "[BODY]: %s", (char *)request->body_v2.literal);
             }
         }
     }
@@ -527,14 +540,33 @@ extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
                 found_version = true;
             }
         }
-        else if (parser->current_token->type == HTTPTokenString)
+        else if (parser->current_token->type == HTTPTokenBody)
         {
-            printf("%d\n", double_crlf_found);
-            if (double_crlf_found && requires_body)
+            if (double_crlf_found && requires_body && parser->peek_token->type == HTTPTokenEOF)
             {
                 http_request->body_v2.literal = parser->current_token->literal;
             }
-            else if (parser->peek_token->type == HTTPTokenColon)
+            else
+            {
+                if (!double_crlf_found)
+                {
+                    Log(ERROR, "double CRLF not found before body");
+                }
+                if (!requires_body)
+                {
+                    Log(ERROR, "double CRLF not found before body");
+                }
+                if (parser->peek_token->type != HTTPTokenEOF)
+                {
+                    Log(ERROR, "EOF not found after body");
+                }
+                break;
+            }
+        }
+        else if (parser->current_token->type == HTTPTokenString)
+        {
+
+            if (parser->peek_token->type == HTTPTokenColon)
             {
                 if (parser->previous_token->type != HTTPTokenCRLF)
                 {
@@ -555,7 +587,7 @@ extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
                 }
                 else
                 {
-                    JSONValue *header_entry = JSONValueInit(STRING_t, parser->current_token->literal, header_key);
+                    JSONValue *header_entry = JSONValueInit(JSONSTRING_t, parser->current_token->literal, header_key);
                     if (header_entry == NULL)
                     {
                         Log(ERROR, "FIXME");
@@ -597,7 +629,8 @@ extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
     }
 
     // figure out body type from headers
-    http_request->body_v2.type = HTTPRequestBodyJSON;
+    // http_request->body_v2.type = HTTPRequestBodyJSON;
+    http_request->body_v2.type = HTTPRequestBodyPlain;
 
     // printf("Requires Body: %d\n", requires_body);
     // printf("DOUBLE CRLF: %d\n", double_crlf_found);

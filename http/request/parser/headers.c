@@ -49,5 +49,5 @@ JSONValue *ParseHeader(char *line_start)
     CopyStringServer(header_value_start_after_colon, header_value, header_value_size, 0, false);
     header_value[header_value_size - 1] = NULL_CHAR;
 
-    return JSONValueInit(STRING_t, (char *)header_value, header_key);
+    return JSONValueInit(JSONSTRING_t, (char *)header_value, header_key);
 }

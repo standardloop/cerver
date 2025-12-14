@@ -32,7 +32,7 @@ void SendResponse(HTTPResponse *resp)
         return;
     }
     // add Content-Length header
-    HashMapInsert(resp->headers, JSONValueInit(STRING_t, Int64ToString(strlen(resp->body)), QuickAllocatedString("Content-Length")));
+    HashMapInsert(resp->headers, JSONValueInit(JSONSTRING_t, Int64ToString(strlen(resp->body)), QuickAllocatedString("Content-Length")));
 
     // <VERSION> <STATUS_CODE> <STATUS_STRING>\n<HEADERS>\n\n<BODY>
 

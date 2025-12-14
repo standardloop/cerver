@@ -34,15 +34,15 @@ HashMap *generateDefaultResponseHeaders()
     HashMap *response_headers = DefaultHashMapInit();
 
     // Date: <day-name>, <day> <month> <year> <hour>:<minute>:<second> GMT
-    JSONValue *date_for_header_obj = JSONValueInit(STRING_t, generateResponseDate(), QuickAllocatedString("Date"));
+    JSONValue *date_for_header_obj = JSONValueInit(JSONSTRING_t, generateResponseDate(), QuickAllocatedString("Date"));
     HashMapInsert(response_headers, date_for_header_obj);
 
     // Server header TODO: add flag to disable this
-    JSONValue *server_header_obj = JSONValueInit(STRING_t, QuickAllocatedString("cerver/0.0.1 (macOS)"), QuickAllocatedString("Server"));
+    JSONValue *server_header_obj = JSONValueInit(JSONSTRING_t, QuickAllocatedString("cerver/0.0.1 (macOS)"), QuickAllocatedString("Server"));
     HashMapInsert(response_headers, server_header_obj);
 
     // Content-Type: text/plain FIXME: HARDCODED
-    JSONValue *content_header_obj = JSONValueInit(STRING_t, QuickAllocatedString("text/plain"), QuickAllocatedString("Content-Type"));
+    JSONValue *content_header_obj = JSONValueInit(JSONSTRING_t, QuickAllocatedString("text/plain"), QuickAllocatedString("Content-Type"));
     HashMapInsert(response_headers, content_header_obj);
 
     return response_headers;

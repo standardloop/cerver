@@ -82,7 +82,7 @@ HashMap *ParseQuery(char *buffer, size_t buffer_size)
         if (query_key != NULL && query_value != NULL && query_key != query_value)
         {
             // Log(TRACE, "adding a query entry to the map!\n");
-            (void)HashMapInsert(query_map, JSONValueInit(STRING_t, query_value, query_key)); // FIXME error checking
+            (void)HashMapInsert(query_map, JSONValueInit(JSONSTRING_t, query_value, query_key)); // FIXME error checking
             query_entry_count++;
             query_key = NULL;
             query_value = NULL;
