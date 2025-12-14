@@ -2,7 +2,7 @@
 #include <strings.h>
 #include <stdio.h>
 #include <sys/socket.h> // socket() bind() listen() accept() sockaddr
-#include <stdlib.h>     // EXIT_FAILURE
+#include <stdlib.h>     // EXIT_FAILURE atoi()
 #include <string.h>     // strlen()
 #include <netinet/in.h> // sockaddr_in
 #include <unistd.h>     // write() close()
@@ -21,6 +21,10 @@
 
 static char *locateQueryStart(char *, size_t);
 static HTTPRequest *createBlankHTTPRequest();
+
+static void configureHTTPBody(HTTPRequest *);
+static void loopThroughHTTPTokens(HTTPParser *, HTTPRequest *);
+static void separatePortFromHost(HTTPRequest *);
 
 static char *locateQueryStart(char *buffer, size_t size)
 {
@@ -60,11 +64,16 @@ static HTTPRequest *createBlankHTTPRequest()
     request->headers = DefaultHashMapInit();
 
     // v2
+    request->tls = false; // FIXME
     request->host_v2.hostname = NULL;
     request->host_v2.port_number = 80;
     request->method_v2 = V2HTTPGET;
     request->body_v2.literal = NULL;
     request->body_v2.type = HTTPRequestBodyPlain;
+    request->error_v2.is_client = false;
+    request->error_v2.is_client = false;
+    request->error_v2.message = NULL;
+    request->error_v2.bail_resp_code = HTTPCerverDefault;
 
     if (request->headers == NULL)
     {
@@ -375,6 +384,29 @@ void FreeHTTPRequest(HTTPRequest *request)
             // free(request->body);
             FreeJSON(request->body);
         }
+        // v2
+        if (request->host_v2.hostname != NULL)
+        {
+            free(request->host_v2.hostname);
+        }
+        if (request->body_v2.literal != NULL)
+        {
+            switch (request->body_v2.type)
+            {
+            case HTTPRequestBodyJSON:
+                FreeJSON((JSON *)request->body_v2.literal);
+                break;
+            case HTTPRequestBodyPlain:
+                free((char *)request->body_v2.literal);
+                break;
+            default:
+                break;
+            }
+        }
+        if (request->uri != NULL)
+        {
+            free(request->uri);
+        }
         free(request);
     }
 }
@@ -391,12 +423,12 @@ void PrintHTTPRequest(HTTPRequest *request)
         {
             Log(DEBUG, "[METHOD]: %s", HTTPMethodEnumToString(request->method_v2));
         }
-        if (request->host != NULL)
+        if (request->host_v2.hostname != NULL)
         {
             // printf("[DEBUG][HOST]: %s\n", request->host);
             Log(DEBUG, "[HOST]: %s", request->host_v2.hostname);
         }
-        if (request->port >= 0)
+        if (request->host_v2.port_number >= 0)
         {
             Log(DEBUG, "[PORT]: %d", request->host_v2.port_number);
         }
@@ -438,38 +470,77 @@ void PrintHTTPRequest(HTTPRequest *request)
     }
 }
 
-// V2
-extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
+static void separatePortFromHost(HTTPRequest *http_request)
 {
-    if (parser == NULL)
+    char *full_host = HashMapGetValueDirect(http_request->headers, "Host");
+    if (!IsCharInString(full_host, COLON_CHAR))
     {
-        Log(ERROR, "HTTPParser *parser is NULL!");
-        return NULL;
+        // FIXME
+        http_request->host_v2.port_number = DEFAULT_HTTP_PORT;
+        // if (http_request->tls)
+        // {
+        //     http_request->host_v2.port_number = DEFAULT_HTTPS_PORT;
+        // }
+        // else
+        // {
+        //     http_request->host_v2.port_number = DEFAULT_HTTP_PORT;
+        // }
+        // return;
     }
-    HTTPRequest *http_request = createBlankHTTPRequest();
-    if (http_request == NULL)
+    else
     {
-        Log(ERROR, "HTTPRequest *http_request = createBlankHTTPRequest() is NULL!");
-        FreeHTTPParser(parser);
-        return NULL;
+        StringArr *host_breakdown = EveryoneExplodeNow(full_host, COLON_CHAR);
+        if (host_breakdown == NULL)
+        {
+            Log(ERROR, "StringArr *host_breakdown = EveryoneExplodeNow(full_host, COLON_CHAR) is NULL!");
+        }
+        else
+        {
+            if (host_breakdown->num_strings != 2)
+            {
+                Log(ERROR, "StringArr *host_breakdown = EveryoneExplodeNow(full_host, COLON_CHAR) is NULL!");
+            }
+            else
+            {
+                http_request->host_v2.hostname = QuickAllocatedString(host_breakdown->strings[0]); // copy the string
+                http_request->host_v2.port_number = (u_int16_t)atoi(host_breakdown->strings[1]);
+            }
+        }
+        FreeStringArr(host_breakdown);
     }
-    bool found_method = false;
-    bool found_uri = false;
-    bool found_version = false;
-    char *header_key = NULL;
-    bool requires_body = false;
-    bool crlf_found = false;
-    bool double_crlf_found = false;
+}
+
+static void loopThroughHTTPTokens(HTTPParser *parser, HTTPRequest *http_request)
+{
+    // struct to track unique parts of the request
+    struct
+    {
+        bool found_method;
+        bool found_uri;
+        bool found_version;
+        char *header_key;
+        bool requires_body;
+        bool crlf_found;
+        bool double_crlf_found;
+    } parser_tracker;
+
+    parser_tracker.found_method = false;
+    parser_tracker.found_uri = false;
+    parser_tracker.found_version = false;
+    parser_tracker.header_key = NULL;
+    parser_tracker.requires_body = false;
+    parser_tracker.crlf_found = false;
+    parser_tracker.double_crlf_found = false;
+
     NextHTTPToken(parser);
 
     while (ALWAYS)
     {
-
-        if (!double_crlf_found)
+        if (!parser_tracker.double_crlf_found)
         {
-            double_crlf_found = crlf_found && parser->current_token->type == HTTPTokenCRLF;
+            parser_tracker.double_crlf_found = parser_tracker.crlf_found && parser->current_token->type == HTTPTokenCRLF;
         }
-        crlf_found = parser->current_token->type == HTTPTokenCRLF;
+        parser_tracker.crlf_found = parser->current_token->type == HTTPTokenCRLF;
 
         // PrintHTTPToken(parser->current_token, true);
         if (parser->current_token->type == HTTPTokenIllegal)
@@ -490,7 +561,7 @@ extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
         }
         else if (parser->current_token->type == HTTPTokenMethod)
         {
-            if (found_method)
+            if (parser_tracker.found_method)
             {
                 Log(ERROR, "more than one method found....");
                 break;
@@ -501,12 +572,13 @@ extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
                 break;
             }
             http_request->method_v2 = HTTPStringToMethodEnum(parser->current_token->literal);
-            requires_body = DoesMethodRequireBody(http_request->method_v2);
-            found_method = true;
+            free(parser->current_token->literal);
+            parser_tracker.requires_body = DoesMethodRequireBody(http_request->method_v2);
+            parser_tracker.found_method = true;
         }
         else if (parser->current_token->type == HTTPTokenURI)
         {
-            if (found_uri)
+            if (parser_tracker.found_uri)
             {
                 Log(ERROR, "more than one uri found....");
                 break;
@@ -519,12 +591,12 @@ extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
             else
             {
                 http_request->uri = parser->current_token->literal;
-                found_uri = true;
+                parser_tracker.found_uri = true;
             }
         }
         else if (parser->current_token->type == HTTPTokenVersion)
         {
-            if (found_version)
+            if (parser_tracker.found_version)
             {
                 Log(ERROR, "more than one version found....");
                 break;
@@ -537,22 +609,22 @@ extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
             else
             {
                 http_request->version = parser->current_token->literal; // ParseHTTPVersion(parser->current_token->literal, strlen(parser->current_token->literal));
-                found_version = true;
+                parser_tracker.found_version = true;
             }
         }
         else if (parser->current_token->type == HTTPTokenBody)
         {
-            if (double_crlf_found && requires_body && parser->peek_token->type == HTTPTokenEOF)
+            if (parser_tracker.double_crlf_found && parser_tracker.requires_body && parser->peek_token->type == HTTPTokenEOF)
             {
                 http_request->body_v2.literal = parser->current_token->literal;
             }
             else
             {
-                if (!double_crlf_found)
+                if (!parser_tracker.double_crlf_found)
                 {
                     Log(ERROR, "double CRLF not found before body");
                 }
-                if (!requires_body)
+                if (!parser_tracker.requires_body)
                 {
                     Log(ERROR, "double CRLF not found before body");
                 }
@@ -575,7 +647,7 @@ extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
                 }
                 else
                 {
-                    header_key = parser->current_token->literal;
+                    parser_tracker.header_key = parser->current_token->literal;
                 }
             }
             else if (parser->peek_token->type == HTTPTokenCRLF)
@@ -587,7 +659,7 @@ extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
                 }
                 else
                 {
-                    JSONValue *header_entry = JSONValueInit(JSONSTRING_t, parser->current_token->literal, header_key);
+                    JSONValue *header_entry = JSONValueInit(JSONSTRING_t, parser->current_token->literal, parser_tracker.header_key);
                     if (header_entry == NULL)
                     {
                         Log(ERROR, "FIXME");
@@ -617,24 +689,73 @@ extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
         NextHTTPToken(parser);
     }
 
-    if (!double_crlf_found)
+    if (!parser_tracker.double_crlf_found)
     {
         http_request->bail_resp_code = HTTPBadRequest;
     }
-    else if (requires_body && http_request->body == NULL)
+    else if (parser_tracker.requires_body && http_request->body == NULL)
     {
         // FreeHTTPRequest(http_request);
         //  bail response
         http_request->bail_resp_code = HTTPMethodNotAllowed;
     }
+}
 
-    // figure out body type from headers
-    // http_request->body_v2.type = HTTPRequestBodyJSON;
-    http_request->body_v2.type = HTTPRequestBodyPlain;
+// V2
+extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
+{
+    if (parser == NULL)
+    {
+        Log(ERROR, "HTTPParser *parser is NULL!");
+        return NULL;
+    }
+    // if (!parser->lexer->double_crlf)
+    // {
+    //     Log(ERROR, "Lexer did not found double_crlf");
+    //     return NULL;
+    // }
+    HTTPRequest *http_request = createBlankHTTPRequest();
+    if (http_request == NULL)
+    {
+        Log(ERROR, "HTTPRequest *http_request = createBlankHTTPRequest() is NULL!");
+        FreeHTTPParser(parser);
+        return NULL;
+    }
 
-    // printf("Requires Body: %d\n", requires_body);
-    // printf("DOUBLE CRLF: %d\n", double_crlf_found);
-
+    // have this return an error maybe?
+    loopThroughHTTPTokens(parser, http_request);
+    separatePortFromHost(http_request);
+    configureHTTPBody(http_request);
     FreeHTTPParser(parser);
     return http_request;
+}
+
+static void configureHTTPBody(HTTPRequest *http_request)
+{
+    if (http_request == NULL)
+    {
+        return;
+    }
+    char *http_request_content_type = (char *)HashMapGetValueDirect(http_request->headers, "Content-Type");
+    if (http_request_content_type == NULL)
+    {
+        Log(ERROR, "request requires body but, Content-Type header not found");
+    }
+    if (strcmp(http_request_content_type, "text/plain") == 0)
+    {
+        http_request->body_v2.type = HTTPRequestBodyPlain;
+    }
+    else if (strcmp(http_request_content_type, "application/json"))
+    {
+        http_request->body_v2.type = HTTPRequestBodyJSON;
+        char *current_str_body = http_request->body_v2.literal;
+        JSON *body_as_json = StringToJSON(current_str_body);
+        if (body_as_json == NULL)
+        {
+            Log(ERROR, "request requires body but, Content-Type header not found");
+        }
+        else
+        {
+        }
+    }
 }

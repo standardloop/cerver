@@ -13,6 +13,9 @@
 #define MAX_LINE_LENGTH 50
 #define ERROR_SIZE_T 0
 
+#define DEFAULT_HTTP_PORT 80
+#define DEFAULT_HTTPS_PORT 443
+
 /*
     HEAD / HTTP/1.1
     Host: localhost:8080
@@ -59,7 +62,7 @@ typedef struct
     struct host_v2
     {
         char *hostname;
-        u_int8_t port_number;
+        u_int16_t port_number;
     } host_v2;
     enum HTTPCode bail_resp_code;
     HashMap *headers;
@@ -69,6 +72,14 @@ typedef struct
         void *literal;
         enum HTTPRequestBodyTypes type;
     } body_v2;
+    struct error_v2
+    {
+        bool is_server;
+        bool is_client;
+        char *message;
+        enum HTTPCode bail_resp_code;
+    } error_v2;
+    bool tls;
     HashMap *path_params;
 
 } HTTPRequest;

@@ -77,7 +77,8 @@ int main(void)
 {
     SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "TRACE")));
     // char *http_request_string = "GET /index.html HTTP/1.1\r\nHost: example.com\r\n";
-    char *http_request_string = "POST /path HTTP/1.1\r\nHost: example.com:8080\r\nContent-Type: text/plain\r\nMethod-Type: POST\r\nContent-Length: 13\r\n\r\nHello, World!";
+    // char *http_request_string = "POST /path HTTP/1.1\r\nHost: example.com:8080\r\nContent-Type: text/plain\r\nMethod-Type: POST\r\nContent-Length: 13\r\n\r\nHello, World!";
+    char *http_request_string = "POST /api/users HTTP/1.1\r\nHost: example.com:8080\r\nContent-Type: application/json\r\nContent-Length: 52\r\n\r\n{\r\n  \"id\": 78912,\r\n  \"customer\": \"Jason Sweet\",\r\n  \"quantity\": 1,\r\n  \"price\": 18.00\r\n}";
 
     // HTTPLexerDebugTest(http_request, false);
 

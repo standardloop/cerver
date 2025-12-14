@@ -100,6 +100,7 @@ tasks:
 
 
   build:
+    run: once
     deps:
       - dependencies
     cmds:
@@ -159,6 +160,10 @@ tasks:
       - rm -f {{.EXECUTABLE_NAME}} optimize
       - rm -f a.out
 
+  leaks:
+    deps:
+      - leaks:run
+
   leaks:cp:
     deps:
       - build
@@ -166,6 +171,17 @@ tasks:
       - cp /usr/local/lib/standardloop/libstandardloop-util.dylib ./ # to get around sips we need to move dylibs to local dir :(
       - cp /usr/local/lib/standardloop/libstandardloop-json.dylib ./ # to get around sips we need to move dylibs to local dir :(
       - cp /usr/local/lib/standardloop/libstandardloop-logger.dylib ./ # to get around sips we need to move dylibs to local dir :(
+    # FIXME
+    # status:
+    #   - [ -f "libstandardloop-util.dylib" ]
+    #   - [ -f "libstandardloop-json.dylib" ]
+    #   - [ -f "libstandardloop-logger.dylib" ]
+
+  leaks:run:
+    deps:
+      - leaks:cp
+    cmds:
+      - leaks --atExit -- ./{{.EXECUTABLE_NAME}}
 
   leaks:clean:
     cmds:
