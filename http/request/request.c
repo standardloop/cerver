@@ -89,6 +89,7 @@ static HTTPRequest *createBlankHTTPRequest()
 
 HTTPRequest *CreateParsedHTTPRequest(char *buffer, size_t buffer_size)
 {
+    // extern HTTPRequest *ParseHTTPRequest(HTTPParser *parser)
     if (buffer == NULL || buffer_size == 0)
     {
         Log(ERROR, "[4XX]: buffer is NULL for CreateParsedHTTPRequest or buffer_size is 0\n");
@@ -475,6 +476,7 @@ static void separatePortFromHost(HTTPRequest *http_request)
     char *full_host = HashMapGetValueDirect(http_request->headers, "Host");
     if (!IsCharInString(full_host, COLON_CHAR))
     {
+        // this should always be true
         // FIXME
         http_request->host_v2.port_number = DEFAULT_HTTP_PORT;
         // if (http_request->tls)

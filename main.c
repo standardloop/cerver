@@ -73,43 +73,43 @@ void fooStatic(const HTTPRequest *request, HTTPResponse *response)
     return;
 }
 
-int main(void)
-{
-    SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "TRACE")));
-    // char *http_request_string = "GET /index.html HTTP/1.1\r\nHost: example.com\r\n";
-    // char *http_request_string = "POST /path HTTP/1.1\r\nHost: example.com:8080\r\nContent-Type: text/plain\r\nMethod-Type: POST\r\nContent-Length: 13\r\n\r\nHello, World!";
-    char *http_request_string = "POST /api/users HTTP/1.1\r\nHost: example.com:8080\r\nContent-Type: application/json\r\nContent-Length: 52\r\n\r\n{\r\n  \"id\": 78912,\r\n  \"customer\": \"Jason Sweet\",\r\n  \"quantity\": 1,\r\n  \"price\": 18.00\r\n}";
-
-    // HTTPLexerDebugTest(http_request, false);
-
-    HTTPLexer *http_lexer = HTTPLexerInit(http_request_string);
-    // HTTPLexerDebugTest(http_request_string, true);
-    HTTPParser *http_parser = HTTPParserInit(http_lexer);
-    HTTPRequest *http_request = ParseHTTPRequest(http_parser);
-
-    PrintHTTPRequest(http_request);
-    FreeHTTPRequest(http_request);
-    return 0;
-}
-
 // int main(void)
 // {
-//     int port = atoi(GetEnv("PORT", "8080"));
-//     int num_threads = atoi(GetEnv("NUM_THREADS", "4"));
-//     int buffer_size = atoi(GetEnv("BUFFER_SIZE", "100"));
-
 //     SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "TRACE")));
-//     // SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "ERROR")));
+//     // char *http_request_string = "GET /index.html HTTP/1.1\r\nHost: example.com\r\n";
+//     // char *http_request_string = "POST /path HTTP/1.1\r\nHost: example.com:8080\r\nContent-Type: text/plain\r\nMethod-Type: POST\r\nContent-Length: 13\r\n\r\nHello, World!";
+//     char *http_request_string = "POST /api/users HTTP/1.1\r\nHost: example.com:8080\r\nContent-Type: application/json\r\nContent-Length: 52\r\n\r\n{\r\n  \"id\": 78912,\r\n  \"customer\": \"Jason Sweet\",\r\n  \"quantity\": 1,\r\n  \"price\": 18.00\r\n}";
 
-//     Cerver *server = InitCerver(port, num_threads, buffer_size);
+//     // HTTPLexerDebugTest(http_request, false);
 
-//     (void)AddRouteToTable(server->router->get, "/foo", foo);
-//     // (void)AddRouteToTable(server->router->get, "/foo/{id=int}/bar/{name=string}", fooID);
+//     HTTPLexer *http_lexer = HTTPLexerInit(http_request_string);
+//     // HTTPLexerDebugTest(http_request_string, true);
+//     HTTPParser *http_parser = HTTPParserInit(http_lexer);
+//     HTTPRequest *http_request = ParseHTTPRequest(http_parser);
 
-//     // WIP support *
-//     //(void)AddRouteToTable(server->router->get, "/bar/.*", bar);
-
-//     StartCerver(server);
-
-//     return EXIT_SUCCESS;
+//     PrintHTTPRequest(http_request);
+//     FreeHTTPRequest(http_request);
+//     return 0;
 // }
+
+int main(void)
+{
+    int port = atoi(GetEnv("PORT", "8080"));
+    int num_threads = atoi(GetEnv("NUM_THREADS", "4"));
+    int buffer_size = atoi(GetEnv("BUFFER_SIZE", "100"));
+
+    SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "TRACE")));
+    // SetLogLevel(StringToLogLevel(GetEnv("LOG_LEVEL", "ERROR")));
+
+    Cerver *server = InitCerver(port, num_threads, buffer_size);
+
+    (void)AddRouteToTable(server->router->get, "/foo", foo);
+    // (void)AddRouteToTable(server->router->get, "/foo/{id=int}/bar/{name=string}", fooID);
+
+    // WIP support *
+    //(void)AddRouteToTable(server->router->get, "/bar/.*", bar);
+
+    StartCerver(server);
+
+    return EXIT_SUCCESS;
+}

@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <strings.h>
 #include <stdio.h>
 #include <sys/socket.h> // socket() bind() listen() accept() sockaddr
 #include <stdlib.h>     // EXIT_FAILURE
@@ -47,13 +46,27 @@ void SendResponse(HTTPResponse *resp)
     // (void)write(resp->client_socket, hello, strlen(hello));
 }
 
+#define TEMP_BUFFER_SIZE 1024
 void HandleRequest(Router *router, int client_socket)
 {
     HTTPRequest *request = NULL;
     HTTPResponse *response = NULL;
     ssize_t valread;
-    char buffer[BUFFER_SIZE];
-    valread = read(client_socket, buffer, sizeof(char) * BUFFER_SIZE);
+    char buffer[TEMP_BUFFER_SIZE];
+
+    char *read_buffer = calloc(TEMP_BUFFER_SIZE, sizeof(char));
+
+    // we need to read the buffer until we now how long the content length is.
+    
+
+    // valread = recv(client_socket, buffer, sizeof(char) * TEMP_BUFFER_SIZE, 0);
+    // PrintBuffer(buffer, valread, false);
+    // printf("%d\n", (int)valread);
+    // memset(buffer, ' ', sizeof(buffer));
+    // valread = recv(client_socket, buffer, sizeof(char) * TEMP_BUFFER_SIZE, 0);
+    // printf("%d\n", (int)valread);
+    PrintBuffer(buffer, valread, false);
+    exit(0);
     if (valread == 0)
     {
         Log(WARN, "[4XX]: Didn't read more than 0\n");
